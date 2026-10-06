@@ -22,6 +22,7 @@ class FakeClient:
 
     def generate_content(self, model, contents, config):
         self.calls += 1
+        self.contents = contents
         return SimpleNamespace(parsed=self.parsed.pop(0))
 
 
@@ -168,6 +169,19 @@ def test_muc_tt27():
     assert dg.muc_tt27(BAN.phieu, ids, _kq("dung", "dung", "dung", "dung", "dung", "mot_phan", "sai")) == "Hoàn thành"
     xanh = [0, 1, 2, 3]  # phiếu Xanh: không có mức 3 -> mức 3 coi như đạt
     assert dg.muc_tt27(BAN.phieu, xanh, _kq("dung", "dung", "dung", "dung")) == "Hoàn thành tốt"
+
+
+def test_muc_cuoi_ky():
+    assert dg.muc_cuoi_ky(["Hoàn thành", "Hoàn thành tốt", "Hoàn thành"]) == "Hoàn thành"
+    assert dg.muc_cuoi_ky(["Hoàn thành", "Hoàn thành tốt"]) == "Hoàn thành tốt"  # hoà: lấy lần gần nhất
+    assert dg.muc_cuoi_ky([]) == ""
+
+
+def test_nhan_xet_hoc_ba_khong_gui_ten():
+    client = FakeClient(ai.NhanXetHocBa(nhan_xet="Em hoàn thành tốt nội dung phép cộng."))
+    ls = [{"ngay": "2026-10-01", "mon": "Toán", "chu_de": "Phép cộng", "muc_tt27": "Hoàn thành tốt", "nhan_xet": "Tốt"}]
+    out = ai.nhan_xet_hoc_ba(client, "m", 2, ls, "Hoàn thành tốt")
+    assert out.startswith("Em hoàn thành") and "Nguyễn" not in str(client.contents)
 
 
 def test_khop_ten():
@@ -435,6 +449,33 @@ def test_nhieu_lop():
         assert len(kho.lop_ds(dn.db, dn.email)) == 3  # lớp mới tự lưu
         at.button(key="xoa_lop").click().run()
         assert not at.exception and len(kho.lop_ds(dn.db, dn.email)) == 2
+
+
+def test_luu_cham_va_tien_bo():
+    import kho
+    goc = ai.nhan_xet_hoc_ba
+    ai.nhan_xet_hoc_ba = lambda client, model, lop, ls, muc: f"Nhận xét lớp {lop}: {muc}"
+    try:
+        with DangNhap() as dn:
+            lop = ai.LopHoc(ten_lop="2A", hoc_sinh=[ai.HocSinh(stt=1, ten="Nguyễn An"), ai.HocSinh(stt=2, ten="Lê Bình")])
+            kho.lop_luu(dn.db, dn.email, lop)
+            at = _app("fake")
+            at.switch_page("trang/cham_bai.py").run()
+            at.button(key="mau_sb").click().run()
+            at.session_state["cham"] = {"ver": 1, "loi": [], "rows": [
+                {"STT": 1, "Họ tên": "Nguyễn An", "Điểm": 9.5, "Mức TT27": "Hoàn thành tốt", "Nhận xét": "Tốt", "Câu 1": "✓"},
+                {"STT": 2, "Họ tên": "Lê Bình", "Điểm": 4.0, "Mức TT27": "Chưa hoàn thành", "Nhận xét": "Cố gắng", "Câu 1": "✗"}]}
+            at.run()
+            at.button(key="cb_luu").click().run()
+            assert not at.exception and len(kho.tien_bo(dn.db, dn.email, lop.id)) == 2
+            assert at.button(key="cb_luu").disabled  # không lưu trùng
+            at.switch_page("trang/tien_bo.py").run()
+            assert not at.exception and len(at.dataframe) == 1
+            at.button(key="hb_ca_lop").click().run()
+            assert not at.exception
+            assert at.session_state.hoc_ba[lop.id]["Nguyễn An"]["nx"] == "Nhận xét lớp 2: Hoàn thành tốt"
+    finally:
+        ai.nhan_xet_hoc_ba = goc
 
 
 if __name__ == "__main__":

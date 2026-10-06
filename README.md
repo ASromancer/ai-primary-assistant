@@ -22,14 +22,18 @@
 
 Sổ tổng hợp sửa được trực tiếp và xuất Excel. Một nút cập nhật nhóm Xanh/Cam/Tím cho phiếu lần sau.
 
+**🔐 Cá nhân hoá (đăng nhập Google + database)**: hồ sơ giáo viên (form tự điền lựa chọn gần nhất), **📚 Thư viện** phiếu tự lưu (tìm không dấu, gắn sao, nhân bản), nhiều lớp lưu lâu dài, lưu kết quả chấm vào hồ sơ lớp. **📈 Tiến bộ**: bảng mức TT27 của từng em qua các lần chấm, biểu đồ từng em, AI gợi ý **nhận xét học bạ cuối kỳ** (không gửi tên học sinh), xuất Excel. Trang chủ có thống kê: số phiếu, số bài chấm, giờ tiết kiệm ước tính. Không cấu hình thì app chạy ở chế độ khách như bình thường.
+
 **💾 Lưu/mở lại phiếu (.json)** và **phiếu mẫu có sẵn** (kèm kết quả kiểm định): trình chiếu được cả khi không có mạng.
 
 ## Cấu trúc
 
 ```text
 app.py               Điều hướng, thanh bên cài đặt dùng chung
-state.py             Trạng thái phiên, client AI, báo lỗi
-trang/               Các trang: trang_chu, soan_phieu, lop_hoc, cham_bai, lop_cua_toi
+state.py             Trạng thái phiên, client AI, đăng nhập, tự lưu
+kho.py               Truy cập database (mọi truy vấn lọc theo email giáo viên)
+sql/schema.sql       Tạo bảng trên Supabase (chạy một lần)
+trang/               Các trang: trang_chu, soan_phieu, thu_vien, lop_hoc, cham_bai, lop_cua_toi, tien_bo
 ai.py                Gọi Gemini: soạn phiếu, kiểm định, đề B, chấm bài (JSON schema, tự chuyển model dự phòng)
 danh_gia.py          Mức TT27, khớp tên học sinh, sổ tổng hợp Excel
 docx_export.py       Xuất Word + ZIP (phiếu chung, phiếu nhóm, phiếu theo tên, đáp án)
@@ -67,6 +71,42 @@ Lấy Gemini API Key miễn phí tại <https://aistudio.google.com/apikey>
 Muốn đổi model AI (khi Google ngừng model cũ): thêm `GEMINI_MODEL = "ten-model-moi"` vào Secrets. Mặc định là `gemini-3.8-flash`.
 
 > **Lưu ý:** key nằm trong Secrets thì mọi người mở link đều dùng chung key của bạn. Gói miễn phí có giới hạn số lượt mỗi phút/ngày. Nếu chỉ dùng để demo, có thể bỏ trống Secrets để mỗi người tự nhập key ở thanh bên.
+
+## Bật đăng nhập và lưu dữ liệu (tuỳ chọn, ~20 phút)
+
+Streamlit Cloud không giữ được file trên ổ đĩa, nên dữ liệu được lưu trên **Supabase** (Postgres miễn phí) và giáo viên đăng nhập bằng **Google**.
+
+**A. Tạo database Supabase**
+1. Vào <https://supabase.com>, tạo tài khoản rồi bấm **New project**. Chọn Region **Southeast Asia (Singapore)**, đặt mật khẩu database và ghi lại mật khẩu này.
+2. Mở **SQL Editor** → **New query**, dán toàn bộ nội dung file [sql/schema.sql](sql/schema.sql), rồi bấm **Run**.
+3. Bấm **Connect** (trên cùng) và chọn **Session pooler**. Copy chuỗi URI, thay `[YOUR-PASSWORD]` bằng mật khẩu ở bước 1, rồi đổi `postgresql://` thành `postgresql+psycopg2://`.
+   (Streamlit Cloud không kết nối được tới địa chỉ "Direct connection" vì địa chỉ đó chỉ có IPv6; phải dùng Session pooler.)
+
+**B. Tạo đăng nhập Google**
+1. Vào <https://console.cloud.google.com>, tạo một project mới.
+2. Vào **Google Auth Platform → Branding**: điền tên ứng dụng và email hỗ trợ. Ở mục **Audience** chọn *External*, sau đó bấm **Publish app** để mọi tài khoản Google đều đăng nhập được. Nếu để chế độ *Testing* thì chỉ những email được thêm vào danh sách Test users mới đăng nhập được.
+3. Vào **Clients → Create client**, chọn loại *Web application*. Ở **Authorized redirect URIs** thêm hai địa chỉ:
+   - `https://TEN-APP.streamlit.app/oauth2callback`
+   - `http://localhost:8501/oauth2callback`
+4. Copy **Client ID** và **Client secret**.
+
+**C. Dán vào Secrets** (Streamlit Cloud → App settings → Secrets), theo mẫu trong [.streamlit/secrets.toml.example](.streamlit/secrets.toml.example):
+
+```toml
+[auth]
+redirect_uri = "https://TEN-APP.streamlit.app/oauth2callback"
+cookie_secret = "..."   # tạo bằng: python -c "import secrets; print(secrets.token_hex(32))"
+client_id = "....apps.googleusercontent.com"
+client_secret = "GOCSPX-..."
+server_metadata_url = "https://accounts.google.com/.well-known/openid-configuration"
+
+[connections.sql]
+url = "postgresql+psycopg2://postgres.MA_PROJECT:MAT_KHAU@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+```
+
+**Bảo mật:** các bảng đã bật RLS và bị chặn với vai trò `anon`/`authenticated`, nên API công khai của Supabase không đọc được dữ liệu. Chỉ app (giữ chuỗi kết nối bí mật) mới truy cập được, và mọi truy vấn đều lọc theo email của giáo viên. Tên học sinh không gửi cho AI, trừ trường hợp tên nằm sẵn trong ảnh bài làm khi chấm.
+
+**Lưu ý:** project Supabase gói miễn phí tự tạm dừng sau 7 ngày không ai dùng. Trước buổi demo, vào dashboard Supabase bấm **Restore** nếu project đang tạm dừng.
 
 ## Mẹo trình chiếu (thi sáng kiến / giáo viên giỏi)
 

@@ -34,6 +34,15 @@ def muc_tt27(phieu, ids: list[int], kq) -> str:
     return "Hoàn thành"
 
 
+def muc_cuoi_ky(ds_muc: list[str]) -> str:
+    """Mức gợi ý cuối kỳ: mức xuất hiện nhiều nhất; hoà thì lấy mức của lần gần nhất trong số các mức hoà."""
+    if not ds_muc:
+        return ""
+    dem = {m: ds_muc.count(m) for m in ds_muc}
+    cao = max(dem.values())
+    return next(m for m in reversed(ds_muc) if dem[m] == cao)
+
+
 def bo_dau(s: str) -> str:
     s = s.replace("đ", "d").replace("Đ", "D")
     return unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()

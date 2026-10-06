@@ -269,3 +269,18 @@ Hãy đọc kỹ chữ viết tay và chấm TỪNG câu (đủ {len(ids)} câu,
         c.diem_dat = min(phieu.cau_hoi[i].diem, max(0.0, c.diem_dat))
         kq.cau.append(c)
     return kq
+
+
+class NhanXetHocBa(BaseModel):
+    nhan_xet: str = Field(description="Nhận xét cuối kỳ ghi học bạ, 2-3 câu")
+
+
+def nhan_xet_hoc_ba(client, model, lop: int, lich_su: list[dict], muc_goi_y: str) -> str:
+    """Gợi ý nhận xét học bạ từ lịch sử đánh giá. KHÔNG gửi tên học sinh: chỉ gửi mức và nhận xét các lần chấm."""
+    ls = "\n".join(f"- {r['ngay']} · {r['mon']} · {r['chu_de']}: {r['muc_tt27']}. {r.get('nhan_xet', '')}" for r in lich_su)
+    prompt = f"""Dựa trên quá trình đánh giá thường xuyên của một học sinh {f"lớp {lop}" if lop else "tiểu học"} dưới đây, viết nhận xét cuối kỳ \
+để ghi vào học bạ theo Thông tư 27/2020/TT-BGDĐT. Mức đạt được gợi ý: {muc_goi_y}.
+{ls}
+Yêu cầu: 2-3 câu, ngắn gọn, cụ thể theo nội dung đã học; nêu điểm mạnh, điều cần cố gắng; giọng tích cực; \
+không nêu điểm số; không dùng tên riêng (bắt đầu bằng "Em" hoặc động từ, ví dụ "Hoàn thành tốt...")."""
+    return _goi(client, model, [prompt], NhanXetHocBa, temperature=0.5).nhan_xet.strip()

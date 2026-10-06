@@ -118,3 +118,20 @@ with st.container(border=True):
         state.dat_lop(LopHoc(ten_lop=lop.ten_lop, hoc_sinh=hs))
         st.toast(f"Đã cập nhật nhóm cho {len(theo_ten)} học sinh" + (f" (thêm mới {len(moi)} em)" if moi else ""),
                  icon="👥")
+
+    if state.ca_nhan():
+        import kho
+        lop_hien = st.session_state.get("lop") or LopHoc()
+        da_luu = st.session_state.get("cham_da_luu") == cham["ver"]
+        if not lop_hien.id:
+            st.caption("💡 Chọn hoặc tạo lớp ở trang *Lớp của tôi* để lưu kết quả vào hồ sơ tiến bộ của lớp.")
+        elif st.button("✅ Đã lưu vào hồ sơ lớp" if da_luu else
+                       f"💾 Lưu vào hồ sơ lớp {lop_hien.ten_lop or ''} (theo dõi tiến bộ)",
+                       disabled=da_luu, width="stretch", key="cb_luu"):
+            cot_cau = [c for c in df.columns if c.startswith("Câu ")]
+            kho.cham_luu(state.db(), state.email(), lop_hien.id, ban_cham.thong_so.mon, ban_cham.thong_so.chu_de,
+                         loai + (" – đề B" if de_b else ""),
+                         [{"ten": r["Họ tên"], "diem": float(r["Điểm"]) if pd.notna(r["Điểm"]) else None, "muc_tt27": r["Mức TT27"], "nhan_xet": r["Nhận xét"],
+                           "chi_tiet": {c: r[c] for c in cot_cau}} for r in df.to_dict("records") if r["Họ tên"]])
+            st.session_state.cham_da_luu = cham["ver"]
+            st.rerun()
