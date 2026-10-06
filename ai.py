@@ -76,6 +76,19 @@ class KiemDinh(BaseModel):
     van_de: list[VanDe]
 
 
+class KetQuaCau(BaseModel):
+    cau_so: int = Field(description="Số thứ tự câu trên phiếu đã phát")
+    dat: Literal["dung", "mot_phan", "sai", "bo_trong"]
+    diem_dat: float
+    ghi_chu: str = Field(description="Lỗi sai cụ thể hoặc điểm tốt, rất ngắn; rỗng nếu đúng hoàn toàn")
+
+
+class KetQuaCham(BaseModel):
+    ten_tren_phieu: str = Field(description="Họ tên học sinh viết trên phiếu; rỗng nếu không đọc được")
+    cau: list[KetQuaCau]
+    nhan_xet: str = Field(description="2-3 câu nhận xét theo tinh thần TT27")
+
+
 class HocSinh(BaseModel):
     stt: int
     ten: str
@@ -228,3 +241,29 @@ Soạn đề B TƯƠNG ĐƯƠNG: đúng {len(phieu.cau_hoi)} câu, cùng thứ t
         chuan_hoa(c)
     b.ten_bai, b.yeu_cau_can_dat = phieu.ten_bai, phieu.yeu_cau_can_dat
     return b
+
+
+def cham_bai(client, model, ts: ThongSo, phieu: Phieu, ids: list[int], anh: tuple[bytes, str]) -> KetQuaCham:
+    """Chấm một ảnh bài làm. ids: chỉ số câu (trong phieu.cau_hoi) theo đúng thứ tự trên phiếu đã phát."""
+    ds = "\n".join(
+        f"Câu {k} (Mức {c.muc}, {DANG_BAI[c.dang]}, {c.diem} điểm): {c.noi_dung} | Lựa chọn: {c.lua_chon} "
+        f"{c.cot_phai or ''} | Đáp án: {c.dap_an} | Hướng dẫn chấm: {c.huong_dan_cham}"
+        for k, c in enumerate((phieu.cau_hoi[i] for i in ids), 1))
+    prompt = f"""Ảnh đính kèm là bài làm của một học sinh lớp {ts.lop} trên phiếu môn {ts.mon}, chủ đề "{ts.chu_de}".
+Các câu trên phiếu và đáp án:
+{ds}
+Hãy đọc kỹ chữ viết tay và chấm TỪNG câu (đủ {len(ids)} câu, theo đúng số thứ tự trên):
+- dat: dung / mot_phan / sai / bo_trong; diem_dat theo hướng dẫn chấm; ghi_chu nêu lỗi sai cụ thể.
+- Chấp nhận cách trình bày khác nếu kết quả và lập luận đúng.
+- ten_tren_phieu: họ tên học sinh ghi ở đầu phiếu.
+- nhan_xet: 2-3 câu theo tinh thần Thông tư 27: nêu cụ thể điều em làm tốt, điều em cần cố gắng và lời \
+động viên; xưng "em"; không nhắc điểm số."""
+    kq = _goi(client, model, [types.Part.from_bytes(data=anh[0], mime_type=anh[1]), prompt], KetQuaCham,
+              temperature=0.1)
+    theo_so = {c.cau_so: c for c in kq.cau}
+    kq.cau = []
+    for k, i in enumerate(ids, 1):
+        c = theo_so.get(k) or KetQuaCau(cau_so=k, dat="bo_trong", diem_dat=0, ghi_chu="")
+        c.diem_dat = min(phieu.cau_hoi[i].diem, max(0.0, c.diem_dat))
+        kq.cau.append(c)
+    return kq

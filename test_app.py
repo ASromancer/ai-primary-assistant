@@ -8,6 +8,7 @@ from streamlit.testing.v1 import AppTest
 
 import ai
 import classroom_html as cx
+import danh_gia as dg
 import docx_export as dx
 
 BAN = ai.BanLuu.model_validate_json(open("mau/phieu_mau.json", encoding="utf-8").read())
@@ -154,6 +155,43 @@ def test_phieu_theo_ten():
     assert "Nguyễn An" in text and "Lê Bình" in text and "PHIẾU TÍM – ĐỀ B" in text
 
 
+def _kq(*dat):
+    return ai.KetQuaCham(ten_tren_phieu="An", nhan_xet="", cau=[
+        ai.KetQuaCau(cau_so=k + 1, dat=d, diem_dat=0, ghi_chu="") for k, d in enumerate(dat)])
+
+
+def test_muc_tt27():
+    ids = list(range(7))  # 3 câu mức 1, 2 câu mức 2, 2 câu mức 3
+    assert dg.muc_tt27(BAN.phieu, ids, _kq(*["dung"] * 7)) == "Hoàn thành tốt"
+    assert dg.muc_tt27(BAN.phieu, ids, _kq("sai", "sai", "dung", "dung", "dung", "dung", "dung")) == "Chưa hoàn thành"
+    assert dg.muc_tt27(BAN.phieu, ids, _kq("dung", "dung", "dung", "dung", "mot_phan", "sai", "sai")) == "Hoàn thành"
+    assert dg.muc_tt27(BAN.phieu, ids, _kq("dung", "dung", "dung", "dung", "dung", "mot_phan", "sai")) == "Hoàn thành"
+    xanh = [0, 1, 2, 3]  # phiếu Xanh: không có mức 3 -> mức 3 coi như đạt
+    assert dg.muc_tt27(BAN.phieu, xanh, _kq("dung", "dung", "dung", "dung")) == "Hoàn thành tốt"
+
+
+def test_khop_ten():
+    assert dg.khop_ten("nguyen van an", ["Nguyễn Văn An", "Lê Bình"]) == "Nguyễn Văn An"
+    assert dg.khop_ten("Le Binh", ["Nguyễn Văn An", "Lê Bình"]) == "Lê Bình"
+    assert dg.khop_ten("Trần C", ["Nguyễn Văn An"]) == "Trần C"
+    assert dg.khop_ten("", ["Nguyễn Văn An"]) == ""
+
+
+def test_excel():
+    from openpyxl import load_workbook
+    b = dg.so_tong_hop_excel([{"STT": 1, "Họ tên": "An", "Điểm": 9.5, "Mức TT27": "Hoàn thành tốt", "Nhận xét": "Tốt"}])
+    ws = load_workbook(io.BytesIO(b)).active
+    assert ws["B2"].value == "An" and ws["A1"].font.bold and ws["C2"].value == 9.5
+
+
+def test_cham_bai_kep_diem_va_bu_cau():
+    kq = _kq("dung")
+    kq.cau[0].diem_dat = 99
+    out = ai.cham_bai(FakeClient(kq), "m", BAN.thong_so, BAN.phieu, [0, 1], (b"x", "image/png"))
+    assert out.cau[0].diem_dat == BAN.phieu.cau_hoi[0].diem
+    assert [c.cau_so for c in out.cau] == [1, 2] and out.cau[1].dat == "bo_trong"
+
+
 def test_bo_tien_to():
     assert dx.bo_tien_to("A. 43") == "43"
     assert dx.bo_tien_to("2) quả cam") == "quả cam"
@@ -233,6 +271,22 @@ def test_trang_lop_cua_toi():
         assert not at.exception
     finally:
         ai.tao_de_b = goc
+
+
+def test_trang_cham_bai_ket_qua():
+    at = _app("fake")
+    at.switch_page("trang/cham_bai.py").run()
+    assert not at.exception  # chưa có phiếu: hướng dẫn, không lỗi
+    at.button(key="mau_sb").click().run()
+    at.session_state["lop"] = ai.LopHoc(ten_lop="2A", hoc_sinh=[ai.HocSinh(stt=1, ten="Nguyễn An", nhom="Cam")])
+    at.session_state["cham"] = {"ver": 1, "loi": ["x.jpg: lỗi"], "rows": [
+        {"STT": 1, "Họ tên": "Nguyễn An", "Điểm": 9.5, "Mức TT27": "Hoàn thành tốt", "Nhận xét": "Tốt", "Câu 1": "✓"},
+        {"STT": 2, "Họ tên": "Lê Bình", "Điểm": 4.0, "Mức TT27": "Chưa hoàn thành", "Nhận xét": "Cố gắng", "Câu 1": "✗"}]}
+    at.run()
+    assert not at.exception
+    assert [m.value for m in at.metric] == ["1 em", "0 em", "1 em"]
+    at.button(key="cb_ap_nhom").click().run()
+    assert {h.ten: h.nhom for h in at.session_state.lop.hoc_sinh} == {"Nguyễn An": "Tím", "Lê Bình": "Xanh"}
 
 
 if __name__ == "__main__":

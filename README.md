@@ -4,25 +4,39 @@
 
 ## Tính năng
 
-- **Phiếu 3 mức (TT27)**: Mức 1 nhận biết – Mức 2 kết nối – Mức 3 vận dụng, số câu tự điều chỉnh theo thời lượng 15/20/35 phút.
-- **Chọn lớp, môn, bộ sách** (Kết nối tri thức, Chân trời sáng tạo, Cánh Diều) và **dạng bài** (trắc nghiệm, đúng/sai, nối cột, điền khuyết, tự luận).
-- **Chụp ảnh trang SGK**: tải lên tối đa 3 ảnh, AI ra đề bám đúng nội dung trang sách.
-- **Chỉnh từng câu**: 🔄 Đổi câu khác · ⬇️ Dễ hơn · ⬆️ Khó hơn · ✏️ Sửa tay, không phải tạo lại cả phiếu.
-- **Xuất Word để in** (Times New Roman 14, khổ A4), tải trọn bộ một file ZIP:
-  - Phiếu chung (đủ 3 mức, ghi là "Thử thách 1/2/3 sao")
-  - 3 phiếu nhóm **Xanh / Cam / Tím**: tên màu trung tính, học sinh không thấy nhãn mức độ; mỗi phiếu có thêm 1 câu thử thách ở mức kế tiếp
-  - Đáp án + ma trận đề + yêu cầu cần đạt + hướng dẫn chấm (dành cho giáo viên)
-  - Có mục **học sinh tự đánh giá** và **nhận xét của giáo viên**, đúng tinh thần TT27
-- **Lưu/mở lại phiếu (.json)** và **phiếu mẫu có sẵn**: trình chiếu được cả khi không có mạng hoặc chưa có API key.
+**✍️ Soạn phiếu**
+- Phiếu 3 mức TT27 (nhận biết – kết nối – vận dụng), chọn lớp, môn, bộ sách (Kết nối tri thức, Chân trời sáng tạo, Cánh Diều), dạng bài, thời lượng 15/20/35 phút.
+- **Chụp ảnh trang SGK** (tối đa 3 ảnh): AI ra đề bám sát trang sách.
+- **AI kiểm định**: lượt AI thứ hai đóng vai tổ trưởng chuyên môn, soát đáp án sai, câu lệch mức, ngôn ngữ chưa hợp lứa tuổi. Kết quả là điểm chất lượng 0–100 và cảnh báo trên từng câu, kèm nút 🛠 *Sửa theo góp ý*.
+- Chỉnh từng câu: 🔄 Đổi câu · ➖ Dễ hơn · ➕ Khó hơn · ✏️ Sửa tay · ↩️ Hoàn tác.
+- **In ngay** trên trình duyệt (khổ A4, cỡ chữ 14/16/18) hoặc tải Word/ZIP: phiếu chung, 3 phiếu nhóm **Xanh / Cam / Tím** (tên màu trung tính, học sinh không thấy nhãn mức độ), đáp án + ma trận + yêu cầu cần đạt.
+
+**🎬 Lớp học**: trình chiếu từng câu trên máy chiếu với thẻ màu kiểu Kahoot, đồng hồ đếm ngược, lật đáp án kèm pháo giấy, 🎲 gọi tên ngẫu nhiên, 🔊 đọc to câu hỏi (giọng tiếng Việt của trình duyệt), toàn màn hình, phím tắt. Không tốn lượt AI.
+
+**👥 Lớp của tôi**: danh sách học sinh theo nhóm (dán từ Excel). **Đề A/B** chống nhìn bài: cùng cấu trúc, khác số liệu. **Phiếu theo tên**: mỗi em một trang có sẵn tên, đúng màu nhóm, có thể xen kẽ đề A/B. Tên học sinh không gửi cho AI.
+
+**📷 Chấm bài**: tải ảnh bài làm cả lớp, AI chấm từng câu và viết nhận xét theo TT27. Mức Hoàn thành tốt / Hoàn thành / Chưa hoàn thành được tính bằng quy tắc cố định:
+- Chưa hoàn thành: làm đúng dưới 50% số câu Mức 1.
+- Hoàn thành tốt: Mức 1 và Mức 2 đúng từ 80% trở lên, Mức 3 đúng từ 50% trở lên.
+- Hoàn thành: các trường hợp còn lại.
+
+Sổ tổng hợp sửa được trực tiếp và xuất Excel. Một nút cập nhật nhóm Xanh/Cam/Tím cho phiếu lần sau.
+
+**💾 Lưu/mở lại phiếu (.json)** và **phiếu mẫu có sẵn** (kèm kết quả kiểm định): trình chiếu được cả khi không có mạng.
 
 ## Cấu trúc
 
 ```text
-app.py              Giao diện Streamlit
-ai.py               Gọi Gemini, cấu trúc dữ liệu phiếu (JSON schema)
-docx_export.py      Xuất Word + ZIP
-mau/phieu_mau.json  Phiếu mẫu Toán lớp 2 (demo)
-test_app.py         Kiểm thử (không cần API key)
+app.py               Điều hướng, thanh bên cài đặt dùng chung
+state.py             Trạng thái phiên, client AI, báo lỗi
+trang/               Các trang: trang_chu, soan_phieu, lop_hoc, cham_bai, lop_cua_toi
+ai.py                Gọi Gemini: soạn phiếu, kiểm định, đề B, chấm bài (JSON schema, tự chuyển model dự phòng)
+danh_gia.py          Mức TT27, khớp tên học sinh, sổ tổng hợp Excel
+docx_export.py       Xuất Word + ZIP (phiếu chung, phiếu nhóm, phiếu theo tên, đáp án)
+html_export.py       Trang in A4 trên trình duyệt
+classroom_html.py    Ứng dụng trình chiếu Lớp học (HTML/JS tự chứa)
+mau/phieu_mau.json   Phiếu mẫu Toán lớp 2 (demo)
+test_app.py          Kiểm thử (không cần API key)
 ```
 
 ## Chạy trên máy
@@ -57,5 +71,5 @@ Muốn đổi model AI (khi Google ngừng model cũ): thêm `GEMINI_MODEL = "te
 ## Mẹo trình chiếu (thi sáng kiến / giáo viên giỏi)
 
 - Trước buổi thi, tạo sẵn 2–3 phiếu đẹp rồi bấm **Lưu phiếu (.json)**. Nếu mạng chập chờn thì mở lại file đó, không phải chờ AI.
-- Kịch bản demo ấn tượng: chụp trang SGK bằng điện thoại → tải lên → AI ra phiếu → bấm "Dễ hơn" một câu → tải ZIP → mở phiếu Xanh/Cam/Tím.
+- Kịch bản demo: chụp trang SGK → AI ra phiếu và tự kiểm định → *Sửa theo góp ý* → trình chiếu ở trang Lớp học (gọi tên, lật đáp án) → chấm vài bài mẫu bằng ảnh → cập nhật nhóm → in phiếu theo tên cho buổi sau.
 - Streamlit Cloud cho app "ngủ" sau vài ngày không ai dùng: mở link trước buổi thi khoảng 5 phút để app kịp khởi động lại.

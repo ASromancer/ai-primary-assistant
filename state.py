@@ -1,6 +1,5 @@
 """Trạng thái và tiện ích dùng chung cho mọi trang."""
 import re
-import unicodedata
 from pathlib import Path
 
 import streamlit as st
@@ -8,6 +7,7 @@ from google.genai import errors
 from pydantic import ValidationError
 
 from ai import BanLuu, tao_client
+from danh_gia import bo_dau
 
 TRANG = {
     "trang_chu": "trang/trang_chu.py",
@@ -72,11 +72,6 @@ def bao_loi(e: Exception):
 def md(s: str) -> str:
     """Escape markdown để nội dung AI (vd '1.', '*') hiển thị đúng nguyên văn."""
     return re.sub(r"([\\`*_{}\[\]()#+\-.!|>~<])", r"\\\1", s).replace("\n", "  \n")
-
-
-def bo_dau(s: str) -> str:
-    s = s.replace("đ", "d").replace("Đ", "D")
-    return unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
 
 
 def ten_file(s: str) -> str:
