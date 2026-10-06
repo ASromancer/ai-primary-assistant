@@ -2,7 +2,9 @@ import streamlit as st
 
 import state
 
-st.set_page_config(page_title="Trợ Lý Phân Hóa Tiểu Học - TT27", page_icon="📚", layout="wide")
+cong = not state.da_dang_nhap() and not state.cho_phep_khach()  # chưa đăng nhập: chỉ hiện màn hình đăng nhập
+st.set_page_config(page_title="Trợ Lý Phân Hóa Tiểu Học - TT27", page_icon="📚", layout="wide",
+                   initial_sidebar_state="collapsed" if cong else "auto")
 
 st.html("""<style>
 .block-container { padding-top: 4.5rem; }
@@ -17,6 +19,22 @@ st.html("""<style>
 .buoc.doc { flex-direction: column; }
 .buoc.doc > div { flex: none; }
 </style>""")
+
+if cong:
+    _, giua, _ = st.columns([1, 2, 1])
+    with giua:
+        st.html("""<div class="banner" style="margin-top:6vh"><div class="t">📚 Trợ Lý Giáo Viên: Phiếu Bài Tập Phân Hóa</div>
+<div class="s">Soạn phiếu 3 mức theo Thông tư 27/2020/TT-BGDĐT · Kiểm định bằng AI · Dạy trên lớp · Chấm bài bằng ảnh ·
+Theo dõi tiến bộ và gợi ý nhận xét học bạ</div></div>""")
+        with st.container(border=True):
+            st.markdown("#### 🔐 Đăng nhập để bắt đầu")
+            st.markdown("- ✍️ Phiếu bạn soạn được **tự động lưu** vào thư viện riêng\n"
+                        "- 👥 Quản lý nhiều lớp, danh sách học sinh theo nhóm Xanh/Cam/Tím\n"
+                        "- 📈 Theo dõi tiến bộ từng em và gợi ý **nhận xét học bạ** cuối kỳ")
+            state.nut_dang_nhap("dang_nhap_cong", nho=True)
+            st.caption("🔒 Dữ liệu của mỗi giáo viên được tách riêng theo tài khoản Google. "
+                       "Ứng dụng chỉ đọc tên và email của bạn.")
+    st.stop()
 
 # Giữ giá trị ô cài đặt khi chuyển trang (Streamlit xoá state của widget không còn hiển thị)
 for k in ("api_key_nhap", "ten_gv", "truong"):
@@ -37,9 +55,11 @@ with st.sidebar:
                 st.caption("☁️ Phiếu, lớp học và kết quả chấm được lưu tự động." if state.co_db()
                            else "⚠️ Chưa cấu hình database – dữ liệu chỉ lưu trong phiên.")
                 st.button("Đăng xuất", on_click=st.logout, width="stretch", key="dang_xuat")
-        else:
-            st.button("🔐 Đăng nhập bằng Google", on_click=st.login, type="primary", width="stretch", key="dang_nhap")
-            st.caption("Đăng nhập để lưu phiếu, lớp học và theo dõi tiến bộ học sinh.")
+    if not state.email():
+        with st.container(border=True):
+            st.markdown("**👤 Chế độ khách**")
+            st.caption("Dữ liệu chỉ nằm trong phiên này. Đăng nhập để lưu phiếu, lớp học và theo dõi tiến bộ học sinh.")
+            state.nut_dang_nhap("dang_nhap", nho=True)
 
     st.subheader("⚙️ Cài đặt")
     if not state._secret("GEMINI_API_KEY"):

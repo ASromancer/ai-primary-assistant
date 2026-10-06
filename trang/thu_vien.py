@@ -8,11 +8,10 @@ st.markdown("## 📚 Thư viện phiếu của tôi")
 st.caption("Mọi phiếu đã soạn được lưu tự động. Tìm lại, gắn sao, nhân bản để soạn phiếu mới từ phiếu cũ.")
 
 if not state.ca_nhan():
-    if state.co_auth():
-        st.info("🔐 Đăng nhập bằng Google để lưu và xem lại thư viện phiếu.")
-        st.button("Đăng nhập bằng Google", on_click=st.login, type="primary", key="tv_dang_nhap")
-    else:
-        st.info("Thư viện cần cấu hình đăng nhập và database (xem hướng dẫn trong README).")
+    st.info("🔐 Đăng nhập để lưu và xem lại thư viện phiếu."
+            if not state.email() else "⚠️ Chưa cấu hình database (khối [connections.sql] trong Secrets).")
+    if not state.email():
+        state.nut_dang_nhap("tv_dang_nhap")
     st.stop()
 
 db, email = state.db(), state.email()

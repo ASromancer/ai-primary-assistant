@@ -12,9 +12,10 @@ st.caption("Theo dõi mức đạt TT27 của từng em qua các lần chấm v�
            "AI chỉ nhận lịch sử mức và nhận xét, không nhận tên học sinh.")
 
 if not state.ca_nhan():
-    st.info("🔐 Đăng nhập (và cấu hình database) để lưu kết quả chấm và theo dõi tiến bộ của lớp.")
-    if state.co_auth():
-        st.button("Đăng nhập bằng Google", on_click=st.login, type="primary", key="tb_dang_nhap")
+    st.info("🔐 Đăng nhập để lưu kết quả chấm và theo dõi tiến bộ của lớp."
+            if not state.email() else "⚠️ Chưa cấu hình database (khối [connections.sql] trong Secrets).")
+    if not state.email():
+        state.nut_dang_nhap("tb_dang_nhap")
     st.stop()
 
 db, email = state.db(), state.email()

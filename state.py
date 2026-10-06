@@ -147,6 +147,26 @@ def email() -> str:
     return st.user.email if co_auth() and st.user.is_logged_in else ""
 
 
+def cho_phep_khach() -> bool:
+    """Mặc định bắt buộc đăng nhập; đặt CHE_DO_KHACH = true trong Secrets để cho dùng không cần đăng nhập."""
+    return bool(_secret("CHE_DO_KHACH", False))
+
+
+def da_dang_nhap() -> bool:
+    return bool(email())
+
+
+def nut_dang_nhap(key: str, nho: bool = False):
+    """Nút đăng nhập luôn hiển thị khi chưa đăng nhập; chưa cấu hình [auth] thì nút mờ kèm hướng dẫn."""
+    if co_auth():
+        st.button("🔐 Đăng nhập bằng Google", on_click=st.login, type="primary", key=key,
+                  width="stretch" if nho else "content")
+    else:
+        st.button("🔐 Đăng nhập bằng Google", disabled=True, key=key, width="stretch" if nho else "content",
+                  help="Quản trị viên cần thêm khối [auth] vào Secrets – xem README, mục Bật đăng nhập.")
+        st.caption("⚙️ Chưa bật đăng nhập: thêm khối `[auth]` (Google OAuth) vào Secrets của app.")
+
+
 def db():
     return st.connection("sql", type="sql").engine
 

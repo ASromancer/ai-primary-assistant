@@ -72,7 +72,11 @@ Muốn đổi model AI (khi Google ngừng model cũ): thêm `GEMINI_MODEL = "te
 
 > **Lưu ý:** key nằm trong Secrets thì mọi người mở link đều dùng chung key của bạn. Gói miễn phí có giới hạn số lượt mỗi phút/ngày. Nếu chỉ dùng để demo, có thể bỏ trống Secrets để mỗi người tự nhập key ở thanh bên.
 
-## Bật đăng nhập và lưu dữ liệu (tuỳ chọn, ~20 phút)
+## Bật đăng nhập và lưu dữ liệu (~20 phút)
+
+> **App bắt buộc đăng nhập Google.** Khi chưa cấu hình khối `[auth]`, app chỉ hiện màn hình đăng nhập với nút bị mờ.
+> Muốn tạm cho dùng không cần đăng nhập (ví dụ demo lúc mất mạng), thêm `CHE_DO_KHACH = true` vào Secrets.
+> Ở chế độ này dữ liệu chỉ nằm trong phiên làm việc, không được lưu lại.
 
 Streamlit Cloud không giữ được file trên ổ đĩa, nên dữ liệu được lưu trên **Supabase** (Postgres miễn phí) và giáo viên đăng nhập bằng **Google**.
 

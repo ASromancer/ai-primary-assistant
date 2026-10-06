@@ -21,8 +21,11 @@ if state.ca_nhan():
                        help="Ước tính: 40 phút soạn một phiếu có đáp án và ma trận, 3 phút chấm và nhận xét một bài")
     except Exception as e:
         st.warning(f"Chưa đọc được thống kê từ database: {e}")
-elif state.co_auth():
-    st.info("🔐 Đăng nhập bằng Google ở thanh bên để lưu phiếu, lớp học và theo dõi tiến bộ học sinh.")
+elif not state.email():
+    with st.container(border=True, horizontal=True, vertical_alignment="center"):
+        st.markdown("**🔐 Bạn đang dùng chế độ khách.** Đăng nhập để tự lưu phiếu vào thư viện, "
+                    "quản lý nhiều lớp và theo dõi tiến bộ từng học sinh.", width="stretch")
+        state.nut_dang_nhap("dang_nhap_home")
 
 CHUC_NANG = [
     ("soan_phieu", "✍️", "Soạn phiếu", "Phiếu 3 mức TT27 từ tên bài hoặc ảnh SGK. AI tự kiểm định, in ngay hoặc tải Word."),

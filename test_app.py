@@ -282,11 +282,24 @@ def test_bo_tien_to():
     assert dx.bo_tien_to("1.5 kg") == "1.5 kg"
 
 
-def _app(secret_key=None):
+def _app(secret_key=None, khach=True):
     at = AppTest.from_file("app.py", default_timeout=30)
+    if khach:
+        at.secrets["CHE_DO_KHACH"] = True  # các test giao diện chạy ở chế độ khách
     if secret_key:
         at.secrets["GEMINI_API_KEY"] = secret_key
     return at.run()
+
+
+def test_bat_buoc_dang_nhap():
+    at = _app(khach=False)
+    assert not at.exception
+    assert any("Đăng nhập để bắt đầu" in m.value for m in at.markdown)
+    assert at.button(key="dang_nhap_cong").disabled  # chưa cấu hình [auth]: nút mờ
+    assert "lich_su" not in at.session_state and not any("Soạn phiếu" in m.value for m in at.markdown[3:])
+    with DangNhap():
+        at = _app(khach=False)
+        assert not at.exception and not any("Đăng nhập để bắt đầu" in m.value for m in at.markdown)
 
 
 def test_trang_chu_va_dieu_huong():
