@@ -47,8 +47,14 @@ def loi_than_thien(e: Exception) -> str:
         if e.code == 404:
             return f"Model '{MODEL}' không khả dụng. Hãy đổi GEMINI_MODEL trong Secrets."
         if e.code >= 500:
-            return "Máy chủ AI đang quá tải. Vui lòng thử lại sau ít giây."
+            return "Máy chủ AI của Google đang quá tải (đã thử cả model dự phòng). Vui lòng thử lại sau 1–2 phút."
     return f"Đã xảy ra lỗi: {e}"
+
+
+def bao_loi(e: Exception):
+    st.error(loi_than_thien(e))
+    with st.expander("Chi tiết kỹ thuật"):
+        st.code(f"{type(e).__name__}: {e}")
 
 
 def md(s: str) -> str:
@@ -129,7 +135,7 @@ if st.button("🚀 Tạo Phiếu Bài Tập Phân Hóa", type="primary", width="
                 ts.chu_de = ts.chu_de or phieu.ten_bai
                 st.session_state.ban = BanLuu(thong_so=ts, phieu=phieu)
             except Exception as e:
-                st.error(loi_than_thien(e))
+                bao_loi(e)
 
 if "ban" not in st.session_state:
     st.info("👆 Chọn thông số rồi bấm **Tạo phiếu**, hoặc bấm **Xem phiếu mẫu** ở thanh bên để xem thử.")
@@ -162,7 +168,7 @@ def lam_lai(i: int, che_do: str):
         try:
             phieu.cau_hoi[i] = tao_lai_cau(_client(api_key), MODEL, ts, phieu, i, che_do)
         except Exception as e:
-            st.error(loi_than_thien(e))
+            bao_loi(e)
             return
     st.rerun()
 

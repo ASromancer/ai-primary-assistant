@@ -34,6 +34,27 @@ def test_tao_phieu_sap_xep_va_thu_lai():
     assert max(c.muc for c in out.cau_hoi) == 3
 
 
+def test_chuyen_model_du_phong_khi_qua_tai():
+    class Client503(FakeClient):
+        def generate_content(self, model, contents, config):
+            self.models_used.append(model)
+            if model == "m":
+                raise ai.errors.APIError(503, {"error": {"message": "overloaded", "status": "UNAVAILABLE"}})
+            return super().generate_content(model, contents, config)
+    client = Client503(BAN.phieu.model_copy(deep=True))
+    client.models_used = []
+    ai.tao_phieu(client, "m", BAN.thong_so, list(ai.DANG_BAI), [])
+    assert client.models_used == ["m", ai.MODEL_DU_PHONG[0]]
+
+    sai_key = FakeClient()
+    sai_key.generate_content = lambda **kw: (_ for _ in ()).throw(ai.errors.APIError(400, {"error": {"message": "API key not valid"}}))
+    try:
+        ai.tao_phieu(sai_key, "m", BAN.thong_so, list(ai.DANG_BAI), [])
+        assert False, "lỗi 400 phải báo ngay, không chuyển model"
+    except ai.errors.APIError as e:
+        assert e.code == 400
+
+
 def test_tao_lai_cau_giu_muc_va_diem():
     moi = BAN.phieu.cau_hoi[0].model_copy(update=dict(muc=3, diem=5, noi_dung="Câu mới"))
     out = ai.tao_lai_cau(FakeClient(moi), "m", BAN.thong_so, BAN.phieu, 0, "de_hon")

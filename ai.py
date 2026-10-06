@@ -2,7 +2,7 @@
 from typing import Literal
 
 from google import genai
-from google.genai import types
+from google.genai import errors, types
 from pydantic import BaseModel, Field
 
 DANG_BAI = {
@@ -70,8 +70,15 @@ Ngôn ngữ trong sáng, chuẩn sư phạm, phù hợp lứa tuổi, tên nhân
 tự kiểm tra lại từng phép tính trước khi trả lời.""".format(m1=MUC[1], m2=MUC[2], m3=MUC[3])
 
 
+# Model dự phòng khi model chính quá tải (5xx), hết lượt (429) hoặc không tồn tại (404).
+MODEL_DU_PHONG = ["gemini-3.5-flash", "gemini-3.1-flash-lite"]
+CHUYEN_MODEL = {404, 429, 500, 502, 503, 504}
+
+
 def tao_client(api_key: str) -> genai.Client:
-    return genai.Client(api_key=api_key)
+    # SDK tự thử lại 1 lần sau 2 giây khi máy chủ lỗi tạm thời
+    retry = types.HttpRetryOptions(attempts=2, initial_delay=2, http_status_codes=[500, 502, 503, 504])
+    return genai.Client(api_key=api_key, http_options=types.HttpOptions(retry_options=retry))
 
 
 def _goi(client, model, contents, schema, temperature=0.7):
@@ -81,10 +88,19 @@ def _goi(client, model, contents, schema, temperature=0.7):
         response_schema=schema,
         temperature=temperature,
     )
-    for _ in range(2):  # AI đôi khi trả JSON lỗi: thử lại 1 lần
-        r = client.models.generate_content(model=model, contents=contents, config=cfg)
-        if isinstance(r.parsed, schema):
-            return r.parsed
+    loi = None
+    for m in dict.fromkeys([model, *MODEL_DU_PHONG]):
+        try:
+            for _ in range(2):  # AI đôi khi trả JSON lỗi: thử lại 1 lần
+                r = client.models.generate_content(model=m, contents=contents, config=cfg)
+                if isinstance(r.parsed, schema):
+                    return r.parsed
+        except errors.APIError as e:
+            if e.code not in CHUYEN_MODEL:
+                raise
+            loi = e
+    if loi:
+        raise loi
     raise ValueError("AI trả về dữ liệu không đúng định dạng. Vui lòng bấm tạo lại.")
 
 
