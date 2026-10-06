@@ -418,6 +418,25 @@ def test_thu_vien():
         assert len(kho.phieu_ds(dn.db, dn.email)) == 2
 
 
+def test_nhieu_lop():
+    import kho
+    with DangNhap() as dn:
+        kho.lop_luu(dn.db, dn.email, ai.LopHoc(ten_lop="2A", hoc_sinh=[ai.HocSinh(stt=1, ten="An")]))
+        kho.lop_luu(dn.db, dn.email, ai.LopHoc(ten_lop="2B", hoc_sinh=[ai.HocSinh(stt=1, ten="Bình")]))
+        at = _app()
+        at.switch_page("trang/lop_cua_toi.py").run()
+        assert at.session_state.lop.ten_lop == "2B"  # lớp gần nhất
+        id_2a = next(x["id"] for x in kho.lop_ds(dn.db, dn.email) if x["ten_lop"] == "2A")
+        at.selectbox[0].set_value(id_2a).run()
+        assert not at.exception and at.session_state.lop.ten_lop == "2A"
+        at.button(key="lop_moi").click().run()
+        at.text_area(key="dan_ten").input("Chi\nDũng").run()
+        at.button(key="them_ten").click().run()
+        assert len(kho.lop_ds(dn.db, dn.email)) == 3  # lớp mới tự lưu
+        at.button(key="xoa_lop").click().run()
+        assert not at.exception and len(kho.lop_ds(dn.db, dn.email)) == 2
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):
