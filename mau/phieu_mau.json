@@ -1,0 +1,47 @@
+{
+  "thong_so": {
+    "mon": "Toán",
+    "lop": 2,
+    "bo_sach": "Kết nối tri thức với cuộc sống",
+    "chu_de": "Phép cộng có nhớ trong phạm vi 100",
+    "thoi_luong": 20,
+    "truong": ""
+  },
+  "phieu": {
+    "ten_bai": "Phép cộng (có nhớ) số có hai chữ số với số có hai chữ số",
+    "yeu_cau_can_dat": [
+      "Thực hiện được phép cộng (có nhớ) số có hai chữ số với số có một chữ số, số có hai chữ số trong phạm vi 100.",
+      "Giải được bài toán thực tế liên quan đến phép cộng có nhớ.",
+      "Nhận biết và tìm được quy luật của dãy số đơn giản."
+    ],
+    "cau_hoi": [
+      {"muc": 1, "dang": "trac_nghiem", "noi_dung": "Khoanh vào chữ đặt trước kết quả đúng của phép tính 38 + 5:",
+       "lua_chon": ["33", "43", "42", "53"], "cot_phai": [],
+       "goi_y_hs": "Tách 5 = 2 + 3. Ta có 38 + 2 = 40, rồi 40 + 3 = ...",
+       "dap_an": "B. 43", "huong_dan_cham": "Khoanh đúng B được 1 điểm.", "diem": 1},
+      {"muc": 1, "dang": "dien_khuyet", "noi_dung": "Đặt tính rồi tính:   27 + 15 = .......      46 + 38 = .......      59 + 6 = .......",
+       "lua_chon": [], "cot_phai": [],
+       "goi_y_hs": "Cộng hàng đơn vị trước. Ví dụ: 7 + 5 = 12, viết 2 nhớ 1.",
+       "dap_an": "27 + 15 = 42;  46 + 38 = 84;  59 + 6 = 65", "huong_dan_cham": "Mỗi phép tính đúng 0,5 điểm; đặt tính thẳng cột.", "diem": 1.5},
+      {"muc": 1, "dang": "noi_cot", "noi_dung": "Nối mỗi phép tính với kết quả đúng:",
+       "lua_chon": ["29 + 4", "36 + 7", "48 + 5"], "cot_phai": ["53", "33", "43"],
+       "goi_y_hs": "Em có thể đếm thêm từ số lớn hơn.",
+       "dap_an": "1 – b; 2 – c; 3 – a", "huong_dan_cham": "Mỗi nối đúng 0,5 điểm.", "diem": 1.5},
+      {"muc": 2, "dang": "tu_luan", "noi_dung": "Lớp 2A có 28 bạn nữ và 17 bạn nam. Hỏi lớp 2A có tất cả bao nhiêu bạn?",
+       "lua_chon": [], "cot_phai": [], "goi_y_hs": "",
+       "dap_an": "Số bạn lớp 2A có tất cả là: 28 + 17 = 45 (bạn). Đáp số: 45 bạn.",
+       "huong_dan_cham": "Câu lời giải 0,5đ; phép tính đúng 1đ; đáp số 0,5đ.", "diem": 2},
+      {"muc": 2, "dang": "dung_sai", "noi_dung": "Đúng ghi Đ, sai ghi S vào ô trống:",
+       "lua_chon": ["45 + 27 = 72", "38 + 46 = 74", "19 + 19 = 38"], "cot_phai": [], "goi_y_hs": "",
+       "dap_an": "a) Đ;  b) S (vì 38 + 46 = 84);  c) Đ", "huong_dan_cham": "Mỗi ý đúng 0,5 điểm.", "diem": 1.5},
+      {"muc": 3, "dang": "tu_luan", "noi_dung": "Mai có 35 nhãn vở. Mai có ít hơn Hà 8 nhãn vở. Hỏi cả hai bạn có tất cả bao nhiêu nhãn vở?",
+       "lua_chon": [], "cot_phai": [], "goi_y_hs": "",
+       "dap_an": "Hà có: 35 + 8 = 43 (nhãn vở). Cả hai bạn có: 35 + 43 = 78 (nhãn vở). Đáp số: 78 nhãn vở.",
+       "huong_dan_cham": "Tìm đúng số nhãn vở của Hà 0,75đ; tìm đúng tổng 0,75đ.", "diem": 1.5},
+      {"muc": 3, "dang": "dien_khuyet", "noi_dung": "Tìm quy luật rồi viết tiếp hai số:   17, 26, 35, 44, ......., .......",
+       "lua_chon": [], "cot_phai": [], "goi_y_hs": "",
+       "dap_an": "53, 62 (mỗi số sau bằng số liền trước cộng thêm 9).", "huong_dan_cham": "Viết đúng 2 số 0,5đ; nêu được quy luật 0,5đ.", "diem": 1}
+    ],
+    "loi_chuc": "Chúc các em làm bài thật tốt và luôn yêu thích môn Toán!"
+  }
+}
