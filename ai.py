@@ -96,12 +96,14 @@ class HocSinh(BaseModel):
 
 
 class LopHoc(BaseModel):
+    id: str = ""  # id trong database (rỗng nếu chưa lưu)
     ten_lop: str = ""
     hoc_sinh: list[HocSinh] = []
 
 
 class BanLuu(BaseModel):
     """Toàn bộ phiếu + thông số, dùng để lưu/mở lại file .json."""
+    id: str = ""  # id trong database (rỗng nếu chưa lưu)
     thong_so: ThongSo
     phieu: Phieu
     phieu_b: Phieu | None = None  # đề B: cùng cấu trúc, khác số liệu

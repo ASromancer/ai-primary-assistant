@@ -192,6 +192,76 @@ def test_cham_bai_kep_diem_va_bu_cau():
     assert [c.cau_so for c in out.cau] == [1, 2] and out.cau[1].dat == "bo_trong"
 
 
+def _sqlite():
+    import tempfile
+    from sqlalchemy import create_engine
+    import kho
+    db = create_engine(f"sqlite:///{tempfile.mkdtemp()}/t.db")
+    kho.tao_bang(db)
+    return db
+
+
+def kiem_tra_kho(db):
+    import kho
+    A, B = "a@truong.vn", "b@truong.vn"
+    kho.ho_so_luu(db, A, ten="Cô Lan", lop_mac_dinh=2, khong_hop_le="x")
+    assert kho.ho_so_lay(db, A)["ten"] == "Cô Lan" and kho.ho_so_lay(db, B) == {}
+
+    ban = BAN.model_copy(deep=True)
+    pid = kho.phieu_luu(db, A, ban)
+    assert ban.id == pid and kho.phieu_luu(db, A, ban) == pid  # cập nhật, không tạo mới
+    ds = kho.phieu_ds(db, A)
+    assert len(ds) == 1 and ds[0]["diem_kd"] == 92 and ds[0]["so_cau"] == 7
+    kho.phieu_sao(db, A, pid, True)
+    assert kho.phieu_ds(db, A)[0]["gan_sao"] is True
+    # Cách ly: B không mở/sửa/xoá/gắn sao được phiếu của A; lưu với id của A tạo bản riêng cho B
+    assert kho.phieu_mo(db, B, pid) is None and kho.phieu_ds(db, B) == []
+    kho.phieu_xoa(db, B, pid); kho.phieu_sao(db, B, pid, False)
+    assert kho.phieu_ds(db, A)[0]["gan_sao"] is True
+    gia = BAN.model_copy(update={"id": pid})
+    assert kho.phieu_luu(db, B, gia) != pid and kho.phieu_mo(db, A, pid).thong_so.chu_de == BAN.thong_so.chu_de
+
+    lop = ai.LopHoc(ten_lop="2A", hoc_sinh=[ai.HocSinh(stt=1, ten="An", nhom="Xanh"), ai.HocSinh(stt=2, ten="Bình")])
+    lid = kho.lop_luu(db, A, lop)
+    lop.hoc_sinh = lop.hoc_sinh[:1]
+    kho.lop_luu(db, A, lop)
+    assert kho.lop_mo(db, A, lid).hoc_sinh == [ai.HocSinh(stt=1, ten="An", nhom="Xanh")]
+    assert kho.lop_ds(db, A)[0]["si_so"] == 1
+    lop_gia = ai.LopHoc(id=lid, ten_lop="hack", hoc_sinh=[])
+    kho.lop_luu(db, B, lop_gia)  # không được xoá học sinh lớp của A
+    assert lop_gia.id != lid and kho.lop_mo(db, A, lid).ten_lop == "2A" and kho.lop_mo(db, B, lid) is None
+
+    rows = [{"ten": "An", "diem": 9, "muc_tt27": "Hoàn thành tốt", "nhan_xet": "Tốt", "chi_tiet": {"Câu 1": "✓"}}]
+    kho.cham_luu(db, A, lid, "Toán", "Phép cộng", "Phiếu chung", rows)
+    kho.cham_luu(db, A, lid, "Toán", "Phép trừ", "Phiếu chung", [{**rows[0], "muc_tt27": "Hoàn thành"}])
+    kho.cham_luu(db, B, lid, "Toán", "x", "x", rows)  # B không gắn được vào lớp của A
+    tb = kho.tien_bo(db, A, lid)
+    assert [r["muc_tt27"] for r in tb] == ["Hoàn thành tốt", "Hoàn thành"] and kho.tien_bo(db, B, lid) == []
+    tk = kho.thong_ke(db, A)
+    assert (tk["so_phieu"], tk["so_lop"], tk["so_hoc_sinh"], tk["so_bai_cham"]) == (1, 1, 1, 2)
+    kho.lop_xoa(db, B, lid)
+    assert kho.lop_mo(db, A, lid) is not None
+    kho.lop_xoa(db, A, lid)
+    assert kho.lop_ds(db, A) == [] and kho.thong_ke(db, A)["so_bai_cham"] == 2  # lịch sử chấm vẫn giữ
+
+
+def test_kho_sqlite():
+    kiem_tra_kho(_sqlite())
+
+
+def test_kho_postgres():
+    import os
+    url = os.environ.get("TEST_PG_URL")
+    if not url:
+        print("  (bỏ qua: chưa đặt TEST_PG_URL)")
+        return
+    from sqlalchemy import create_engine
+    import kho
+    db = create_engine(url)
+    kho.tao_bang(db, postgres=True)
+    kiem_tra_kho(db)
+
+
 def test_bo_tien_to():
     assert dx.bo_tien_to("A. 43") == "43"
     assert dx.bo_tien_to("2) quả cam") == "quả cam"
