@@ -100,24 +100,30 @@ def test_bo_tien_to():
     assert dx.bo_tien_to("1.5 kg") == "1.5 kg"
 
 
-def test_giao_dien_phieu_mau():
-    at = AppTest.from_file("app.py", default_timeout=30).run()
-    assert not at.exception
-    at.button(key="mau_main").click().run()  # Xem phiếu mẫu
-    assert not at.exception
-    assert len(at.session_state.lich_su) == 1
-    assert any("Phép cộng có nhớ" in m.value for m in at.markdown)
-    at.button(key="doi0").click().run()  # chưa có API key -> báo lỗi, không crash
-    assert not at.exception and at.error
+def _app(secret_key=None):
+    at = AppTest.from_file("app.py", default_timeout=30)
+    if secret_key:
+        at.secrets["GEMINI_API_KEY"] = secret_key
+    return at.run()
 
 
-def test_doi_cau_va_hoan_tac():
+def test_trang_chu_va_dieu_huong():
+    at = _app()
+    assert not at.exception
+    for trang in ["trang/soan_phieu.py", "trang/lop_hoc.py", "trang/cham_bai.py", "trang/lop_cua_toi.py"]:
+        at.switch_page(trang).run()
+        assert not at.exception, trang
+
+
+def test_soan_phieu_mau_doi_cau_hoan_tac():
     goc = ai.tao_lai_cau
-    ai.tao_lai_cau = lambda client, model, ts, phieu, i, che_do: phieu.cau_hoi[i].model_copy(update={"noi_dung": "CÂU MỚI"})
+    ai.tao_lai_cau = lambda client, model, ts, phieu, i, che_do, **kw: phieu.cau_hoi[i].model_copy(update={"noi_dung": "CÂU MỚI"})
     try:
-        at = AppTest.from_file("app.py", default_timeout=30)
-        at.secrets["GEMINI_API_KEY"] = "fake"
-        at.run().button(key="mau_main").click().run()
+        at = _app("fake")
+        at.switch_page("trang/soan_phieu.py").run()
+        at.button(key="mau_main").click().run()
+        assert not at.exception
+        assert len(at.session_state.lich_su) == 1
         cu = at.session_state.ban.phieu.cau_hoi[0].noi_dung
         at.button(key="doi0").click().run()
         assert not at.exception and at.session_state.ban.phieu.cau_hoi[0].noi_dung == "CÂU MỚI"

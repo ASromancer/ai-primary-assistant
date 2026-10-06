@@ -3,6 +3,8 @@ primaryColor = "#1565C0"
 backgroundColor = "#FFFFFF"
 secondaryBackgroundColor = "#F1F6FD"
 textColor = "#1A1A1A"
+font = "'Be Vietnam Pro':https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap"
+baseRadius = "0.75rem"
 
 [server]
 maxUploadSize = 5
