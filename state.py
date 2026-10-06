@@ -167,8 +167,19 @@ def nut_dang_nhap(key: str, nho: bool = False):
         st.caption("⚙️ Chưa bật đăng nhập: thêm khối `[auth]` (Google OAuth) vào Secrets của app.")
 
 
+def chuan_hoa_url(url: str) -> str:
+    """Chuỗi Supabase dán nguyên (postgresql://...) -> dùng driver psycopg2 đã cài.
+    (SQLAlchemy 2.1 mặc định 'postgresql://' là psycopg v3, không được cài.)"""
+    url = url.strip()
+    for dau in ("postgres://", "postgresql://", "postgresql+psycopg://"):
+        if url.startswith(dau):
+            return "postgresql+psycopg2://" + url[len(dau):]
+    return url
+
+
 def db():
-    return st.connection("sql", type="sql").engine
+    url = chuan_hoa_url(st.secrets["connections"]["sql"]["url"])
+    return st.connection("sql", type="sql", url=url).engine
 
 
 def ca_nhan() -> bool:
@@ -182,6 +193,9 @@ def _dau(obj) -> str:
 
 def nap_ho_so():
     """Lần đầu trong phiên sau khi đăng nhập: nạp hồ sơ và lớp gần nhất từ database."""
+    if email() and co_auth() and st.session_state.get("ten_google") != email():
+        st.session_state.ten_google = email()  # một lần mỗi phiên: điền sẵn tên tài khoản Google
+        st.session_state.ten_gv = st.session_state.get("ten_gv") or st.user.to_dict().get("name", "")
     if not ca_nhan() or st.session_state.get("ho_so_nap") == email():
         return
     import kho
@@ -191,9 +205,10 @@ def nap_ho_so():
         lop = kho.lop_mo(db(), email(), ds_lop[-1]["id"]) if ds_lop and "lop" not in st.session_state else None
     except Exception as e:
         st.sidebar.warning(f"Chưa kết nối được database: {e}")
+        st.session_state.ho_so_nap = email()  # không thử lại (và không báo lỗi) ở mọi lần chạy
         return
     st.session_state.ho_so = hs
-    st.session_state.ten_gv = hs.get("ten") or getattr(st.user, "name", "") if co_auth() else hs.get("ten", "")
+    st.session_state.ten_gv = hs.get("ten") or st.session_state.get("ten_gv", "")
     st.session_state.truong = hs.get("truong", "")
     if lop:
         st.session_state.lop = lop
@@ -222,7 +237,9 @@ def tu_luu():
             kho.ho_so_luu(db(), email(), ten=ho_so[0], truong=ho_so[1])
             da_luu["ho_so"] = ho_so
     except Exception as e:
-        st.toast(f"Chưa lưu được lên database: {e}", icon="⚠️")
+        if st.session_state.get("loi_luu") != str(e):  # báo một lần, tránh lặp ở mọi lần chạy
+            st.session_state.loi_luu = str(e)
+            st.toast(f"Chưa lưu được lên database: {e}", icon="⚠️")
 
 
 def luu_mac_dinh(**truong):

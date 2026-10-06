@@ -259,6 +259,15 @@ def kiem_tra_kho(db):
     assert kho.lop_ds(db, A) == [] and kho.thong_ke(db, A)["so_bai_cham"] == 2  # lịch sử chấm vẫn giữ
 
 
+def test_chuan_hoa_url():
+    import state
+    goc = "postgresql://postgres.abc:pw@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres"
+    assert state.chuan_hoa_url(goc) == goc.replace("postgresql://", "postgresql+psycopg2://")
+    assert state.chuan_hoa_url(" postgres://u:p@h/db ") == "postgresql+psycopg2://u:p@h/db"
+    assert state.chuan_hoa_url("postgresql+psycopg2://u:p@h/db") == "postgresql+psycopg2://u:p@h/db"
+    assert state.chuan_hoa_url("sqlite:///x.db") == "sqlite:///x.db"
+
+
 def test_kho_sqlite():
     kiem_tra_kho(_sqlite())
 
