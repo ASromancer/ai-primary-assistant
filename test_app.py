@@ -127,6 +127,33 @@ def test_trinh_chieu_an_toan():
     assert '"giay": 60' in h and "speechSynthesis" in h and '"An"' in h
 
 
+def test_de_b_giu_cau_truc():
+    b = BAN.phieu.model_copy(deep=True)
+    for c in b.cau_hoi:
+        c.muc, c.diem = 3, 9
+    out = ai.tao_de_b(FakeClient(b), "m", BAN.thong_so, BAN.phieu)
+    assert [(c.muc, c.dang, c.diem) for c in out.cau_hoi] == [(c.muc, c.dang, c.diem) for c in BAN.phieu.cau_hoi]
+    thieu = BAN.phieu.model_copy(update={"cau_hoi": BAN.phieu.cau_hoi[:2]})
+    try:
+        ai.tao_de_b(FakeClient(thieu, thieu), "m", BAN.thong_so, BAN.phieu)
+        assert False, "số câu khác phải báo lỗi"
+    except ValueError:
+        pass
+
+
+def test_phieu_theo_ten():
+    import html_export as hx
+    ban = BAN.model_copy(update={"phieu_b": BAN.phieu.model_copy(deep=True)})
+    hs = [ai.HocSinh(stt=1, ten="Nguyễn An", nhom="Xanh"), ai.HocSinh(stt=2, ten="Lê Bình", nhom="Tím")]
+    trang = hx.phieu_theo_ten(ban, hs, True)
+    assert len(trang) == 2 and "Nguyễn An" in trang[0] and "PHIẾU XANH" in trang[0]
+    assert "ĐỀ B" in trang[1] and "ĐỀ B" not in trang[0]
+    assert "ĐỀ B" not in "".join(hx.phieu_theo_ten(ban, hs, False))
+    d = Document(io.BytesIO(dx.phieu_theo_ten(ban, hs, True)))
+    text = "\n".join([p.text for p in d.paragraphs] + [c.text for t in d.tables for r in t.rows for c in r.cells])
+    assert "Nguyễn An" in text and "Lê Bình" in text and "PHIẾU TÍM – ĐỀ B" in text
+
+
 def test_bo_tien_to():
     assert dx.bo_tien_to("A. 43") == "43"
     assert dx.bo_tien_to("2) quả cam") == "quả cam"
@@ -185,6 +212,27 @@ def test_kiem_dinh_tren_giao_dien():
         assert at.session_state.ban.kiem_dinh.van_de == []
     finally:
         ai.kiem_dinh, ai.tao_lai_cau = goc
+
+
+def test_trang_lop_cua_toi():
+    goc = ai.tao_de_b
+    ai.tao_de_b = lambda client, model, ts, phieu: phieu.model_copy(deep=True)
+    try:
+        at = _app("fake")
+        at.switch_page("trang/lop_cua_toi.py").run()
+        at.text_area(key="dan_ten").input("Nguyễn An\nLê Bình\n\nTrần Chi").run()
+        at.button(key="them_ten").click().run()
+        assert not at.exception
+        assert [h.ten for h in at.session_state.lop.hoc_sinh] == ["Nguyễn An", "Lê Bình", "Trần Chi"]
+        at.run()  # chạy lại không được nhân đôi dòng
+        assert len(at.session_state.lop.hoc_sinh) == 3
+        at.button(key="mau_sb").click().run()
+        at.button(key="tao_de_b").click().run()
+        assert not at.exception and at.session_state.ban.phieu_b is not None
+        at.toggle(key="xen_ke").set_value(True).run()
+        assert not at.exception
+    finally:
+        ai.tao_de_b = goc
 
 
 if __name__ == "__main__":

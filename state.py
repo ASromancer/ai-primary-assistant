@@ -107,6 +107,12 @@ def mo_phieu(raw: bytes | str):
         st.error("File không đúng định dạng phiếu của ứng dụng.")
 
 
+def dat_lop(moi):
+    """Thay danh sách lớp và làm mới bảng nhập liệu ở trang Lớp của tôi."""
+    st.session_state.lop = moi
+    st.session_state.lop_ver = st.session_state.get("lop_ver", 0) + 1
+
+
 def can_phieu() -> BanLuu:
     """Trả phiếu hiện tại; nếu chưa có thì hướng dẫn và dừng trang."""
     ban = ban_hien_tai()

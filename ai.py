@@ -76,10 +76,22 @@ class KiemDinh(BaseModel):
     van_de: list[VanDe]
 
 
+class HocSinh(BaseModel):
+    stt: int
+    ten: str
+    nhom: Literal["Xanh", "Cam", "Tím"] = "Cam"
+
+
+class LopHoc(BaseModel):
+    ten_lop: str = ""
+    hoc_sinh: list[HocSinh] = []
+
+
 class BanLuu(BaseModel):
     """Toàn bộ phiếu + thông số, dùng để lưu/mở lại file .json."""
     thong_so: ThongSo
     phieu: Phieu
+    phieu_b: Phieu | None = None  # đề B: cùng cấu trúc, khác số liệu
     kiem_dinh: KiemDinh | None = None
     kiem_dinh_cho: str = ""  # dấu vân tay của phiếu lúc kiểm định
 
@@ -197,3 +209,22 @@ Chấm điểm 0-100: trừ nặng khi đáp án sai.
     kd.diem = min(100, max(0, kd.diem))
     kd.van_de = [v for v in kd.van_de if 0 <= v.cau_so <= len(phieu.cau_hoi)]
     return kd
+
+
+def tao_de_b(client, model, ts: ThongSo, phieu: Phieu) -> Phieu:
+    """Đề B cùng cấu trúc (mức, dạng bài, điểm từng câu) nhưng khác số liệu/ngữ liệu, chống nhìn bài."""
+    prompt = f"""Đây là phiếu bài tập (đề A) môn {ts.mon} lớp {ts.lop}, chủ đề "{ts.chu_de}":
+{phieu.model_dump_json()}
+Soạn đề B TƯƠNG ĐƯƠNG: đúng {len(phieu.cau_hoi)} câu, cùng thứ tự; mỗi câu giữ nguyên mức, dạng bài, điểm, \
+độ khó và yêu cầu cần đạt nhưng thay số liệu, tên nhân vật, ngữ liệu. Đáp án phải chính xác."""
+    for _ in range(2):
+        b = _goi(client, model, [prompt], Phieu, temperature=0.8)
+        if len(b.cau_hoi) == len(phieu.cau_hoi):
+            break
+    else:
+        raise ValueError("AI tạo đề B chưa đủ số câu như đề A. Vui lòng thử lại.")
+    for a, c in zip(phieu.cau_hoi, b.cau_hoi):
+        c.muc, c.dang, c.diem = a.muc, a.dang, a.diem
+        chuan_hoa(c)
+    b.ten_bai, b.yeu_cau_can_dat = phieu.ten_bai, phieu.yeu_cau_can_dat
+    return b

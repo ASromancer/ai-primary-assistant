@@ -5,7 +5,8 @@ Mọi nội dung do AI/người dùng nhập đều được html.escape vì tra
 import html
 
 from ai import DANG_BAI, MUC, BanLuu, CauHoi
-from docx_export import NHOM, SAO, bo_tien_to, cau_cua_nhom, cau_theo_muc, ma_tran, so, vi_tri_trong_phieu
+from docx_export import (NHOM, SAO, ban_de_b, bo_tien_to, cau_cua_nhom, cau_theo_muc, dung_de_b, ma_tran, so,
+                         vi_tri_trong_phieu)
 
 XANH_DAM = "#003366"
 
@@ -52,11 +53,11 @@ def t(s: str) -> str:
     return html.escape(s).replace("\n", "<br>")
 
 
-def _dau(ban: BanLuu, ten_phieu: str, mau: str = XANH_DAM) -> str:
+def _dau(ban: BanLuu, ten_phieu: str, mau: str = XANH_DAM, ho_ten: str = "", ten_lop: str = "") -> str:
     ts = ban.thong_so
     return f"""<div class="dau">
-<div>Trường Tiểu học: {t(ts.truong) or '....................'}<br>Lớp: ............</div>
-<div>Họ và tên: ......................................<br>Ngày: ......./......./...........</div></div>
+<div>Trường Tiểu học: {t(ts.truong) or '....................'}<br>Lớp: {t(ten_lop) or '............'}</div>
+<div>Họ và tên: {f"<b>{t(ho_ten)}</b>" if ho_ten else '......................................'}<br>Ngày: ......./......./...........</div></div>
 <h1 style="color:{mau}">{t(ten_phieu)}</h1>
 <div class="phu">Môn {t(ts.mon)} – Lớp {ts.lop} – Thời gian: {ts.thoi_luong} phút</div>
 <div class="chude">Chủ đề: {t(ts.chu_de)}</div>"""
@@ -102,10 +103,11 @@ def phieu_chung(ban: BanLuu) -> str:
     return f'<div class="trang">{"".join(out)}{_cuoi(ban)}</div>'
 
 
-def phieu_nhom(ban: BanLuu, ten: str) -> str:
+def phieu_nhom(ban: BanLuu, ten: str, ho_ten: str = "", ten_lop: str = "", de_b: bool = False) -> str:
     mau = f"#{NHOM[ten][1]}"
     chinh, them = cau_cua_nhom(ban, ten)
-    out = [_dau(ban, f"PHIẾU HỌC TẬP – PHIẾU {ten.upper()}", mau)]
+    tieu_de = f"PHIẾU HỌC TẬP – PHIẾU {ten.upper()}" + (" – ĐỀ B" if de_b else "")
+    out = [_dau(ban, tieu_de, mau, ho_ten, ten_lop)]
     out += [_cau(stt, ban.phieu.cau_hoi[i]) for stt, i in enumerate(chinh, 1)]
     if them:
         out.append(f'<div class="muc" style="color:{mau}">★ THỬ THÁCH THÊM (nếu em còn thời gian)</div>')
@@ -136,6 +138,14 @@ def dap_an(ban: BanLuu) -> str:
 <h2>3. Phân phiếu theo nhóm</h2><ul>{nhom}</ul>
 <h2>4. Đáp án và hướng dẫn chấm</h2>
 <table><tr><th>Câu (vị trí)</th><th>Mức – Dạng</th><th>Đáp án</th><th>Hướng dẫn chấm</th></tr>{da}</table></div>"""
+
+
+def phieu_theo_ten(ban: BanLuu, hoc_sinh: list, xen_ke_ab: bool, ten_lop: str = "") -> list[str]:
+    out = []
+    for hs in hoc_sinh:
+        b = dung_de_b(ban, hs, xen_ke_ab)
+        out.append(phieu_nhom(ban_de_b(ban) if b else ban, hs.nhom, hs.ten, ten_lop, b))
+    return out
 
 
 def cac_trang(ban: BanLuu) -> dict[str, str]:

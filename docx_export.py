@@ -58,10 +58,10 @@ def _para(doc, text="", bold=False, italic=False, size=None, color=None, align=N
     return p
 
 
-def _tieu_de(doc, ts, truong, ten_phieu, mau=XANH_DAM):
+def _tieu_de(doc, ts, truong, ten_phieu, mau=XANH_DAM, ho_ten="", ten_lop=""):
     t = doc.add_table(rows=1, cols=2)
-    t.cell(0, 0).text = f"Trường Tiểu học: {truong or '....................'}\nLớp: ............"
-    t.cell(0, 1).text = "Họ và tên: ......................................\nNgày: ......./......./..........."
+    t.cell(0, 0).text = f"Trường Tiểu học: {truong or '....................'}\nLớp: {ten_lop or '............'}"
+    t.cell(0, 1).text = f"Họ và tên: {ho_ten or '......................................'}\nNgày: ......./......./..........."
     _para(doc)
     _para(doc, ten_phieu, bold=True, size=16, color=mau, align=WD_ALIGN_PARAGRAPH.CENTER)
     _para(doc, f"Môn {ts.mon} – Lớp {ts.lop} – Thời gian: {ts.thoi_luong} phút",
@@ -141,17 +141,42 @@ def phieu_chung(ban: BanLuu) -> bytes:
     return _luu(doc)
 
 
-def phieu_nhom(ban: BanLuu, ten: str) -> bytes:
+def _viet_phieu_nhom(doc, ban: BanLuu, ten: str, ho_ten="", ten_lop="", de_b=False):
     _, mau, _ = NHOM[ten]
     chinh, them = cau_cua_nhom(ban, ten)
-    doc = _doc_moi()
-    _tieu_de(doc, ban.thong_so, ban.thong_so.truong, f"PHIẾU HỌC TẬP – PHIẾU {ten.upper()}", mau)
+    tieu_de = f"PHIẾU HỌC TẬP – PHIẾU {ten.upper()}" + (" – ĐỀ B" if de_b else "")
+    _tieu_de(doc, ban.thong_so, ban.thong_so.truong, tieu_de, mau, ho_ten, ten_lop)
     for stt, i in enumerate(chinh, 1):
         _cau(doc, stt, ban.phieu.cau_hoi[i])
     if them:
         _para(doc, "★ THỬ THÁCH THÊM (nếu em còn thời gian)", bold=True, color=mau).paragraph_format.space_before = Pt(10)
         _cau(doc, len(chinh) + 1, ban.phieu.cau_hoi[them[0]])
     _cuoi_phieu(doc, ban)
+
+
+def phieu_nhom(ban: BanLuu, ten: str) -> bytes:
+    doc = _doc_moi()
+    _viet_phieu_nhom(doc, ban, ten)
+    return _luu(doc)
+
+
+def ban_de_b(ban: BanLuu) -> BanLuu:
+    return ban.model_copy(update={"phieu": ban.phieu_b})
+
+
+def dung_de_b(ban: BanLuu, hs, xen_ke_ab: bool) -> bool:
+    """Xen kẽ đề: học sinh STT chẵn làm đề B (nếu đã có đề B)."""
+    return bool(xen_ke_ab and ban.phieu_b and hs.stt % 2 == 0)
+
+
+def phieu_theo_ten(ban: BanLuu, hoc_sinh: list, xen_ke_ab: bool, ten_lop: str = "") -> bytes:
+    """Một file Word, mỗi học sinh một trang, có sẵn họ tên và đúng màu nhóm."""
+    doc = _doc_moi()
+    for k, hs in enumerate(hoc_sinh):
+        if k:
+            doc.add_page_break()
+        b = dung_de_b(ban, hs, xen_ke_ab)
+        _viet_phieu_nhom(doc, ban_de_b(ban) if b else ban, hs.nhom, hs.ten, ten_lop, b)
     return _luu(doc)
 
 
