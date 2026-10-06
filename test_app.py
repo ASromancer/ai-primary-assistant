@@ -82,6 +82,18 @@ def test_xuat_word():
     assert dx.ma_tran(BAN)[-1][-2:] == [7, 10.0]
 
 
+def test_trang_in_html():
+    import html_export as hx
+    ban = BAN.model_copy(deep=True)
+    ban.phieu.cau_hoi[0].noi_dung = "<script>alert(1)</script> 38 + 5"
+    trang = hx.cac_trang(ban)
+    assert list(trang) == ["Phiếu chung", "Phiếu Xanh", "Phiếu Cam", "Phiếu Tím", "Đáp án & ma trận"]
+    doc = hx.trang_in(list(trang.values()), 18)
+    assert "<script>alert" not in doc and "&lt;script&gt;" in doc  # nội dung AI phải được escape
+    assert "font-size: 18pt" in doc and doc.count('class="trang') == 5
+    assert "Mức" not in trang["Phiếu chung"] and "THỬ THÁCH THÊM" in trang["Phiếu Xanh"]
+
+
 def test_bo_tien_to():
     assert dx.bo_tien_to("A. 43") == "43"
     assert dx.bo_tien_to("2) quả cam") == "quả cam"
@@ -91,11 +103,28 @@ def test_bo_tien_to():
 def test_giao_dien_phieu_mau():
     at = AppTest.from_file("app.py", default_timeout=30).run()
     assert not at.exception
-    at.sidebar.button[0].click().run()  # Xem phiếu mẫu
+    at.button(key="mau_main").click().run()  # Xem phiếu mẫu
     assert not at.exception
-    assert any("Phép cộng có nhớ" in s.value for s in at.subheader)
+    assert len(at.session_state.lich_su) == 1
+    assert any("Phép cộng có nhớ" in m.value for m in at.markdown)
     at.button(key="doi0").click().run()  # chưa có API key -> báo lỗi, không crash
     assert not at.exception and at.error
+
+
+def test_doi_cau_va_hoan_tac():
+    goc = ai.tao_lai_cau
+    ai.tao_lai_cau = lambda client, model, ts, phieu, i, che_do: phieu.cau_hoi[i].model_copy(update={"noi_dung": "CÂU MỚI"})
+    try:
+        at = AppTest.from_file("app.py", default_timeout=30)
+        at.secrets["GEMINI_API_KEY"] = "fake"
+        at.run().button(key="mau_main").click().run()
+        cu = at.session_state.ban.phieu.cau_hoi[0].noi_dung
+        at.button(key="doi0").click().run()
+        assert not at.exception and at.session_state.ban.phieu.cau_hoi[0].noi_dung == "CÂU MỚI"
+        at.button(key="ht0").click().run()
+        assert at.session_state.ban.phieu.cau_hoi[0].noi_dung == cu
+    finally:
+        ai.tao_lai_cau = goc
 
 
 if __name__ == "__main__":
