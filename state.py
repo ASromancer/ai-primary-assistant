@@ -12,9 +12,11 @@ from danh_gia import bo_dau
 TRANG = {
     "trang_chu": "trang/trang_chu.py",
     "soan_phieu": "trang/soan_phieu.py",
+    "thu_vien": "trang/thu_vien.py",
     "lop_hoc": "trang/lop_hoc.py",
     "cham_bai": "trang/cham_bai.py",
     "lop_cua_toi": "trang/lop_cua_toi.py",
+    "tien_bo": "trang/tien_bo.py",
 }
 PHIEU_MAU = Path(__file__).parent / "mau" / "phieu_mau.json"
 
@@ -61,6 +63,10 @@ def loi_than_thien(e: Exception) -> str:
         if e.code >= 500:
             return "Máy chủ AI của Google đang quá tải (đã thử cả model dự phòng). Vui lòng thử lại sau 1–2 phút."
     return f"Đã xảy ra lỗi: {e}"
+
+
+def so_vn(x: float) -> str:
+    return f"{x:g}".replace(".", ",")
 
 
 def bao_loi(e: Exception):
@@ -120,3 +126,91 @@ def can_phieu() -> BanLuu:
             st.rerun()
         st.stop()
     return ban
+
+
+# ---------------- Cá nhân hoá: đăng nhập + database ----------------
+def co_auth() -> bool:
+    try:
+        return "auth" in st.secrets
+    except Exception:
+        return False
+
+
+def co_db() -> bool:
+    try:
+        return "sql" in st.secrets.get("connections", {})
+    except Exception:
+        return False
+
+
+def email() -> str:
+    return st.user.email if co_auth() and st.user.is_logged_in else ""
+
+
+def db():
+    return st.connection("sql", type="sql").engine
+
+
+def ca_nhan() -> bool:
+    """Đã đăng nhập và có database: bật lưu trữ cá nhân."""
+    return bool(email()) and co_db()
+
+
+def _dau(obj) -> str:
+    return obj.model_dump_json() if hasattr(obj, "model_dump_json") else repr(obj)
+
+
+def nap_ho_so():
+    """Lần đầu trong phiên sau khi đăng nhập: nạp hồ sơ và lớp gần nhất từ database."""
+    if not ca_nhan() or st.session_state.get("ho_so_nap") == email():
+        return
+    import kho
+    try:
+        hs = kho.ho_so_lay(db(), email())
+        ds_lop = kho.lop_ds(db(), email())
+        lop = kho.lop_mo(db(), email(), ds_lop[-1]["id"]) if ds_lop and "lop" not in st.session_state else None
+    except Exception as e:
+        st.sidebar.warning(f"Chưa kết nối được database: {e}")
+        return
+    st.session_state.ho_so = hs
+    st.session_state.ten_gv = hs.get("ten") or getattr(st.user, "name", "") if co_auth() else hs.get("ten", "")
+    st.session_state.truong = hs.get("truong", "")
+    if lop:
+        st.session_state.lop = lop
+    st.session_state.da_luu = {"ho_so": (st.session_state.ten_gv, st.session_state.truong),
+                               "lop": _dau(st.session_state.get("lop"))}
+    st.session_state.ho_so_nap = email()
+
+
+def tu_luu():
+    """Lưu những gì đã thay đổi (phiếu hiện tại, lớp hiện tại, tên/trường). Gọi sau mỗi lần chạy trang."""
+    if not ca_nhan():
+        return
+    import kho
+    da_luu = st.session_state.setdefault("da_luu", {})
+    try:
+        ban = st.session_state.get("ban")
+        if ban is not None and da_luu.get("phieu") != _dau(ban):
+            kho.phieu_luu(db(), email(), ban)
+            da_luu["phieu"] = _dau(ban)
+        lop = st.session_state.get("lop")
+        if lop is not None and (lop.hoc_sinh or lop.ten_lop) and da_luu.get("lop") != _dau(lop):
+            kho.lop_luu(db(), email(), lop)
+            da_luu["lop"] = _dau(lop)
+        ho_so = (ten_gv(), truong())
+        if da_luu.get("ho_so") != ho_so:
+            kho.ho_so_luu(db(), email(), ten=ho_so[0], truong=ho_so[1])
+            da_luu["ho_so"] = ho_so
+    except Exception as e:
+        st.toast(f"Chưa lưu được lên database: {e}", icon="⚠️")
+
+
+def luu_mac_dinh(**truong):
+    """Ghi nhớ lựa chọn gần nhất (lớp, môn, bộ sách, yêu cầu thêm) làm mặc định cho lần sau."""
+    st.session_state.setdefault("ho_so", {}).update(truong)
+    if ca_nhan():
+        import kho
+        try:
+            kho.ho_so_luu(db(), email(), **truong)
+        except Exception:
+            pass

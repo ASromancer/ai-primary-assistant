@@ -45,9 +45,12 @@ with trai:
     with st.container(border=True):
         st.markdown("#### ① Thông tin bài học")
         c1, c2 = st.columns(2)
-        lop = c1.selectbox("Khối lớp", list(MON_THEO_LOP), format_func=lambda x: f"Lớp {x}")
-        mon = c2.selectbox("Môn học", MON_THEO_LOP[lop])
-        bo_sach = st.selectbox("Bộ sách", BO_SACH)
+        hs = st.session_state.get("ho_so", {})  # lựa chọn gần nhất của giáo viên
+        vi_tri = lambda ds, x: ds.index(x) if x in ds else 0
+        lop = c1.selectbox("Khối lớp", list(MON_THEO_LOP), index=vi_tri(list(MON_THEO_LOP), hs.get("lop_mac_dinh")),
+                           format_func=lambda x: f"Lớp {x}")
+        mon = c2.selectbox("Môn học", MON_THEO_LOP[lop], index=vi_tri(MON_THEO_LOP[lop], hs.get("mon_mac_dinh")))
+        bo_sach = st.selectbox("Bộ sách", BO_SACH, index=vi_tri(BO_SACH, hs.get("bo_sach_mac_dinh")))
         thoi_luong = st.segmented_control(
             "Thời lượng làm bài", list(THOI_LUONG), default=20, format_func=THOI_LUONG.get, width="stretch",
             help="15 phút: khởi động/củng cố · 20 phút: luyện tập · 35 phút: phiếu cuối tuần")
@@ -57,7 +60,7 @@ with trai:
         with st.expander("Tuỳ chọn nâng cao"):
             dang_bai = st.pills("Dạng bài", list(DANG_BAI), selection_mode="multi", default=list(DANG_BAI),
                                 format_func=DANG_BAI.get)
-            ghi_chu = st.text_area("Yêu cầu thêm", height=80,
+            ghi_chu = st.text_area("Yêu cầu thêm", value=hs.get("yeu_cau_mau") or "", height=80,
                                    placeholder="VD: Lồng ghép an toàn giao thông; dùng địa danh ở Hà Nội...")
         bam_tao = st.button("🚀 Tạo phiếu bài tập", type="primary", width="stretch")
 
@@ -83,6 +86,8 @@ with trai:
                     ts.chu_de = ts.chu_de or phieu.ten_bai
                     ban_moi = BanLuu(thong_so=ts, phieu=phieu)
                     dat_phieu(ban_moi)
+                    state.luu_mac_dinh(lop_mac_dinh=lop, mon_mac_dinh=mon, bo_sach_mac_dinh=bo_sach,
+                                       yeu_cau_mau=ghi_chu.strip())
                     st.write("🔎 Tổ trưởng chuyên môn AI đang kiểm định phiếu")
                     chay_kiem_dinh(ban_moi)
                     status.update(label="Đã tạo xong phiếu!", state="complete", expanded=False)

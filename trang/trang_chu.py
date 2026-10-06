@@ -9,6 +9,21 @@ st.html(f"""<div class="banner"><div class="t">👋 Chào {html.escape(ten) if t
 <div class="s">Trợ lý AI soạn phiếu phân hóa 3 mức theo Thông tư 27/2020/TT-BGDĐT – soạn, kiểm định, dạy trên lớp,
 chấm bài và chia nhóm học sinh trong một nơi.</div></div>""")
 
+if state.ca_nhan():
+    import kho
+    try:
+        tk = kho.thong_ke(state.db(), state.email())
+        cols = st.columns(4)
+        cols[0].metric("📝 Phiếu đã soạn", tk["so_phieu"], border=True)
+        cols[1].metric("📷 Bài đã chấm", tk["so_bai_cham"], border=True)
+        cols[2].metric("👥 Lớp · học sinh", f"{tk['so_lop']} · {tk['so_hoc_sinh']}", border=True)
+        cols[3].metric("⏱️ Thời gian tiết kiệm", f"~{state.so_vn(tk['gio_tiet_kiem'])} giờ", border=True,
+                       help="Ước tính: 40 phút soạn một phiếu có đáp án và ma trận, 3 phút chấm và nhận xét một bài")
+    except Exception as e:
+        st.warning(f"Chưa đọc được thống kê từ database: {e}")
+elif state.co_auth():
+    st.info("🔐 Đăng nhập bằng Google ở thanh bên để lưu phiếu, lớp học và theo dõi tiến bộ học sinh.")
+
 CHUC_NANG = [
     ("soan_phieu", "✍️", "Soạn phiếu", "Phiếu 3 mức TT27 từ tên bài hoặc ảnh SGK. AI tự kiểm định, in ngay hoặc tải Word."),
     ("lop_hoc", "🎬", "Lớp học", "Trình chiếu từng câu, đếm giờ, lật đáp án, gọi tên ngẫu nhiên, đọc to câu hỏi."),

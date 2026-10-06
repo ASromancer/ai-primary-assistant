@@ -23,7 +23,24 @@ for k in ("api_key_nhap", "ten_gv", "truong"):
     if k in st.session_state:
         st.session_state[k] = st.session_state[k]
 
+state.nap_ho_so()  # phải chạy trước khi vẽ các ô ten_gv/truong
+
 with st.sidebar:
+    if state.co_auth():
+        if st.user.is_logged_in:
+            info = st.user.to_dict()
+            with st.container(border=True):
+                with st.container(horizontal=True, vertical_alignment="center"):
+                    if info.get("picture"):
+                        st.image(info["picture"], width=44)
+                    st.markdown(f"**{info.get('name', '')}**  \n{info.get('email', '')}")
+                st.caption("☁️ Phiếu, lớp học và kết quả chấm được lưu tự động." if state.co_db()
+                           else "⚠️ Chưa cấu hình database – dữ liệu chỉ lưu trong phiên.")
+                st.button("Đăng xuất", on_click=st.logout, width="stretch", key="dang_xuat")
+        else:
+            st.button("🔐 Đăng nhập bằng Google", on_click=st.login, type="primary", width="stretch", key="dang_nhap")
+            st.caption("Đăng nhập để lưu phiếu, lớp học và theo dõi tiến bộ học sinh.")
+
     st.subheader("⚙️ Cài đặt")
     if not state._secret("GEMINI_API_KEY"):
         st.text_input("Gemini API Key", type="password", key="api_key_nhap",
@@ -51,10 +68,16 @@ with st.sidebar:
         st.rerun()
     st.caption(f"Mô hình AI: `{state.MODEL}` (tự chuyển model dự phòng khi quá tải).")
 
-st.navigation([
+trang = st.navigation([
     st.Page(state.TRANG["trang_chu"], title="Trang chủ", icon="🏠", default=True),
     st.Page(state.TRANG["soan_phieu"], title="Soạn phiếu", icon="✍️"),
+    st.Page(state.TRANG["thu_vien"], title="Thư viện", icon="📚"),
     st.Page(state.TRANG["lop_hoc"], title="Lớp học", icon="🎬"),
     st.Page(state.TRANG["cham_bai"], title="Chấm bài", icon="📷"),
     st.Page(state.TRANG["lop_cua_toi"], title="Lớp của tôi", icon="👥"),
-], position="top").run()
+    st.Page(state.TRANG["tien_bo"], title="Tiến bộ", icon="📈"),
+], position="top")
+try:
+    trang.run()
+finally:  # chạy cả khi trang gọi st.rerun()/st.stop()
+    state.tu_luu()

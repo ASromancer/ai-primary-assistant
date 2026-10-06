@@ -359,6 +359,40 @@ def test_trang_cham_bai_ket_qua():
     assert {h.ten: h.nhom for h in at.session_state.lop.hoc_sinh} == {"Nguyễn An": "Tím", "Lê Bình": "Xanh"}
 
 
+class DangNhap:
+    """Giả lập giáo viên đã đăng nhập + database SQLite."""
+    def __init__(self, email="co.lan@truong.vn", db=None):
+        import state
+        self.state, self.email, self.db = state, email, db or _sqlite()
+
+    def __enter__(self):
+        s = self.state
+        self.goc = s.email, s.co_db, s.db
+        s.email, s.co_db, s.db = (lambda: self.email), (lambda: True), (lambda: self.db)
+        return self
+
+    def __exit__(self, *a):
+        self.state.email, self.state.co_db, self.state.db = self.goc
+
+
+def test_dang_nhap_tu_luu_va_nap_ho_so():
+    import kho
+    with DangNhap() as dn:
+        at = _app()
+        at.text_input(key="ten_gv").input("Cô Lan").run()
+        at.button(key="mau_sb").click().run()
+        assert not at.exception
+        ds = kho.phieu_ds(dn.db, dn.email)
+        assert len(ds) == 1 and at.session_state.ban.id == ds[0]["id"]
+        at.run()  # không đổi gì: không tạo thêm bản ghi
+        assert len(kho.phieu_ds(dn.db, dn.email)) == 1
+        assert kho.ho_so_lay(dn.db, dn.email)["ten"] == "Cô Lan"
+        assert [m.value for m in at.metric][:2] == ["1", "0"]  # thống kê trang chủ
+        kho.lop_luu(dn.db, dn.email, ai.LopHoc(ten_lop="2A", hoc_sinh=[ai.HocSinh(stt=1, ten="An")]))
+        moi = _app()  # phiên mới: nạp hồ sơ + lớp gần nhất
+        assert moi.session_state.ten_gv == "Cô Lan" and moi.session_state.lop.ten_lop == "2A"
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):
