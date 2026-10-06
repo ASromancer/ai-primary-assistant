@@ -7,6 +7,7 @@ from docx import Document
 from streamlit.testing.v1 import AppTest
 
 import ai
+import classroom_html as cx
 import docx_export as dx
 
 BAN = ai.BanLuu.model_validate_json(open("mau/phieu_mau.json", encoding="utf-8").read())
@@ -107,6 +108,23 @@ def test_trang_in_html():
     assert "<script>alert" not in doc and "&lt;script&gt;" in doc  # nội dung AI phải được escape
     assert "font-size: 18pt" in doc and doc.count('class="trang') == 5
     assert "Mức" not in trang["Phiếu chung"] and "THỬ THÁCH THÊM" in trang["Phiếu Xanh"]
+
+
+def test_dap_an_dung():
+    c = BAN.phieu.cau_hoi[0]
+    assert cx.dap_an_dung(c) == 1  # "B. 43"
+    assert cx.dap_an_dung(c.model_copy(update={"dap_an": "Đáp án: C"})) == 2
+    assert cx.dap_an_dung(c.model_copy(update={"dap_an": "53"})) == 3  # khớp nội dung phương án
+    assert cx.dap_an_dung(c.model_copy(update={"dap_an": "Không rõ"})) is None
+    assert cx.dap_an_dung(BAN.phieu.cau_hoi[1]) is None  # không phải trắc nghiệm
+
+
+def test_trinh_chieu_an_toan():
+    ban = BAN.model_copy(deep=True)
+    ban.phieu.cau_hoi[0].noi_dung = "</script><script>alert(1)</script>"
+    h = cx.trinh_chieu(ban, ["An", "Bình"], 60, True)
+    assert "</script><script>alert" not in h and "<\\/script>" in h
+    assert '"giay": 60' in h and "speechSynthesis" in h and '"An"' in h
 
 
 def test_bo_tien_to():
