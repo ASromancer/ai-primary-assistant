@@ -3,7 +3,7 @@ import streamlit as st
 import docx_export as dx
 import html_export as hx
 import state
-from ai import DANG_BAI, MUC, SO_CAU, BanLuu, ThongSo, tao_lai_cau, tao_phieu
+from ai import DANG_BAI, LOAI_VAN_DE, MUC, SO_CAU, BanLuu, ThongSo, dau_van_tay, kiem_dinh, tao_lai_cau, tao_phieu
 from state import MODEL, PHIEU_MAU, bao_loi, dat_phieu, md, mo_phieu, ten_file
 
 MON_THEO_LOP = {
@@ -19,6 +19,15 @@ SAO = dx.SAO
 # Màu mức độ trùng màu phiếu nhóm: Mức 1 ~ Phiếu Xanh, Mức 2 ~ Cam, Mức 3 ~ Tím
 MAU_MUC = {1: "green", 2: "orange", 3: "violet"}
 api_key = state.api_key()
+
+
+def chay_kiem_dinh(ban: BanLuu):
+    """Kiểm định không được chặn việc dùng phiếu: lỗi chỉ cảnh báo."""
+    try:
+        ban.kiem_dinh = kiem_dinh(state.client(), MODEL, ban.thong_so, ban.phieu)
+        ban.kiem_dinh_cho = dau_van_tay(ban.phieu)
+    except Exception as e:
+        st.warning(f"Chưa kiểm định được phiếu: {state.loi_than_thien(e)}")
 
 
 @st.cache_data(max_entries=20)
@@ -72,7 +81,10 @@ with trai:
                     phieu = tao_phieu(state.client(), MODEL, ts, dang_bai,
                                       [(a.getvalue(), a.type) for a in anh], ghi_chu)
                     ts.chu_de = ts.chu_de or phieu.ten_bai
-                    dat_phieu(BanLuu(thong_so=ts, phieu=phieu))
+                    ban_moi = BanLuu(thong_so=ts, phieu=phieu)
+                    dat_phieu(ban_moi)
+                    st.write("🔎 Tổ trưởng chuyên môn AI đang kiểm định phiếu")
+                    chay_kiem_dinh(ban_moi)
                     status.update(label="Đã tạo xong phiếu!", state="complete", expanded=False)
                     st.toast("Phiếu đã sẵn sàng – xem, chỉnh và in ở bên phải", icon="🎉")
                 except Exception as e:
@@ -107,18 +119,54 @@ with phai:
     if abs(tong - 10) > 0.01:
         st.warning(f"Tổng điểm hiện là {dx.so(tong)}, chưa bằng 10. Dùng nút ✏️ Sửa để chỉnh điểm từng câu.")
 
-    def lam_lai(i: int, che_do: str):
+    kd = ban.kiem_dinh
+    with st.container(border=True):
+        if kd is None:
+            with st.container(horizontal=True, vertical_alignment="center"):
+                st.markdown("🔎 **Kiểm định AI:** phiếu chưa được kiểm định.")
+                if st.button("Kiểm định ngay", key="kd_chay", type="primary"):
+                    if not api_key:
+                        st.error("Cần Gemini API Key để kiểm định.")
+                    else:
+                        with st.spinner("Tổ trưởng chuyên môn AI đang kiểm định..."):
+                            chay_kiem_dinh(ban)
+                        st.rerun()
+        else:
+            mau = "green" if kd.diem >= 85 else "orange" if kd.diem >= 70 else "red"
+            xep_loai = "Tốt" if kd.diem >= 85 else "Khá – nên xem lại" if kd.diem >= 70 else "Cần sửa"
+            with st.container(horizontal=True, vertical_alignment="center"):
+                st.markdown(f"🔎 **Kiểm định AI: {kd.diem}/100**")
+                st.badge(xep_loai, color=mau)
+                st.badge(f"{len(kd.van_de)} góp ý" if kd.van_de else "Không phát hiện lỗi",
+                         color="orange" if kd.van_de else "green")
+                if st.button("Kiểm định lại", key="kd_lai", type="tertiary", icon="🔄"):
+                    if not api_key:
+                        st.error("Cần Gemini API Key để kiểm định.")
+                    else:
+                        with st.spinner("Tổ trưởng chuyên môn AI đang kiểm định..."):
+                            chay_kiem_dinh(ban)
+                        st.rerun()
+            st.caption(md(kd.nhan_xet_chung))
+            for v in kd.van_de:
+                if v.cau_so == 0:
+                    st.warning(f"**{LOAI_VAN_DE[v.loai]}:** {md(v.mo_ta)} → {md(v.de_xuat)}")
+            if ban.kiem_dinh_cho != dau_van_tay(phieu):
+                st.caption("✏️ Phiếu đã thay đổi sau lần kiểm định gần nhất – bấm *Kiểm định lại* để cập nhật.")
+
+    def lam_lai(i: int, che_do: str, gop_y: str = "", van_de=None):
         if not api_key:
             st.error("Cần Gemini API Key để AI soạn lại câu.")
             return
         with st.spinner("AI đang soạn lại câu..."):
             try:
-                moi = tao_lai_cau(state.client(), MODEL, ts, phieu, i, che_do)
+                moi = tao_lai_cau(state.client(), MODEL, ts, phieu, i, che_do, gop_y=gop_y)
             except Exception as e:
                 bao_loi(e)
                 return
         st.session_state.hoan_tac = (id(ban), i, phieu.cau_hoi[i])
         phieu.cau_hoi[i] = moi
+        if van_de is not None and kd is not None:
+            kd.van_de.remove(van_de)
         st.rerun()
 
     def hien_cau(i: int):
@@ -141,6 +189,12 @@ with phai:
                 b.markdown("  \n".join(f"{chr(97 + k)}\\. {md(dx.bo_tien_to(x))}" for k, x in enumerate(c.cot_phai[:8])))
             if c.goi_y_hs:
                 st.caption(f"💡 Gợi ý: {md(c.goi_y_hs)}")
+            for k, v in enumerate(kd.van_de if kd else []):
+                if v.cau_so == i + 1:
+                    with st.container(horizontal=True, vertical_alignment="center"):
+                        st.warning(f"**{LOAI_VAN_DE[v.loai]}:** {md(v.mo_ta)} → {md(v.de_xuat)}", width="stretch")
+                        if st.button("🛠 Sửa theo góp ý", key=f"gy{i}_{k}"):
+                            lam_lai(i, "gop_y", gop_y=f"{v.mo_ta}. Đề xuất: {v.de_xuat}", van_de=v)
             with st.expander("Đáp án & hướng dẫn chấm"):
                 st.markdown(f"**Đáp án:** {md(c.dap_an)}  \n**Hướng dẫn chấm:** {md(c.huong_dan_cham)}")
 

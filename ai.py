@@ -1,4 +1,5 @@
 """Gọi Gemini để sinh phiếu bài tập phân hóa theo TT27, đầu ra JSON có cấu trúc."""
+import hashlib
 from typing import Literal
 
 from google import genai
@@ -54,10 +55,37 @@ class ThongSo(BaseModel):
     truong: str = ""
 
 
+LOAI_VAN_DE = {
+    "dap_an_sai": "Đáp án sai",
+    "lech_muc": "Lệch mức độ",
+    "ngon_ngu": "Ngôn ngữ",
+    "trinh_bay": "Trình bày",
+}
+
+
+class VanDe(BaseModel):
+    cau_so: int = Field(description="Số thứ tự câu trong phiếu (bắt đầu từ 1); 0 nếu là vấn đề chung")
+    loai: Literal["dap_an_sai", "lech_muc", "ngon_ngu", "trinh_bay"]
+    mo_ta: str
+    de_xuat: str = Field(description="Cách sửa cụ thể")
+
+
+class KiemDinh(BaseModel):
+    diem: int = Field(description="Điểm chất lượng phiếu 0-100")
+    nhan_xet_chung: str = Field(description="1-2 câu nhận xét tổng quát")
+    van_de: list[VanDe]
+
+
 class BanLuu(BaseModel):
     """Toàn bộ phiếu + thông số, dùng để lưu/mở lại file .json."""
     thong_so: ThongSo
     phieu: Phieu
+    kiem_dinh: KiemDinh | None = None
+    kiem_dinh_cho: str = ""  # dấu vân tay của phiếu lúc kiểm định
+
+
+def dau_van_tay(phieu: Phieu) -> str:
+    return hashlib.sha1(phieu.model_dump_json().encode()).hexdigest()
 
 
 SYSTEM = """Bạn là chuyên gia giáo dục tiểu học Việt Nam, am hiểu Chương trình GDPT 2018 và \
@@ -135,15 +163,37 @@ CHE_DO = {
     "doi": "Soạn một câu KHÁC hẳn (khác ngữ liệu, có thể khác dạng bài), cùng mức độ và cùng mục tiêu.",
     "de_hon": "Soạn lại câu này DỄ HƠN rõ rệt (số nhỏ hơn, ít bước hơn, thêm gợi ý) nhưng vẫn thuộc cùng mức.",
     "kho_hon": "Soạn lại câu này KHÓ HƠN rõ rệt (nhiều bước hơn, cần lập luận) nhưng vẫn thuộc cùng mức.",
+    "gop_y": "Soạn lại câu này để khắc phục góp ý của tổ chuyên môn bên dưới, vẫn thuộc cùng mức.",
 }
 
 
-def tao_lai_cau(client, model, ts: ThongSo, phieu: Phieu, idx: int, che_do: str) -> CauHoi:
+def tao_lai_cau(client, model, ts: ThongSo, phieu: Phieu, idx: int, che_do: str, gop_y: str = "") -> CauHoi:
     cu = phieu.cau_hoi[idx]
     prompt = f"""Phiếu bài tập môn {ts.mon} lớp {ts.lop}, bộ sách "{ts.bo_sach}", chủ đề: {ts.chu_de}.
 Câu hiện tại (Mức {cu.muc}): {cu.model_dump_json()}
 {CHE_DO[che_do]} Giữ nguyên số điểm {cu.diem}. Không trùng với các câu khác trong phiếu:
 {[c.noi_dung for c in phieu.cau_hoi]}"""
+    if gop_y:
+        prompt += f"\nGóp ý cần khắc phục: {gop_y}"
     moi = chuan_hoa(_goi(client, model, [prompt], CauHoi, temperature=0.9))
     moi.muc, moi.diem = cu.muc, cu.diem
     return moi
+
+
+def kiem_dinh(client, model, ts: ThongSo, phieu: Phieu) -> KiemDinh:
+    """Lượt AI thứ hai đóng vai tổ trưởng chuyên môn, soát lỗi phiếu."""
+    cau = "\n".join(f"Câu {k}: {c.model_dump_json()}" for k, c in enumerate(phieu.cau_hoi, 1))
+    prompt = f"""Bạn là tổ trưởng chuyên môn tiểu học, thẩm định phiếu bài tập môn {ts.mon} lớp {ts.lop}, \
+chủ đề "{ts.chu_de}", {ts.thoi_luong} phút. Kiểm tra từng câu:
+1. dap_an_sai: tự giải lại từng câu, đối chiếu đáp án; phương án trắc nghiệm có đúng một đáp án đúng.
+2. lech_muc: câu có đúng mức TT27 đã gán không (mô tả mức ở hướng dẫn hệ thống).
+3. ngon_ngu: từ ngữ có phù hợp học sinh lớp {ts.lop}, rõ ràng, không đánh đố.
+4. trinh_bay: lệnh rõ, đủ dữ kiện, thời lượng hợp lý.
+Chỉ nêu vấn đề THỰC SỰ cần sửa (không nêu ý khen). Phiếu tốt thì danh sách vấn đề rỗng.
+Chấm điểm 0-100: trừ nặng khi đáp án sai.
+
+{cau}"""
+    kd = _goi(client, model, [prompt], KiemDinh, temperature=0.2)
+    kd.diem = min(100, max(0, kd.diem))
+    kd.van_de = [v for v in kd.van_de if 0 <= v.cau_so <= len(phieu.cau_hoi)]
+    return kd

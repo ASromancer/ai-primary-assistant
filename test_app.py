@@ -61,6 +61,21 @@ def test_tao_lai_cau_giu_muc_va_diem():
     assert (out.muc, out.diem, out.noi_dung) == (1, 1, "Câu mới")
 
 
+def test_kiem_dinh_kep_diem_va_loc_cau():
+    kd = ai.KiemDinh(diem=140, nhan_xet_chung="ok", van_de=[
+        ai.VanDe(cau_so=2, loai="dap_an_sai", mo_ta="sai", de_xuat="sửa"),
+        ai.VanDe(cau_so=99, loai="ngon_ngu", mo_ta="x", de_xuat="y")])
+    out = ai.kiem_dinh(FakeClient(kd), "m", BAN.thong_so, BAN.phieu)
+    assert out.diem == 100 and [v.cau_so for v in out.van_de] == [2]
+
+
+def test_dau_van_tay_doi_khi_sua():
+    p = BAN.phieu.model_copy(deep=True)
+    a = ai.dau_van_tay(p)
+    p.cau_hoi[0].noi_dung += "!"
+    assert a != ai.dau_van_tay(p)
+
+
 def test_xuat_word():
     files = dx.tat_ca(BAN)
     assert len(files) == 5
@@ -131,6 +146,27 @@ def test_soan_phieu_mau_doi_cau_hoan_tac():
         assert at.session_state.ban.phieu.cau_hoi[0].noi_dung == cu
     finally:
         ai.tao_lai_cau = goc
+
+
+def test_kiem_dinh_tren_giao_dien():
+    goc = ai.kiem_dinh, ai.tao_lai_cau
+    ai.kiem_dinh = lambda client, model, ts, phieu: ai.KiemDinh(diem=72, nhan_xet_chung="Cần xem lại câu 1", van_de=[
+        ai.VanDe(cau_so=1, loai="dap_an_sai", mo_ta="Đáp án chưa đúng", de_xuat="Sửa thành B")])
+    ai.tao_lai_cau = lambda client, model, ts, phieu, i, che_do, gop_y="": phieu.cau_hoi[i].model_copy(update={"noi_dung": gop_y})
+    try:
+        at = _app("fake")
+        at.switch_page("trang/soan_phieu.py").run()
+        at.button(key="mau_main").click().run()
+        at.button(key="kd_lai").click().run()
+        assert not at.exception
+        assert at.session_state.ban.kiem_dinh.diem == 72
+        assert any("Đáp án chưa đúng" in w.value for w in at.warning)
+        at.button(key="gy0_0").click().run()
+        assert not at.exception
+        assert at.session_state.ban.phieu.cau_hoi[0].noi_dung.startswith("Đáp án chưa đúng")
+        assert at.session_state.ban.kiem_dinh.van_de == []
+    finally:
+        ai.kiem_dinh, ai.tao_lai_cau = goc
 
 
 if __name__ == "__main__":
