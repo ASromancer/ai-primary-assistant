@@ -393,6 +393,31 @@ def test_dang_nhap_tu_luu_va_nap_ho_so():
         assert moi.session_state.ten_gv == "Cô Lan" and moi.session_state.lop.ten_lop == "2A"
 
 
+def test_thu_vien():
+    import kho
+    with DangNhap() as dn:
+        a = BAN.model_copy(deep=True)
+        b = BAN.model_copy(deep=True)
+        b.thong_so.chu_de, b.thong_so.mon = "Đọc hiểu: Chuyện quả bầu", "Tiếng Việt"
+        kho.phieu_luu(dn.db, dn.email, a); kho.phieu_luu(dn.db, dn.email, b)
+        kho.phieu_luu(dn.db, "nguoi.khac@x.vn", BAN.model_copy(deep=True))
+        at = _app()
+        at.switch_page("trang/thu_vien.py").run()
+        dem = lambda: next(c.value for c in at.caption if c.value.startswith("Hiển thị"))
+        assert not at.exception and "2/2" in dem()  # không thấy phiếu người khác
+        at.text_input[0].input("qua bau").run()  # tìm không dấu
+        assert "1/2" in dem()
+        at.text_input[0].input("").run()
+        at.button(key=f"tv_sao_{a.id}").click().run()
+        assert kho.phieu_mo(dn.db, dn.email, a.id) and [p["gan_sao"] for p in kho.phieu_ds(dn.db, dn.email) if p["id"] == a.id] == [True]
+        at.button(key=f"tv_nb_{a.id}").click().run()
+        assert not at.exception and at.session_state.ban.thong_so.chu_de.endswith("(bản sao)")
+        assert len(kho.phieu_ds(dn.db, dn.email)) == 3  # bản sao đã tự lưu
+        at.switch_page("trang/thu_vien.py").run()
+        at.button(key=f"tv_xoa_{b.id}").click().run()
+        assert len(kho.phieu_ds(dn.db, dn.email)) == 2
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):
