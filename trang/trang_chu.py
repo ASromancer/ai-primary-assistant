@@ -92,11 +92,11 @@ with phai:
             st.progress(xong / len(buoc))
             for ten_buoc, da_xong, trang in buoc:
                 if da_xong:
-                    st.markdown(f"✅ ~~{ten_buoc}~~")
+                    st.markdown(f":small[✅ ~~{ten_buoc}~~]")
                 elif trang:
                     st.page_link(state.TRANG[trang], label=ten_buoc, icon="⬜")
                 else:
-                    st.markdown(f"⬜ {ten_buoc}")
+                    st.markdown(f":small[⬜ {ten_buoc}]")
     else:
         st.markdown("#### 💡 Quy trình gợi ý")
         st.html("""<div class="buoc doc">

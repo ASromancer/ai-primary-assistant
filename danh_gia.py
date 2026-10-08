@@ -8,7 +8,9 @@ from openpyxl.styles import Alignment, Font, PatternFill
 
 TY_LE = {"dung": 1.0, "mot_phan": 0.5, "sai": 0.0, "bo_trong": 0.0}
 KY_HIEU = {"dung": "✓", "mot_phan": "½", "sai": "✗", "bo_trong": "–"}
+DAO_KY_HIEU = {v: k for k, v in KY_HIEU.items()}
 MUC_TT27 = ["Hoàn thành tốt", "Hoàn thành", "Chưa hoàn thành"]
+NGUONG_BO_TRO = 0.4  # câu có từ 40% học sinh chưa đạt trở lên cần dạy bổ trợ
 NHOM_DE_XUAT = {"Hoàn thành tốt": "Tím", "Hoàn thành": "Cam", "Chưa hoàn thành": "Xanh"}
 
 
@@ -41,6 +43,42 @@ def muc_cuoi_ky(ds_muc: list[str]) -> str:
     dem = {m: ds_muc.count(m) for m in ds_muc}
     cao = max(dem.values())
     return next(m for m in reversed(ds_muc) if dem[m] == cao)
+
+
+def phan_tich_cau(rows: list[dict], so_cau: int) -> list[dict]:
+    """Thống kê từng câu từ sổ tổng hợp (ô dạng '✓', '½ ghi chú', '✗ ghi chú', '–').
+    chua_dat = (sai + bỏ trống + ½ một phần) / số bài; loi = các ghi chú lỗi khác nhau."""
+    out = []
+    for k in range(1, so_cau + 1):
+        dem = dict.fromkeys(KY_HIEU, 0)
+        loi = []
+        for r in rows:
+            o = str(r.get(f"Câu {k}") or "").strip()
+            dat = DAO_KY_HIEU.get(o[:1])
+            if dat:
+                dem[dat] += 1
+            if o[1:].strip() and o[1:].strip() not in loi:
+                loi.append(o[1:].strip())
+        n = sum(dem.values()) or 1
+        out.append({"cau": k, **dem, "chua_dat": (dem["sai"] + dem["bo_trong"] + 0.5 * dem["mot_phan"]) / n,
+                    "loi": loi[:8]})
+    return out
+
+
+def yeu_cau_bo_tro(cau_hoi: list, phan_tich: list[dict], toi_da: int = 4) -> tuple[str, list[int]]:
+    """Chọn câu yếu (≥ ngưỡng; nếu không có thì câu yếu nhất còn lỗi) và dựng yêu cầu cho AI soạn phiếu bổ trợ.
+    Chỉ dùng nội dung câu hỏi và ghi chú lỗi – không có tên học sinh."""
+    xep = sorted(phan_tich, key=lambda p: -p["chua_dat"])
+    chon = [p for p in xep if p["chua_dat"] >= NGUONG_BO_TRO][:toi_da] or [p for p in xep if p["chua_dat"] > 0][:1]
+    dong = []
+    for p in chon:
+        c = cau_hoi[p["cau"] - 1]
+        dong.append(f"- Câu {p['cau']} (Mức {c.muc}): \"{c.noi_dung}\" – đáp án: {c.dap_an}. "
+                    f"{p['chua_dat']:.0%} học sinh chưa đạt" + (f"; lỗi thường gặp: {'; '.join(p['loi'])}" if p["loi"] else ""))
+    yc = ("Đây là PHIẾU BỔ TRỢ soạn sau khi chấm bài. Học sinh còn yếu ở các nội dung sau:\n" + "\n".join(dong) +
+          "\nHãy tập trung luyện lại đúng các kiến thức, kỹ năng này (không lặp nguyên câu cũ): Mức 1 có hướng dẫn mẫu "
+          "từng bước và chỉ ra cách tránh lỗi thường gặp; Mức 2, 3 vận dụng lại trong tình huống mới.")
+    return yc, [p["cau"] for p in chon]
 
 
 def bo_dau(s: str) -> str:

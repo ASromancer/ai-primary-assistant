@@ -22,6 +22,8 @@
 
 Sổ tổng hợp sửa được trực tiếp và xuất Excel. Một nút cập nhật nhóm Xanh/Cam/Tím cho phiếu lần sau.
 
+**🩺 Phân tích lỗi sai và phiếu bổ trợ**: sau khi chấm, biểu đồ cho thấy tỉ lệ học sinh chưa đạt từng câu (vạch ngưỡng 40%) và các lỗi thường gặp. Một nút để AI soạn **phiếu bổ trợ** nhắm đúng những nội dung còn yếu (đã kiểm định), mở ngay ở trang Soạn phiếu. Khép kín vòng *chấm bài → phát hiện chỗ hổng → dạy bù*. Không gửi tên học sinh cho AI.
+
 **🔐 Cá nhân hoá (đăng nhập Google + database)**: hồ sơ giáo viên (form tự điền lựa chọn gần nhất), **📚 Thư viện** phiếu tự lưu (tìm không dấu, gắn sao, nhân bản), nhiều lớp lưu lâu dài, lưu kết quả chấm vào hồ sơ lớp. **📈 Tiến bộ**: bảng mức TT27 của từng em qua các lần chấm, biểu đồ từng em, AI gợi ý **nhận xét học bạ cuối kỳ** (không gửi tên học sinh), xuất Excel. Trang chủ có thống kê: số phiếu, số bài chấm, giờ tiết kiệm ước tính. Không cấu hình thì app chạy ở chế độ khách như bình thường.
 
 **💾 Lưu/mở lại phiếu (.json)** và **phiếu mẫu có sẵn** (kèm kết quả kiểm định): trình chiếu được cả khi không có mạng.
@@ -83,7 +85,7 @@ Streamlit Cloud không giữ được file trên ổ đĩa, nên dữ liệu đ�
 **A. Tạo database Supabase**
 1. Vào <https://supabase.com>, tạo tài khoản rồi bấm **New project**. Chọn Region **Southeast Asia (Singapore)**, đặt mật khẩu database và ghi lại mật khẩu này.
 2. Mở **SQL Editor** → **New query**, dán toàn bộ nội dung file [sql/schema.sql](sql/schema.sql), rồi bấm **Run**.
-3. Bấm **Connect** (trên cùng) và chọn **Session pooler**. Copy chuỗi URI, thay `[YOUR-PASSWORD]` bằng mật khẩu ở bước 1, rồi đổi `postgresql://` thành `postgresql+psycopg2://`.
+3. Bấm **Connect** (trên cùng) và chọn **Session pooler**. Copy chuỗi URI và thay `[YOUR-PASSWORD]` bằng mật khẩu ở bước 1. App tự chuyển sang driver phù hợp, không cần sửa gì thêm.
    (Streamlit Cloud không kết nối được tới địa chỉ "Direct connection" vì địa chỉ đó chỉ có IPv6; phải dùng Session pooler.)
 
 **B. Tạo đăng nhập Google**
@@ -105,7 +107,7 @@ client_secret = "GOCSPX-..."
 server_metadata_url = "https://accounts.google.com/.well-known/openid-configuration"
 
 [connections.sql]
-url = "postgresql+psycopg2://postgres.MA_PROJECT:MAT_KHAU@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+url = "postgresql://postgres.MA_PROJECT:MAT_KHAU@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
 ```
 
 **Bảo mật:** các bảng đã bật RLS và bị chặn với vai trò `anon`/`authenticated`, nên API công khai của Supabase không đọc được dữ liệu. Chỉ app (giữ chuỗi kết nối bí mật) mới truy cập được, và mọi truy vấn đều lọc theo email của giáo viên. Tên học sinh không gửi cho AI, trừ trường hợp tên nằm sẵn trong ảnh bài làm khi chấm.

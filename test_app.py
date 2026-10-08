@@ -184,6 +184,21 @@ def test_nhan_xet_hoc_ba_khong_gui_ten():
     assert out.startswith("Em hoàn thành") and "Nguyễn" not in str(client.contents)
 
 
+def test_phan_tich_loi_sai():
+    rows = [{"Câu 1": "✓", "Câu 2": "✗ quên nhớ 1"}, {"Câu 1": "✓", "Câu 2": "½ thiếu đáp số"},
+            {"Câu 1": "✗", "Câu 2": "–"}, {"Câu 1": "✓", "Câu 2": "✗ quên nhớ 1"}]
+    pt = dg.phan_tich_cau(rows, 2)
+    assert (pt[0]["dung"], pt[0]["sai"], pt[0]["chua_dat"]) == (3, 1, 0.25)
+    assert (pt[1]["sai"], pt[1]["mot_phan"], pt[1]["bo_trong"]) == (2, 1, 1)
+    assert pt[1]["chua_dat"] == (2 + 1 + 0.5) / 4 and pt[1]["loi"] == ["quên nhớ 1", "thiếu đáp số"]
+    cau = [BAN.phieu.cau_hoi[0], BAN.phieu.cau_hoi[1]]
+    yc, chon = dg.yeu_cau_bo_tro(cau, pt)
+    assert chon == [2] and "quên nhớ 1" in yc and BAN.phieu.cau_hoi[1].noi_dung in yc
+    assert "Câu 1" not in yc.split("Học sinh còn yếu")[1]  # câu 1 dưới ngưỡng 40%
+    _, chon = dg.yeu_cau_bo_tro(cau, dg.phan_tich_cau([{"Câu 1": "✓", "Câu 2": "½"}], 2))
+    assert chon == [2]  # không câu nào vượt ngưỡng: lấy câu yếu nhất có lỗi
+
+
 def test_khop_ten():
     assert dg.khop_ten("nguyen van an", ["Nguyễn Văn An", "Lê Bình"]) == "Nguyễn Văn An"
     assert dg.khop_ten("Le Binh", ["Nguyễn Văn An", "Lê Bình"]) == "Lê Bình"
@@ -501,6 +516,34 @@ def test_luu_cham_va_tien_bo():
             assert at.session_state.hoc_ba[lop.id]["Nguyễn An"]["nx"] == "Nhận xét lớp 2: Hoàn thành tốt"
     finally:
         ai.nhan_xet_hoc_ba = goc
+
+
+def test_phieu_bo_tro_tu_trang_cham_bai():
+    goc = ai.tao_phieu, ai.kiem_dinh
+    nhan = {}
+
+    def gia_tao_phieu(client, model, ts, dang_bai, anh, ghi_chu=""):
+        nhan["ts"], nhan["ghi_chu"] = ts, ghi_chu
+        return BAN.phieu.model_copy(deep=True)
+    ai.tao_phieu = gia_tao_phieu
+    ai.kiem_dinh = lambda *a: (_ for _ in ()).throw(RuntimeError("kiểm định lỗi"))  # không được chặn phiếu
+    try:
+        at = _app("fake")
+        at.switch_page("trang/cham_bai.py").run()
+        at.button(key="mau_sb").click().run()
+        cau = [c.model_copy() for c in BAN.phieu.cau_hoi[:2]]
+        at.session_state["cham"] = {"ver": 1, "loi": [], "cau": cau, "ts": BAN.thong_so, "loai": "Phiếu chung", "rows": [
+            {"STT": 1, "Họ tên": "Nguyễn An", "Điểm": 5.0, "Mức TT27": "Hoàn thành", "Nhận xét": "", "Câu 1": "✓", "Câu 2": "✗ quên nhớ 1"},
+            {"STT": 2, "Họ tên": "Lê Bình", "Điểm": 4.0, "Mức TT27": "Hoàn thành", "Nhận xét": "", "Câu 1": "✓", "Câu 2": "✗ quên nhớ 1"}]}
+        at.run()
+        assert not at.exception and any("Nội dung cần bổ trợ" in m.value for m in at.markdown)
+        at.button(key="cb_bo_tro").click().run()
+        assert not at.exception
+        assert nhan["ts"].chu_de.startswith("Bổ trợ:") and "quên nhớ 1" in nhan["ghi_chu"]
+        assert "Nguyễn An" not in nhan["ghi_chu"]  # không gửi tên học sinh cho AI
+        assert at.session_state.ban.thong_so.chu_de.startswith("Bổ trợ:")
+    finally:
+        ai.tao_phieu, ai.kiem_dinh = goc
 
 
 if __name__ == "__main__":

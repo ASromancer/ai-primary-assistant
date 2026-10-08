@@ -1,12 +1,13 @@
 from pathlib import Path
 
+import altair as alt
 import pandas as pd
 import streamlit as st
 
 import danh_gia as dg
 import docx_export as dx
 import state
-from ai import HocSinh, LopHoc, cham_bai
+from ai import DANG_BAI, BanLuu, HocSinh, LopHoc, cham_bai, dau_van_tay, kiem_dinh, tao_phieu
 
 st.markdown("## 📷 Chấm bài bằng ảnh")
 st.caption("Chụp bài làm của cả lớp – AI chấm từng câu, viết nhận xét theo Thông tư 27, xếp mức "
@@ -65,7 +66,10 @@ if bam:
             row["Ảnh"] = f.name
             rows.append(row)
         tien.progress(1.0, text=f"Đã chấm xong {len(rows)}/{len(anh)} bài")
-        st.session_state.cham = {"rows": rows, "loi": loi, "ver": st.session_state.get("cham", {}).get("ver", 0) + 1}
+        st.session_state.cham = {"rows": rows, "loi": loi, "ver": st.session_state.get("cham", {}).get("ver", 0) + 1,
+                                 # ảnh chụp phiếu đã chấm: phân tích lỗi không lệch nếu giáo viên mở phiếu khác
+                                 "cau": [ban_cham.phieu.cau_hoi[i].model_copy() for i in ids],
+                                 "ts": ban_cham.thong_so.model_copy(), "loai": loai}
         st.toast(f"Đã chấm {len(rows)} bài", icon="✅")
 
 # ---------------- Kết quả ----------------
@@ -134,3 +138,57 @@ with st.container(border=True):
                            "chi_tiet": {c: r[c] for c in cot_cau}} for r in df.to_dict("records") if r["Họ tên"]])
             st.session_state.cham_da_luu = cham["ver"]
             st.rerun()
+
+# ---------------- ③ Phân tích lỗi sai & phiếu bổ trợ ----------------
+if "cau" in cham:
+    cau = cham["cau"]
+    pt = dg.phan_tich_cau(df.to_dict("records"), len(cau))
+    with st.container(border=True):
+        st.markdown("#### ③ Phân tích lỗi sai")
+        st.caption(f"Tỉ lệ học sinh chưa đạt từng câu ({len(df)} bài). Câu từ {dg.NGUONG_BO_TRO:.0%} trở lên "
+                   "nên dạy bổ trợ.")
+        dl = pd.DataFrame([{
+            "Câu": f"Câu {p['cau']} · Mức {cau[p['cau'] - 1].muc}", "Thứ tự": p["cau"], "Chưa đạt": p["chua_dat"],
+            "Đề bài": cau[p["cau"] - 1].noi_dung[:80], "Đúng": p["dung"], "Một phần": p["mot_phan"],
+            "Sai": p["sai"], "Bỏ trống": p["bo_trong"], "Lỗi thường gặp": "; ".join(p["loi"][:3]) or "–"} for p in pt])
+        cot = alt.Chart(dl).mark_bar(color="#1565C0", cornerRadiusEnd=4, height={"band": 0.6}).encode(
+            y=alt.Y("Câu:N", sort=alt.EncodingSortField("Thứ tự"), title=None),
+            x=alt.X("Chưa đạt:Q", title="Tỉ lệ học sinh chưa đạt", scale=alt.Scale(domain=[0, 1]),
+                    axis=alt.Axis(format="%", grid=True, gridColor="#EEF1F5")),
+            tooltip=["Câu", "Đề bài", alt.Tooltip("Chưa đạt:Q", format=".0%"), "Đúng", "Một phần", "Sai", "Bỏ trống",
+                     "Lỗi thường gặp"])
+        nguong = alt.Chart(pd.DataFrame({"x": [dg.NGUONG_BO_TRO]})).mark_rule(color="#888", strokeDash=[4, 4]).encode(x="x:Q")
+        st.altair_chart((cot + nguong).properties(height=max(160, 34 * len(dl))), width="stretch")
+
+        yc, chon = dg.yeu_cau_bo_tro(cau, pt)
+        if not chon:
+            st.success("🎉 Cả lớp làm tốt tất cả các câu – chưa cần phiếu bổ trợ.")
+        else:
+            st.markdown("**Nội dung cần bổ trợ:**")
+            for p in (x for x in pt if x["cau"] in chon):
+                c = cau[p["cau"] - 1]
+                st.markdown(f"- **Câu {p['cau']}** (Mức {c.muc}, {DANG_BAI[c.dang]}) – {p['chua_dat']:.0%} chưa đạt: "
+                            f"{state.md(c.noi_dung)}" + (f"  \n  *Lỗi thường gặp: {state.md('; '.join(p['loi']))}*"
+                                                       if p["loi"] else ""))
+            if st.button(f"✨ Soạn phiếu bổ trợ cho {len(chon)} nội dung này", type="primary", key="cb_bo_tro"):
+                if not state.api_key():
+                    st.error("Cần Gemini API Key để soạn phiếu bổ trợ.")
+                else:
+                    with st.status("AI đang soạn phiếu bổ trợ... (khoảng 20–40 giây)", expanded=True) as status:
+                        try:
+                            ts = cham["ts"].model_copy(update={"chu_de": f"Bổ trợ: {cham['ts'].chu_de}", "thoi_luong": 20})
+                            phieu = tao_phieu(state.client(), state.MODEL, ts, list(DANG_BAI), [], yc)
+                            moi = BanLuu(thong_so=ts, phieu=phieu)
+                            st.write("🔎 Tổ trưởng chuyên môn AI đang kiểm định phiếu")
+                            try:
+                                moi.kiem_dinh = kiem_dinh(state.client(), state.MODEL, ts, phieu)
+                                moi.kiem_dinh_cho = dau_van_tay(phieu)
+                            except Exception:
+                                pass  # kiểm định lỗi không chặn phiếu
+                            state.dat_phieu(moi)
+                            status.update(label="Đã soạn xong phiếu bổ trợ!", state="complete")
+                        except Exception as e:
+                            status.update(label="Chưa soạn được phiếu bổ trợ", state="error")
+                            state.bao_loi(e)
+                            st.stop()
+                    st.switch_page(state.TRANG["soan_phieu"])
