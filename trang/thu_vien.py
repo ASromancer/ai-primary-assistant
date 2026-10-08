@@ -1,6 +1,5 @@
 import streamlit as st
 
-import kho
 import state
 from danh_gia import bo_dau
 
@@ -14,9 +13,16 @@ if not state.ca_nhan():
         state.nut_dang_nhap("tv_dang_nhap")
     st.stop()
 
-db, email = state.db(), state.email()
+with st.popover("📥 Nhập phiếu từ file .json"):
+    f = st.file_uploader("File .json đã lưu từ ứng dụng", type="json", key="tv_nhap")
+    if f and st.button("Nhập vào thư viện", type="primary", key="tv_nhap_btn"):
+        state.mo_phieu(f.getvalue())
+        if "ban" in st.session_state:
+            st.session_state.ban.id = ""  # luôn tạo bản ghi mới của mình
+            st.switch_page(state.TRANG["soan_phieu"])
+
 try:
-    ds = kho.phieu_ds(db, email)
+    ds = state.doc("phieu_ds")
 except Exception as e:
     state.bao_loi(e)
     st.stop()
@@ -42,7 +48,7 @@ dang_mo = getattr(st.session_state.get("ban"), "id", "")
 
 
 def mo(id: str, nhan_ban: bool = False):
-    ban = kho.phieu_mo(db, email, id)
+    ban = state.doc("phieu_mo", id)
     if ban is None:
         st.error("Không tìm thấy phiếu.")
         return
@@ -71,12 +77,12 @@ for k, p in enumerate(loc):
             if st.button("⧉ Nhân bản", key=f"tv_nb_{p['id']}", help="Tạo bản sao để chỉnh thành phiếu mới"):
                 mo(p["id"], nhan_ban=True)
             if st.button("☆ Bỏ sao" if p["gan_sao"] else "⭐ Gắn sao", key=f"tv_sao_{p['id']}"):
-                kho.phieu_sao(db, email, p["id"], not p["gan_sao"])
+                state.ghi("phieu_sao", p["id"], not p["gan_sao"])
                 st.rerun()
             with st.popover("🗑️", help="Xoá phiếu"):
                 st.markdown("Xoá vĩnh viễn phiếu này?")
                 if st.button("Xoá", key=f"tv_xoa_{p['id']}", type="primary"):
-                    kho.phieu_xoa(db, email, p["id"])
+                    state.ghi("phieu_xoa", p["id"])
                     if p["id"] == dang_mo:
                         st.session_state.ban.id = ""  # phiếu đang mở thành phiếu chưa lưu
                         st.session_state.setdefault("da_luu", {})["phieu"] = st.session_state.ban.model_dump_json()

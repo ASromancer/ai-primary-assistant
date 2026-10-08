@@ -43,18 +43,21 @@ for k in ("api_key_nhap", "ten_gv", "truong"):
 
 state.nap_ho_so()  # phải chạy trước khi vẽ các ô ten_gv/truong
 
+o_luu = None  # chỗ hiện "Đã lưu lúc ..." (điền sau khi trang chạy xong và tự lưu)
 with st.sidebar:
-    if state.co_auth():
-        if st.user.is_logged_in:
-            info = st.user.to_dict()
-            with st.container(border=True):
-                with st.container(horizontal=True, vertical_alignment="center"):
-                    if info.get("picture"):
-                        st.image(info["picture"], width=44)
-                    st.markdown(f"**{info.get('name', '')}**  \n{info.get('email', '')}")
-                st.caption("☁️ Phiếu, lớp học và kết quả chấm được lưu tự động." if state.co_db()
-                           else "⚠️ Chưa cấu hình database – dữ liệu chỉ lưu trong phiên.")
-                st.button("Đăng xuất", on_click=st.logout, width="stretch", key="dang_xuat")
+    if state.co_auth() and st.user.is_logged_in:
+        info = st.user.to_dict()
+        with st.container(border=True):
+            with st.container(horizontal=True, vertical_alignment="center"):
+                if info.get("picture"):
+                    st.image(info["picture"], width=44)
+                st.markdown(f"**{info.get('name', '')}**  \n{info.get('email', '')}")
+            if state.co_db():
+                o_luu = st.empty()
+                o_luu.caption("☁️ Phiếu, lớp học và kết quả chấm được lưu tự động.")
+            else:
+                st.caption("⚠️ Chưa cấu hình database – dữ liệu chỉ lưu trong phiên.")
+            st.button("Đăng xuất", on_click=st.logout, width="stretch", key="dang_xuat")
     if not state.email():
         with st.container(border=True):
             st.markdown("**👤 Chế độ khách**")
@@ -68,22 +71,23 @@ with st.sidebar:
     st.text_input("Tên giáo viên", key="ten_gv", placeholder="VD: Nguyễn Thị Lan")
     st.text_input("Tên trường (in trên phiếu)", key="truong", placeholder="VD: Tiểu học Nguyễn Trãi")
 
-    st.subheader("🕘 Phiếu trong phiên này")
-    lich_su = st.session_state.get("lich_su", [])
-    if not lich_su:
-        st.caption("Chưa có phiếu nào.")
-    for k, b in enumerate(lich_su):
-        if st.button(f"{b.thong_so.mon} {b.thong_so.lop} · {b.thong_so.chu_de[:38]}", key=f"ls{k}", width="stretch",
-                     type="primary" if b is st.session_state.get("ban") else "secondary"):
-            state.dat_phieu(b)
+    if not state.ca_nhan():  # có database thì Thư viện thay cho lịch sử phiên + mở file
+        st.subheader("🕘 Phiếu trong phiên này")
+        lich_su = st.session_state.get("lich_su", [])
+        if not lich_su:
+            st.caption("Chưa có phiếu nào.")
+        for k, b in enumerate(lich_su):
+            if st.button(f"{b.thong_so.mon} {b.thong_so.lop} · {b.thong_so.chu_de[:38]}", key=f"ls{k}",
+                         width="stretch", type="primary" if b is st.session_state.get("ban") else "secondary"):
+                state.dat_phieu(b)
+                st.rerun()
+        st.subheader("📂 Mở phiếu đã lưu")
+        f = st.file_uploader("File .json đã lưu từ ứng dụng", type="json", label_visibility="collapsed")
+        if f and st.button("Mở phiếu này", width="stretch"):
+            state.mo_phieu(f.getvalue())
             st.rerun()
-
-    st.subheader("📂 Mở phiếu đã lưu")
-    f = st.file_uploader("File .json đã lưu từ ứng dụng", type="json", label_visibility="collapsed")
-    if f and st.button("Mở phiếu này", width="stretch"):
-        state.mo_phieu(f.getvalue())
-        st.rerun()
-    if st.button("👀 Phiếu mẫu (không cần API key)", width="stretch", key="mau_sb"):
+    st.divider()
+    if st.button("👀 Mở phiếu mẫu", width="stretch", key="mau_sb", type="tertiary"):
         state.mo_phieu(state.PHIEU_MAU.read_text(encoding="utf-8"))
         st.rerun()
     st.caption(f"Mô hình AI: `{state.MODEL}` (tự chuyển model dự phòng khi quá tải).")
@@ -101,3 +105,5 @@ try:
     trang.run()
 finally:  # chạy cả khi trang gọi st.rerun()/st.stop()
     state.tu_luu()
+    if o_luu is not None and st.session_state.get("luu_luc"):
+        o_luu.caption(f"☁️ Đã lưu tự động lúc {st.session_state.luu_luc}")

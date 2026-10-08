@@ -8,11 +8,14 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from sqlalchemy import text
+from sqlalchemy import column, insert, table, text
 
 from ai import BanLuu, HocSinh, LopHoc
 
 SCHEMA = Path(__file__).parent / "sql" / "schema.sql"
+# Ghi nhiều dòng bằng insert() của SQLAlchemy: gộp thành 1 câu INSERT nhiều VALUES (1 lượt đi-về tới database)
+_HOC_SINH = table("tl_hoc_sinh", *map(column, ("id", "lop_id", "stt", "ten", "nhom")))
+_KET_QUA = table("tl_ket_qua", *map(column, ("id", "lan_cham_id", "ten", "diem", "muc_tt27", "nhan_xet", "chi_tiet")))
 
 
 def _id() -> str:
@@ -133,9 +136,9 @@ def lop_luu(db, email: str, lop: LopHoc) -> str:
             c.execute(text("insert into tl_lop (id, email, ten_lop, tao_luc) values (:id, :e, :t, :n)"),
                       {"id": lop.id, "e": email, "t": lop.ten_lop, "n": _bay_gio()})
         c.execute(text("delete from tl_hoc_sinh where lop_id = :id"), {"id": lop.id})  # lớp đã xác nhận thuộc email
-        for h in lop.hoc_sinh:
-            c.execute(text("insert into tl_hoc_sinh (id, lop_id, stt, ten, nhom) values (:id, :l, :s, :t, :n)"),
-                      {"id": _id(), "l": lop.id, "s": h.stt, "t": h.ten, "n": h.nhom})
+        if lop.hoc_sinh:
+            c.execute(insert(_HOC_SINH), [{"id": _id(), "lop_id": lop.id, "stt": h.stt, "ten": h.ten, "nhom": h.nhom}
+                                          for h in lop.hoc_sinh])
     return lop.id
 
 
@@ -169,11 +172,11 @@ def cham_luu(db, email: str, lop_id: str | None, mon: str, chu_de: str, loai_phi
         c.execute(text("insert into tl_lan_cham (id, email, lop_id, mon, chu_de, loai_phieu, tao_luc) "
                        "values (:id, :e, :l, :m, :cd, :lp, :t)"),
                   {"id": lan, "e": email, "l": lop_id, "m": mon, "cd": chu_de, "lp": loai_phieu, "t": _bay_gio()})
-        for r in rows:
-            c.execute(text("insert into tl_ket_qua (id, lan_cham_id, ten, diem, muc_tt27, nhan_xet, chi_tiet) "
-                           "values (:id, :lan, :ten, :d, :m, :nx, :ct)"),
-                      {"id": _id(), "lan": lan, "ten": r["ten"], "d": r.get("diem"), "m": r["muc_tt27"],
-                       "nx": r.get("nhan_xet", ""), "ct": json.dumps(r.get("chi_tiet", {}), ensure_ascii=False)})
+        if rows:
+            c.execute(insert(_KET_QUA), [
+                {"id": _id(), "lan_cham_id": lan, "ten": r["ten"], "diem": r.get("diem"), "muc_tt27": r["muc_tt27"],
+                 "nhan_xet": r.get("nhan_xet", ""), "chi_tiet": json.dumps(r.get("chi_tiet", {}), ensure_ascii=False)}
+                for r in rows])
     return lan
 
 

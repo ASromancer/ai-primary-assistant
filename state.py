@@ -179,12 +179,38 @@ def chuan_hoa_url(url: str) -> str:
 
 def db():
     url = chuan_hoa_url(st.secrets["connections"]["sql"]["url"])
-    return st.connection("sql", type="sql", url=url).engine
+    # pool_pre_ping: kiểm tra kết nối trước khi dùng (pooler Supabase hay đóng kết nối nhàn rỗi)
+    return st.connection("sql", type="sql", url=url, pool_pre_ping=True, pool_recycle=300).engine
+
+
+@st.cache_data(ttl=60, show_spinner=False)
+def _doc(ten: str, email_: str, *args):
+    import kho
+    return getattr(kho, ten)(db(), email_, *args)
+
+
+def doc(ham: str, /, *args):
+    """Đọc từ kho có cache 60 giây (database ở xa: mỗi truy vấn ~0,2 giây). ten: tên hàm trong kho.py."""
+    return _doc(ham, email(), *args)
+
+
+def ghi(ham: str, /, *args, **kw):
+    """Ghi vào kho rồi xoá cache đọc để lần sau thấy dữ liệu mới."""
+    import kho
+    out = getattr(kho, ham)(db(), email(), *args, **kw)
+    _doc.clear()
+    return out
 
 
 def ca_nhan() -> bool:
     """Đã đăng nhập và có database: bật lưu trữ cá nhân."""
     return bool(email()) and co_db()
+
+
+def _gio_vn() -> str:
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    return datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")).strftime("%H:%M")
 
 
 def _dau(obj) -> str:
@@ -221,20 +247,21 @@ def tu_luu():
     """Lưu những gì đã thay đổi (phiếu hiện tại, lớp hiện tại, tên/trường). Gọi sau mỗi lần chạy trang."""
     if not ca_nhan():
         return
-    import kho
     da_luu = st.session_state.setdefault("da_luu", {})
     try:
         ban = st.session_state.get("ban")
         if ban is not None and da_luu.get("phieu") != _dau(ban):
-            kho.phieu_luu(db(), email(), ban)
+            ghi("phieu_luu", ban)
             da_luu["phieu"] = _dau(ban)
+            st.session_state.luu_luc = _gio_vn()
         lop = st.session_state.get("lop")
         if lop is not None and (lop.hoc_sinh or lop.ten_lop) and da_luu.get("lop") != _dau(lop):
-            kho.lop_luu(db(), email(), lop)
+            ghi("lop_luu", lop)
             da_luu["lop"] = _dau(lop)
+            st.session_state.luu_luc = _gio_vn()
         ho_so = (ten_gv(), truong())
         if da_luu.get("ho_so") != ho_so:
-            kho.ho_so_luu(db(), email(), ten=ho_so[0], truong=ho_so[1])
+            ghi("ho_so_luu", ten=ho_so[0], truong=ho_so[1])
             da_luu["ho_so"] = ho_so
     except Exception as e:
         if st.session_state.get("loi_luu") != str(e):  # báo một lần, tránh lặp ở mọi lần chạy
@@ -246,8 +273,7 @@ def luu_mac_dinh(**truong):
     """Ghi nhớ lựa chọn gần nhất (lớp, môn, bộ sách, yêu cầu thêm) làm mặc định cho lần sau."""
     st.session_state.setdefault("ho_so", {}).update(truong)
     if ca_nhan():
-        import kho
         try:
-            kho.ho_so_luu(db(), email(), **truong)
+            ghi("ho_so_luu", **truong)
         except Exception:
             pass

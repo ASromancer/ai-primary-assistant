@@ -18,16 +18,14 @@ lop: LopHoc = st.session_state.setdefault("lop", LopHoc())
 dat_lop = state.dat_lop
 
 if state.ca_nhan():  # nhiều lớp, lưu trên database
-    import kho
-    db, email = state.db(), state.email()
-    ds_lop = kho.lop_ds(db, email)
+    ds_lop = state.doc("lop_ds")
     ten = {x["id"]: f"{x['ten_lop'] or '(chưa đặt tên)'} · {x['si_so']} học sinh" for x in ds_lop}
     with st.container(horizontal=True, vertical_alignment="bottom"):
         if ds_lop:
             chon = st.selectbox("Lớp đang làm việc", list(ten), index=list(ten).index(lop.id) if lop.id in ten else None,
                                 format_func=ten.get, placeholder="Chọn lớp", key=f"chon_lop_{st.session_state.get('lop_ver', 0)}")
             if chon and chon != lop.id:
-                dat_lop(kho.lop_mo(db, email, chon))
+                dat_lop(state.doc("lop_mo", chon))
                 st.rerun()
         if st.button("➕ Lớp mới", key="lop_moi"):
             dat_lop(LopHoc())
@@ -37,7 +35,7 @@ if state.ca_nhan():  # nhiều lớp, lưu trên database
                 st.markdown(f"Xoá lớp **{state.md(lop.ten_lop or '(chưa đặt tên)')}** và danh sách học sinh? "
                             "Kết quả chấm đã lưu vẫn được giữ.")
                 if st.button("Xoá lớp", type="primary", key="xoa_lop"):
-                    kho.lop_xoa(db, email, lop.id)
+                    state.ghi("lop_xoa", lop.id)
                     st.session_state.setdefault("da_luu", {})["lop"] = LopHoc().model_dump_json()
                     dat_lop(LopHoc())
                     st.rerun()

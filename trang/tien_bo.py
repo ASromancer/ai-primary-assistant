@@ -3,7 +3,6 @@ import pandas as pd
 import streamlit as st
 
 import danh_gia as dg
-import kho
 import state
 from ai import nhan_xet_hoc_ba
 
@@ -18,8 +17,7 @@ if not state.ca_nhan():
         state.nut_dang_nhap("tb_dang_nhap")
     st.stop()
 
-db, email = state.db(), state.email()
-ds_lop = kho.lop_ds(db, email)
+ds_lop = state.doc("lop_ds")
 if not ds_lop:
     st.info("Chưa có lớp nào. Tạo lớp ở trang Lớp của tôi, chấm bài rồi bấm *Lưu vào hồ sơ lớp*.")
     st.page_link(state.TRANG["lop_cua_toi"], label="Đi tới Lớp của tôi", icon="👥")
@@ -29,7 +27,7 @@ ten_lop = {x["id"]: x["ten_lop"] or "(chưa đặt tên)" for x in ds_lop}
 lop_hien = getattr(st.session_state.get("lop"), "id", "")
 lop_id = st.selectbox("Lớp", list(ten_lop), format_func=ten_lop.get,
                       index=list(ten_lop).index(lop_hien) if lop_hien in ten_lop else 0)
-du_lieu = kho.tien_bo(db, email, lop_id)
+du_lieu = state.doc("tien_bo", lop_id)
 if not du_lieu:
     st.info("Lớp này chưa có kết quả chấm nào được lưu. Ở trang Chấm bài, bấm *💾 Lưu vào hồ sơ lớp* sau khi chấm.")
     st.stop()
@@ -44,7 +42,7 @@ for r in du_lieu:
         lan.append(r["lan_cham_id"])
         nhan_lan[r["lan_cham_id"]] = f"{len(lan)}. {r['ngay'][8:10]}/{r['ngay'][5:7]} · {r['chu_de'][:20]}"
 
-lop = kho.lop_mo(db, email, lop_id)
+lop = state.doc("lop_mo", lop_id)
 ten_hs = [h.ten for h in lop.hoc_sinh] + sorted({r["ten"] for r in du_lieu} - {h.ten for h in lop.hoc_sinh})
 theo_hs = {t: [r for r in du_lieu if r["ten"] == t] for t in ten_hs}
 goi_y = {t: dg.muc_cuoi_ky([r["muc_tt27"] for r in rs]) for t, rs in theo_hs.items()}

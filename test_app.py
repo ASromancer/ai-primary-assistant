@@ -403,6 +403,7 @@ class DangNhap:
 
     def __enter__(self):
         s = self.state
+        s._doc.clear()  # cache đọc dùng chung giữa các test
         self.goc = s.email, s.co_db, s.db
         s.email, s.co_db, s.db = (lambda: self.email), (lambda: True), (lambda: self.db)
         return self
@@ -424,6 +425,8 @@ def test_dang_nhap_tu_luu_va_nap_ho_so():
         assert len(kho.phieu_ds(dn.db, dn.email)) == 1
         assert kho.ho_so_lay(dn.db, dn.email)["ten"] == "Cô Lan"
         assert [m.value for m in at.metric][:2] == ["1", "0"]  # thống kê trang chủ
+        assert any("Bắt đầu nhanh · 1/4" in m.value for m in at.markdown)  # tên trường chưa có, đã có 1 phiếu
+        assert at.button(key=f"mo_{ds[0]['id']}")  # phiếu gần đây lấy từ database
         kho.lop_luu(dn.db, dn.email, ai.LopHoc(ten_lop="2A", hoc_sinh=[ai.HocSinh(stt=1, ten="An")]))
         moi = _app()  # phiên mới: nạp hồ sơ + lớp gần nhất
         assert moi.session_state.ten_gv == "Cô Lan" and moi.session_state.lop.ten_lop == "2A"
