@@ -245,28 +245,37 @@ Soạn đề B TƯƠNG ĐƯƠNG: đúng {len(phieu.cau_hoi)} câu, cùng thứ t
     return b
 
 
-def cham_bai(client, model, ts: ThongSo, phieu: Phieu, ids: list[int], anh: tuple[bytes, str]) -> KetQuaCham:
-    """Chấm một ảnh bài làm. ids: chỉ số câu (trong phieu.cau_hoi) theo đúng thứ tự trên phiếu đã phát."""
+def cham_bai(client, model, ts: ThongSo, phieu: Phieu, ids: list[int], anh: tuple[bytes, str] | None = None,
+             tra_loi: list[str] | None = None, da_cham: dict[int, KetQuaCau] | None = None) -> KetQuaCham:
+    """Chấm một bài làm: ảnh chụp (anh) HOẶC câu trả lời đã gõ khi làm online (tra_loi, mỗi câu một chuỗi).
+    ids: chỉ số câu (trong phieu.cau_hoi) theo đúng thứ tự trên phiếu. da_cham: kết quả code đã tự chấm
+    (số câu -> KetQuaCau), được giữ nguyên thay cho kết quả của AI."""
     ds = "\n".join(
         f"Câu {k} (Mức {c.muc}, {DANG_BAI[c.dang]}, {c.diem} điểm): {c.noi_dung} | Lựa chọn: {c.lua_chon} "
         f"{c.cot_phai or ''} | Đáp án: {c.dap_an} | Hướng dẫn chấm: {c.huong_dan_cham}"
         for k, c in enumerate((phieu.cau_hoi[i] for i in ids), 1))
-    prompt = f"""Ảnh đính kèm là bài làm của một học sinh lớp {ts.lop} trên phiếu môn {ts.mon}, chủ đề "{ts.chu_de}".
+    if tra_loi is not None:
+        nguon = "Dưới đây là bài làm trực tuyến (học sinh tự gõ)"
+        bai = "\nBài làm của học sinh:\n" + "\n".join(f"Câu {k}: {t}" for k, t in enumerate(tra_loi, 1))
+        doc = "Đọc kỹ câu trả lời (chấp nhận lỗi chính tả nhỏ, cách viết số khác nhau)"
+    else:
+        nguon, bai, doc = "Ảnh đính kèm là bài làm", "", "Hãy đọc kỹ chữ viết tay"
+    prompt = f"""{nguon} của một học sinh lớp {ts.lop} trên phiếu môn {ts.mon}, chủ đề "{ts.chu_de}".
 Các câu trên phiếu và đáp án:
-{ds}
-Hãy đọc kỹ chữ viết tay và chấm TỪNG câu (đủ {len(ids)} câu, theo đúng số thứ tự trên):
+{ds}{bai}
+{doc} và chấm TỪNG câu (đủ {len(ids)} câu, theo đúng số thứ tự trên):
 - dat: dung / mot_phan / sai / bo_trong; diem_dat theo hướng dẫn chấm; ghi_chu nêu lỗi sai cụ thể.
 - Chấp nhận cách trình bày khác nếu kết quả và lập luận đúng.
-- ten_tren_phieu: họ tên học sinh ghi ở đầu phiếu.
+- ten_tren_phieu: họ tên học sinh ghi ở đầu phiếu (để rỗng nếu là bài làm trực tuyến).
 - nhan_xet: 2-3 câu theo tinh thần Thông tư 27: nêu cụ thể điều em làm tốt, điều em cần cố gắng và lời \
 động viên; xưng "em"; không nhắc điểm số."""
-    kq = _goi(client, model, [types.Part.from_bytes(data=anh[0], mime_type=anh[1]), prompt], KetQuaCham,
-              temperature=0.1)
+    contents = [prompt] if anh is None else [types.Part.from_bytes(data=anh[0], mime_type=anh[1]), prompt]
+    kq = _goi(client, model, contents, KetQuaCham, temperature=0.1)
     theo_so = {c.cau_so: c for c in kq.cau}
     kq.cau = []
     for k, i in enumerate(ids, 1):
-        c = theo_so.get(k) or KetQuaCau(cau_so=k, dat="bo_trong", diem_dat=0, ghi_chu="")
-        c.diem_dat = min(phieu.cau_hoi[i].diem, max(0.0, c.diem_dat))
+        c = (da_cham or {}).get(k) or theo_so.get(k) or KetQuaCau(cau_so=k, dat="bo_trong", diem_dat=0, ghi_chu="")
+        c = c.model_copy(update={"cau_so": k, "diem_dat": min(phieu.cau_hoi[i].diem, max(0.0, c.diem_dat))})
         kq.cau.append(c)
     return kq
 

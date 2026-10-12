@@ -4,11 +4,13 @@ Mọi hàm nhận `email` của giáo viên đang đăng nhập và mọi câu l
 Id lạ (của người khác hoặc không tồn tại) không bao giờ bị ghi đè: bản ghi mới được tạo cho người gọi.
 """
 import json
+import secrets
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
 from sqlalchemy import column, insert, table, text
+from sqlalchemy.exc import IntegrityError
 
 from ai import BanLuu, HocSinh, LopHoc
 
@@ -201,3 +203,123 @@ def thong_ke(db, email: str) -> dict:
         out = {k: c.execute(text(v), {"e": email}).scalar() or 0 for k, v in q.items()}
     out["gio_tiet_kiem"] = round((out["so_phieu"] * 40 + out["so_bai_cham"] * 3) / 60, 1)
     return out
+
+
+# ---------------- Giao bài online ----------------
+# Hàm giao_bai_* / bai_lam_*: của giáo viên, luôn lọc theo email.
+# Hàm hs_*: của học sinh (không đăng nhập), chỉ nhận mã bài / id bài và tự kiểm tra điều kiện khi nộp.
+_KY_TU_MA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"  # bỏ 0/O, 1/I dễ nhầm
+_CUA_GV = "giao_bai_id in (select id from tl_giao_bai where email = :e)"
+
+
+def giao_bai_tao(db, email: str, ban: BanLuu, lop_id: str | None, che_do: str, han_nop: str | None) -> dict:
+    with db.begin() as c:
+        _dam_bao_gv(c, email)
+        if lop_id and not c.execute(text("select 1 from tl_lop where id = :id and email = :e"),
+                                    {"id": lop_id, "e": email}).first():
+            lop_id = None
+        while True:
+            ma = "".join(secrets.choice(_KY_TU_MA) for _ in range(6))
+            if not c.execute(text("select 1 from tl_giao_bai where ma = :m"), {"m": ma}).first():
+                break
+        id = _id()
+        c.execute(text("insert into tl_giao_bai (id, email, ma, lop_id, tieu_de, du_lieu, che_do, han_nop, tao_luc) "
+                       "values (:id, :e, :ma, :l, :td, :dl, :cd, :h, :t)"),
+                  {"id": id, "e": email, "ma": ma, "l": lop_id, "td": ban.thong_so.chu_de,
+                   "dl": ban.model_dump_json(), "cd": che_do, "h": han_nop, "t": _bay_gio()})
+    return {"id": id, "ma": ma}
+
+
+def giao_bai_ds(db, email: str) -> list[dict]:
+    with db.connect() as c:
+        rows = c.execute(text(
+            "select g.id, g.ma, g.tieu_de, g.lop_id, l.ten_lop, g.che_do, g.dang_mo, g.han_nop, g.tao_luc, "
+            "count(b.id) as so_nop from tl_giao_bai g left join tl_lop l on l.id = g.lop_id "
+            "left join tl_bai_lam b on b.giao_bai_id = g.id where g.email = :e "
+            "group by g.id, g.ma, g.tieu_de, g.lop_id, l.ten_lop, g.che_do, g.dang_mo, g.han_nop, g.tao_luc "
+            "order by g.tao_luc desc"), {"e": email}).mappings().all()
+    return [{**dict(r), "dang_mo": bool(r["dang_mo"]), "tao_luc": str(r["tao_luc"])[:16]} for r in rows]
+
+
+def giao_bai_mo(db, email: str, id: str) -> dict | None:
+    with db.connect() as c:
+        r = c.execute(text("select id, ma, lop_id, che_do, dang_mo, han_nop, du_lieu from tl_giao_bai "
+                           "where id = :id and email = :e"), {"id": id, "e": email}).mappings().first()
+    if not r:
+        return None
+    return {**{k: r[k] for k in ("id", "ma", "lop_id", "che_do", "han_nop")}, "dang_mo": bool(r["dang_mo"]),
+            "ban": BanLuu.model_validate_json(r["du_lieu"])}
+
+
+def giao_bai_dong_mo(db, email: str, id: str, mo: bool):
+    with db.begin() as c:
+        c.execute(text("update tl_giao_bai set dang_mo = :m where id = :id and email = :e"),
+                  {"m": mo, "id": id, "e": email})
+
+
+def bai_lam_ds(db, email: str, giao_bai_id: str) -> list[dict]:
+    with db.connect() as c:
+        rows = c.execute(text(f"select id, ten, phieu, tra_loi, ket_qua, diem, muc_tt27, nhan_xet, trang_thai, nop_luc "
+                              f"from tl_bai_lam where giao_bai_id = :g and {_CUA_GV} order by nop_luc"),
+                         {"g": giao_bai_id, "e": email}).mappings().all()
+    return [{**dict(r), "tra_loi": json.loads(r["tra_loi"]), "ket_qua": json.loads(r["ket_qua"]),
+             "nop_luc": str(r["nop_luc"])} for r in rows]
+
+
+def bai_lam_cham(db, email: str, id: str, ket_qua: list[dict], diem: float, muc_tt27: str, nhan_xet: str):
+    with db.begin() as c:
+        c.execute(text(f"update tl_bai_lam set ket_qua = :kq, diem = :d, muc_tt27 = :m, nhan_xet = :nx, "
+                       f"trang_thai = 'da_cham' where id = :id and {_CUA_GV}"),
+                  {"kq": json.dumps(ket_qua, ensure_ascii=False), "d": diem, "m": muc_tt27, "nx": nhan_xet,
+                   "id": id, "e": email})
+
+
+def bai_lam_xoa(db, email: str, id: str):
+    """Cho học sinh làm lại: xoá bài đã nộp."""
+    with db.begin() as c:
+        c.execute(text(f"delete from tl_bai_lam where id = :id and {_CUA_GV}"), {"id": id, "e": email})
+
+
+def hs_lay_bai(db, ma: str) -> dict | None:
+    """Bài theo mã + danh sách tên lớp. Chứa cả đáp án (phiếu gốc) – chỉ dùng phía server, không hiển thị."""
+    with db.connect() as c:
+        r = c.execute(text("select id, ma, lop_id, che_do, dang_mo, han_nop, du_lieu from tl_giao_bai where ma = :m"),
+                      {"m": ma.strip().upper()}).mappings().first()
+        if not r:
+            return None
+        hs = c.execute(text("select ten, nhom from tl_hoc_sinh where lop_id = :l order by stt"),
+                       {"l": r["lop_id"]}).mappings().all() if r["lop_id"] else []
+    return {"id": r["id"], "ma": r["ma"], "che_do": r["che_do"], "dang_mo": bool(r["dang_mo"]), "han_nop": r["han_nop"],
+            "ban": BanLuu.model_validate_json(r["du_lieu"]), "hoc_sinh": [dict(h) for h in hs]}
+
+
+def hs_da_nop(db, giao_bai_id: str) -> list[str]:
+    with db.connect() as c:
+        return [r[0] for r in c.execute(text("select ten from tl_bai_lam where giao_bai_id = :g order by nop_luc"),
+                                        {"g": giao_bai_id})]
+
+
+def hs_nop_bai(db, giao_bai_id: str, ten: str, phieu: str, tra_loi: list, ket_qua: list[dict], diem: float,
+               muc_tt27: str, trang_thai: str) -> str:
+    """Trả: 'ok' | 'da_nop' | 'dong' | 'het_han' | 'khong_co_ten' | 'khong_co_bai'."""
+    try:
+        with db.begin() as c:
+            g = c.execute(text("select lop_id, dang_mo, han_nop from tl_giao_bai where id = :g"),
+                          {"g": giao_bai_id}).mappings().first()
+            if not g:
+                return "khong_co_bai"
+            if not g["dang_mo"]:
+                return "dong"
+            if g["han_nop"] and datetime.fromisoformat(g["han_nop"]) < _bay_gio():
+                return "het_han"
+            if g["lop_id"] and not c.execute(text("select 1 from tl_hoc_sinh where lop_id = :l and ten = :t"),
+                                             {"l": g["lop_id"], "t": ten}).first():
+                return "khong_co_ten"
+            c.execute(text("insert into tl_bai_lam (id, giao_bai_id, ten, phieu, tra_loi, ket_qua, diem, muc_tt27, "
+                           "trang_thai, nop_luc) values (:id, :g, :t, :p, :tl, :kq, :d, :m, :tt, :n)"),
+                      {"id": _id(), "g": giao_bai_id, "t": ten.strip(), "p": phieu,
+                       "tl": json.dumps(tra_loi, ensure_ascii=False), "kq": json.dumps(ket_qua, ensure_ascii=False),
+                       "d": diem, "m": muc_tt27, "tt": trang_thai, "n": _bay_gio()})
+    except IntegrityError:  # unique(giao_bai_id, ten): tên này đã nộp
+        return "da_nop"
+    return "ok"

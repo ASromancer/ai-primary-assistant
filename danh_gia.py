@@ -1,6 +1,7 @@
 """Đánh giá theo TT27 từ kết quả chấm: mức đạt, khớp tên học sinh, sổ tổng hợp Excel."""
 import difflib
 import io
+import re
 import unicodedata
 
 from openpyxl import Workbook
@@ -118,3 +119,71 @@ def so_tong_hop_excel(rows: list[dict]) -> bytes:
     bio = io.BytesIO()
     wb.save(bio)
     return bio.getvalue()
+
+
+# ---------------- Tự chấm bài làm online ----------------
+_CHO_TRONG = re.compile(r"\.{3,}|…+|_{3,}")
+_DUNG_SAI = re.compile(r"(?<![A-Za-zÀ-ỹĐđ])(Đúng|Sai|Đ|S)(?![A-Za-zÀ-ỹĐđ])")
+_NOI = re.compile(r"(\d+)\s*[-–—:→>]+\s*([a-hA-H])\b")
+CHU = "ABCDEFGH"
+
+
+def so_cho_trong(noi_dung: str) -> int:
+    """Số chỗ trống ('.......', '…', '___') trong đề điền khuyết; tối thiểu 1."""
+    return max(1, len(_CHO_TRONG.findall(noi_dung)))
+
+
+def dap_an_dung_sai(c) -> list[bool] | None:
+    """Đọc đáp án dạng 'a) Đ; b) S; c) Đ'. None nếu không khớp số nhận định (để AI chấm)."""
+    kq = [m in ("Đ", "Đúng") for m in _DUNG_SAI.findall(c.dap_an)]
+    return kq if c.lua_chon and len(kq) == len(c.lua_chon) else None
+
+
+def dap_an_noi_cot(c) -> dict[int, int] | None:
+    """Đọc đáp án dạng '1 – b; 2 – c' thành {chỉ số trái: chỉ số phải}. None nếu không đủ cặp."""
+    cap = {int(i) - 1: CHU.lower().index(ch.lower()) for i, ch in _NOI.findall(c.dap_an)}
+    return cap if c.lua_chon and len(cap) == len(c.lua_chon) else None
+
+
+def _ket_qua(c, dung: int, tong: int, bo_trong: bool):
+    from ai import KetQuaCau
+    if bo_trong:
+        return KetQuaCau(cau_so=0, dat="bo_trong", diem_dat=0, ghi_chu="")
+    ty_le = dung / tong
+    dat = "dung" if ty_le == 1 else "sai" if ty_le == 0 else "mot_phan"
+    return KetQuaCau(cau_so=0, dat=dat, diem_dat=round(c.diem * ty_le, 2), ghi_chu="")
+
+
+def tu_cham(c, tra_loi):
+    """Chấm bằng code các câu trắc nghiệm / đúng-sai / nối cột (chấm điểm từng ý).
+    Trả None nếu cần AI (điền khuyết, tự luận, hoặc không đọc được đáp án)."""
+    if c.dang == "trac_nghiem":
+        from classroom_html import dap_an_dung
+        k = dap_an_dung(c)
+        return None if k is None else _ket_qua(c, int(tra_loi == k), 1, tra_loi is None)
+    if c.dang == "dung_sai":
+        dung = dap_an_dung_sai(c)
+        tl = list(tra_loi or [None] * len(c.lua_chon))
+        return None if dung is None else _ket_qua(c, sum(a == b for a, b in zip(tl, dung)), len(dung),
+                                                  all(x is None for x in tl))
+    if c.dang == "noi_cot":
+        cap = dap_an_noi_cot(c)
+        tl = list(tra_loi or [None] * len(c.lua_chon))
+        return None if cap is None else _ket_qua(c, sum(tl[i] == j for i, j in cap.items() if i < len(tl)), len(cap),
+                                                 all(x is None for x in tl))
+    return None
+
+
+def hien_thi_tra_loi(c, tra_loi) -> str:
+    """Câu trả lời của học sinh dạng chữ (cho AI chấm và bảng của giáo viên)."""
+    if c.dang == "trac_nghiem":
+        from docx_export import bo_tien_to
+        return f"{CHU[tra_loi]}. {bo_tien_to(c.lua_chon[tra_loi])}" if tra_loi is not None and tra_loi < len(c.lua_chon) else "–"
+    if c.dang == "dung_sai":
+        return "; ".join(f"{CHU[i].lower()}) {'Đ' if v else '–' if v is None else 'S'}"
+                         for i, v in enumerate(tra_loi or []))
+    if c.dang == "noi_cot":
+        return "; ".join(f"{i + 1}–{CHU[v].lower() if v is not None else '?'}" for i, v in enumerate(tra_loi or []))
+    if c.dang == "dien_khuyet":
+        return " | ".join((x or "").strip() or "…" for x in (tra_loi or []))
+    return (tra_loi or "").strip() or "–"

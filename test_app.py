@@ -199,6 +199,27 @@ def test_phan_tich_loi_sai():
     assert chon == [2]  # không câu nào vượt ngưỡng: lấy câu yếu nhất có lỗi
 
 
+def test_tu_cham():
+    tn, dk, nc, ds, tl = (BAN.phieu.cau_hoi[i] for i in (0, 1, 2, 4, 3))
+    assert dg.so_cho_trong(dk.noi_dung) == 3 and dg.so_cho_trong("Viết số thích hợp") == 1
+    assert dg.dap_an_dung_sai(ds) == [True, False, True]  # "a) Đ;  b) S (vì 38 + 46 = 84);  c) Đ"
+    assert dg.dap_an_noi_cot(nc) == {0: 1, 1: 2, 2: 0}    # "1 – b; 2 – c; 3 – a"
+    assert dg.dap_an_dung_sai(ds.model_copy(update={"dap_an": "Tuỳ học sinh"})) is None
+    # trắc nghiệm: đáp án B (vị trí 1), điểm 1
+    assert (dg.tu_cham(tn, 1).dat, dg.tu_cham(tn, 1).diem_dat) == ("dung", 1)
+    assert dg.tu_cham(tn, 0).dat == "sai" and dg.tu_cham(tn, None).dat == "bo_trong"
+    # đúng/sai 3 ý, 1,5 điểm: đúng 2/3 -> một phần, 1 điểm
+    kq = dg.tu_cham(ds, [True, True, True])
+    assert (kq.dat, kq.diem_dat) == ("mot_phan", 1.0)
+    assert dg.tu_cham(ds, [True, False, True]).dat == "dung" and dg.tu_cham(ds, [None, None, None]).dat == "bo_trong"
+    # nối cột
+    assert dg.tu_cham(nc, [1, 2, 0]).dat == "dung" and dg.tu_cham(nc, [2, 1, 0]).dat == "mot_phan"
+    # điền khuyết / tự luận: để AI chấm
+    assert dg.tu_cham(dk, ["42", "84", "65"]) is None and dg.tu_cham(tl, "45 bạn") is None
+    assert dg.hien_thi_tra_loi(tn, 1) == "B. 43" and dg.hien_thi_tra_loi(ds, [True, None, False]) == "a) Đ; b) –; c) S"
+    assert dg.hien_thi_tra_loi(nc, [1, None, 0]) == "1–b; 2–?; 3–a" and dg.hien_thi_tra_loi(dk, ["42", "", "65"]) == "42 | … | 65"
+
+
 def test_khop_ten():
     assert dg.khop_ten("nguyen van an", ["Nguyễn Văn An", "Lê Bình"]) == "Nguyễn Văn An"
     assert dg.khop_ten("Le Binh", ["Nguyễn Văn An", "Lê Bình"]) == "Lê Bình"
@@ -283,8 +304,48 @@ def test_chuan_hoa_url():
     assert state.chuan_hoa_url("sqlite:///x.db") == "sqlite:///x.db"
 
 
+def kiem_tra_giao_bai(db):
+    import kho
+    A, B = "gv.a@truong.vn", "gv.b@truong.vn"
+    lop = ai.LopHoc(ten_lop="2A", hoc_sinh=[ai.HocSinh(stt=1, ten="An", nhom="Xanh"), ai.HocSinh(stt=2, ten="Bình", nhom="Tím")])
+    kho.lop_luu(db, A, lop)
+    gb = kho.giao_bai_tao(db, A, BAN, lop.id, "nhom", None)
+    assert len(gb["ma"]) == 6 and gb["ma"].isupper()
+    bai = kho.hs_lay_bai(db, gb["ma"].lower())  # gõ chữ thường vẫn được
+    assert bai["id"] == gb["id"] and bai["dang_mo"] and bai["ban"].thong_so.chu_de == BAN.thong_so.chu_de
+    assert bai["hoc_sinh"] == [{"ten": "An", "nhom": "Xanh"}, {"ten": "Bình", "nhom": "Tím"}]
+    assert kho.hs_lay_bai(db, "ZZZZZZ") is None and kho.hs_da_nop(db, gb["id"]) == []
+    nop = lambda ten, gid=gb["id"]: kho.hs_nop_bai(db, gid, ten, "Xanh", [1], [{"cau_so": 1}], 1.0, "", "cho_ai")
+    assert nop("An") == "ok" and nop("An") == "da_nop" and nop("Người lạ") == "khong_co_ten"
+    assert kho.hs_da_nop(db, gb["id"]) == ["An"]
+    # Giáo viên B không thấy/không sửa được bài của A
+    assert kho.giao_bai_ds(db, B) == [] and kho.bai_lam_ds(db, B, gb["id"]) == [] and kho.giao_bai_mo(db, B, gb["id"]) is None
+    kho.giao_bai_dong_mo(db, B, gb["id"], False)
+    assert kho.hs_lay_bai(db, gb["ma"])["dang_mo"]
+    bl = kho.bai_lam_ds(db, A, gb["id"])
+    assert len(bl) == 1 and bl[0]["ten"] == "An" and bl[0]["tra_loi"] == [1] and bl[0]["trang_thai"] == "cho_ai"
+    kho.bai_lam_cham(db, B, bl[0]["id"], [], 9.0, "Hoàn thành tốt", "Tốt")
+    kho.bai_lam_xoa(db, B, bl[0]["id"])
+    assert kho.bai_lam_ds(db, A, gb["id"])[0]["trang_thai"] == "cho_ai"
+    kho.bai_lam_cham(db, A, bl[0]["id"], [{"cau_so": 1, "dat": "dung"}], 9.0, "Hoàn thành tốt", "Tốt")
+    r = kho.bai_lam_ds(db, A, gb["id"])[0]
+    assert (r["trang_thai"], r["diem"], r["muc_tt27"], r["ket_qua"]) == ("da_cham", 9.0, "Hoàn thành tốt", [{"cau_so": 1, "dat": "dung"}])
+    kho.bai_lam_xoa(db, A, bl[0]["id"])  # cho em làm lại
+    assert nop("An") == "ok"
+    kho.giao_bai_dong_mo(db, A, gb["id"], False)
+    assert nop("Bình") == "dong" and not kho.hs_lay_bai(db, gb["ma"])["dang_mo"]
+    het = kho.giao_bai_tao(db, A, BAN, None, "chung", "2020-01-01T00:00:00+00:00")
+    assert kho.hs_nop_bai(db, het["id"], "Ai đó", "Chung", [], [], 0, "", "cho_ai") == "het_han"
+    tu_do = kho.giao_bai_tao(db, A, BAN, None, "chung", None)  # không chọn lớp: học sinh tự gõ tên
+    assert kho.hs_nop_bai(db, tu_do["id"], "Học sinh tự gõ", "Chung", [], [], 0, "", "cho_ai") == "ok"
+    ds = kho.giao_bai_ds(db, A)
+    assert len(ds) == 3 and {d["ma"]: d["so_nop"] for d in ds}[gb["ma"]] == 1 and ds[-1]["ten_lop"] == "2A"
+    assert kho.giao_bai_mo(db, A, gb["id"])["ban"].thong_so.chu_de == BAN.thong_so.chu_de
+
+
 def test_kho_sqlite():
     kiem_tra_kho(_sqlite())
+    kiem_tra_giao_bai(_sqlite())
 
 
 def test_kho_postgres():
@@ -298,6 +359,16 @@ def test_kho_postgres():
     db = create_engine(url)
     kho.tao_bang(db, postgres=True)
     kiem_tra_kho(db)
+    kiem_tra_giao_bai(db)
+
+
+def test_cham_bai_tra_loi_go():
+    ai_noi = _kq("sai", "dung")  # AI cho câu 1 sai
+    client = FakeClient(ai_noi)
+    tu_dong = {1: ai.KetQuaCau(cau_so=1, dat="dung", diem_dat=1, ghi_chu="")}
+    out = ai.cham_bai(client, "m", BAN.thong_so, BAN.phieu, [0, 1], tra_loi=["B. 43", "42 | 84 | 65"], da_cham=tu_dong)
+    assert [c.dat for c in out.cau] == ["dung", "dung"]  # kết quả code tự chấm được giữ
+    assert client.contents == [client.contents[0]] and "42 | 84 | 65" in client.contents[0]  # chỉ gửi chữ, không ảnh
 
 
 def test_bo_tien_to():
