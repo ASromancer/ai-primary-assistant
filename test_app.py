@@ -392,6 +392,9 @@ def test_bat_buoc_dang_nhap():
     assert any("Đăng nhập để bắt đầu" in m.value for m in at.markdown)
     assert at.button(key="dang_nhap_cong").disabled  # chưa cấu hình [auth]: nút mờ
     assert "lich_su" not in at.session_state and not any("Soạn phiếu" in m.value for m in at.markdown[3:])
+    at.text_input[0].input("k7q2px")
+    at.button[-1].click().run()  # ô nhập mã của học sinh trên màn hình đăng nhập
+    assert at.query_params["ma"] == "K7Q2PX" and any("chưa được cấu hình" in e.value for e in at.error)  # đã sang trang làm bài
     with DangNhap():
         at = _app(khach=False)
         assert not at.exception and not any("Đăng nhập để bắt đầu" in m.value for m in at.markdown)
@@ -615,6 +618,127 @@ def test_phieu_bo_tro_tu_trang_cham_bai():
         assert at.session_state.ban.thong_so.chu_de.startswith("Bổ trợ:")
     finally:
         ai.tao_phieu, ai.kiem_dinh = goc
+
+
+class CoDb:
+    """Database SQLite cho các trang không cần đăng nhập (trang làm bài của học sinh)."""
+    def __enter__(self):
+        import state
+        self.state, self.db = state, _sqlite()
+        self.goc = state.db, state.co_db
+        state.db, state.co_db = (lambda: self.db), (lambda: True)
+        state._doc.clear()
+        return self
+
+    def __exit__(self, *a):
+        self.state.db, self.state.co_db = self.goc
+
+
+def _bam(at, nhan):
+    next(b for b in at.button if nhan in b.label).click()
+    return at.run()
+
+
+def _chu_tren_trang(at) -> str:
+    return "\n".join(str(getattr(e, "value", "")) + str(getattr(e, "label", "")) + str(getattr(e, "options", ""))
+                     for e in at.main)
+
+
+def test_hoc_sinh_lam_bai():
+    import kho
+    with CoDb() as m:
+        GV = "gv@truong.vn"
+        lop = ai.LopHoc(ten_lop="2A", hoc_sinh=[ai.HocSinh(stt=1, ten="An", nhom="Xanh"), ai.HocSinh(stt=2, ten="Bình", nhom="Tím")])
+        kho.lop_luu(m.db, GV, lop)
+        gb = kho.giao_bai_tao(m.db, GV, BAN, lop.id, "nhom", None)
+
+        sai = AppTest.from_file("app.py", default_timeout=30)
+        sai.query_params["ma"] = "ZZZZZZ"
+        sai.run()
+        assert not sai.exception and any("Không tìm thấy bài" in e.value for e in sai.error)
+
+        at = AppTest.from_file("app.py", default_timeout=30)
+        at.query_params["ma"] = gb["ma"].lower()
+        at.run()
+        assert not at.exception and not any("Đăng nhập" in str(b.label) for b in at.button)  # không cần đăng nhập
+        at.button_group(key="hs_chon_ten").set_value("An").run()
+        _bam(at, "Bắt đầu làm bài")
+        assert at.session_state.hs["phieu"] == "Xanh" and at.session_state.hs["ids"] == [0, 1, 2, 3]  # 3 câu mức 1 + 1 thử thách
+        at.radio(key="hs_0").set_value(1).run()            # trắc nghiệm: B
+        _bam(at, "Câu tiếp")
+        for j, v in enumerate(["42", "84", "65"]):          # điền khuyết 3 chỗ trống
+            at.text_input(key=f"hs_1_{j}").input(v)
+        at.run()
+        _bam(at, "Câu tiếp")
+        for i, v in enumerate([1, 2, 0]):                   # nối cột: 1-b, 2-c, 3-a
+            at.button_group(key=f"hs_2_{i}").set_value(v)
+        at.run()
+        _bam(at, "Câu trước")                               # quay lại vẫn giữ câu trả lời
+        assert at.text_input(key="hs_1_0").value == "42"
+        _bam(at, "Câu tiếp")
+        _bam(at, "Câu tiếp")
+        at.text_area(key="hs_3").input("Có tất cả 45 bạn").run()
+        _bam(at, "Xem lại bài")
+        chu = _chu_tren_trang(at)
+        for c in BAN.phieu.cau_hoi:  # đáp án và hướng dẫn chấm không bao giờ hiện cho học sinh
+            assert c.dap_an not in chu and c.huong_dan_cham not in chu
+        at.button(key="hs_nop").click().run()
+        assert not at.exception and "ket_qua" in at.session_state.hs
+        bl = kho.bai_lam_ds(m.db, GV, gb["id"])[0]
+        assert bl["ten"] == "An" and bl["phieu"] == "Xanh" and bl["trang_thai"] == "cho_ai"
+        assert bl["tra_loi"] == [1, ["42", "84", "65"], [1, 2, 0], "Có tất cả 45 bạn"]
+        assert [k["dat"] for k in bl["ket_qua"]] == ["dung", "cho_cham", "dung", "cho_cham"] and bl["diem"] == 2.5
+
+        lai = AppTest.from_file("app.py", default_timeout=30)  # máy khác: tên An đã khoá
+        lai.query_params["ma"] = gb["ma"]
+        lai.run()
+        assert "An" not in lai.button_group(key="hs_chon_ten").options and "Bình" in lai.button_group(key="hs_chon_ten").options
+
+
+def test_giao_vien_giao_bai():
+    import kho
+    goc = ai.cham_bai
+
+    def gia_cham(client, model, ts, phieu, ids, anh=None, tra_loi=None, da_cham=None):
+        assert tra_loi is not None and "An" not in str(tra_loi)
+        cau = [(da_cham or {}).get(k) or ai.KetQuaCau(cau_so=k, dat="dung", diem_dat=phieu.cau_hoi[i].diem, ghi_chu="")
+               for k, i in enumerate(ids, 1)]
+        return ai.KetQuaCham(ten_tren_phieu="", nhan_xet="Em làm tốt.", cau=cau)
+    ai.cham_bai = gia_cham
+    try:
+        with DangNhap() as dn:
+            lop = ai.LopHoc(ten_lop="2A", hoc_sinh=[ai.HocSinh(stt=1, ten="An", nhom="Xanh"), ai.HocSinh(stt=2, ten="Bình", nhom="Tím")])
+            kho.lop_luu(dn.db, dn.email, lop)
+            at = _app("fake")
+            at.button(key="mau_sb").click().run()
+            at.switch_page("trang/giao_bai.py").run()
+            assert not at.exception
+            at.button(key="gb_tao").click().run()
+            assert not at.exception
+            gb = kho.giao_bai_ds(dn.db, dn.email)[0]
+            assert gb["che_do"] == "nhom" and gb["ten_lop"] == "2A"
+            assert any(gb["ma"] in c.value for c in at.code)  # link làm bài có mã
+            kq = [{"cau_so": 1, "dat": "dung", "diem_dat": 1, "ghi_chu": ""}, {"cau_so": 2, "dat": "cho_cham", "diem_dat": 0, "ghi_chu": ""},
+                  {"cau_so": 3, "dat": "sai", "diem_dat": 0, "ghi_chu": ""}, {"cau_so": 4, "dat": "cho_cham", "diem_dat": 0, "ghi_chu": ""}]
+            assert kho.hs_nop_bai(dn.db, gb["id"], "An", "Xanh", [1, ["42", "84", "65"], [0, 1, 2], "45 bạn"], kq, 1, "", "cho_ai") == "ok"
+            at.run()
+            assert not at.exception and [m.value for m in at.metric][-3:] == ["1/2", "1", "0"]
+            at.button(key="gb_ai_cham").click().run()
+            assert not at.exception
+            bl = kho.bai_lam_ds(dn.db, dn.email, gb["id"])[0]
+            assert bl["trang_thai"] == "da_cham" and bl["nhan_xet"] == "Em làm tốt."
+            assert [x["dat"] for x in bl["ket_qua"]] == ["dung", "dung", "sai", "dung"]  # câu 3 code chấm sai được giữ
+            at.button(key="gb_mo_cham").click().run()
+            assert not at.exception
+            assert at.session_state.cham["rows"][0]["Họ tên"] == "An" and len(at.session_state.cham["cau"]) == 4
+            at.switch_page("trang/giao_bai.py").run()
+            at.selectbox(key="gb_lam_lai_ten").set_value("An").run()
+            at.button(key="gb_lam_lai").click().run()
+            assert kho.bai_lam_ds(dn.db, dn.email, gb["id"]) == []
+            at.button(key="gb_dong_mo").click().run()
+            assert not kho.giao_bai_ds(dn.db, dn.email)[0]["dang_mo"]
+    finally:
+        ai.cham_bai = goc
 
 
 if __name__ == "__main__":

@@ -132,10 +132,12 @@ with st.container(border=True):
                        f"💾 Lưu vào hồ sơ lớp {lop_hien.ten_lop or ''} (theo dõi tiến bộ)",
                        disabled=da_luu, width="stretch", key="cb_luu"):
             cot_cau = [c for c in df.columns if c.startswith("Câu ")]
-            state.ghi("cham_luu", lop_hien.id, ban_cham.thong_so.mon, ban_cham.thong_so.chu_de,
-                         loai + (" – đề B" if de_b else ""),
-                         [{"ten": r["Họ tên"], "diem": float(r["Điểm"]) if pd.notna(r["Điểm"]) else None, "muc_tt27": r["Mức TT27"], "nhan_xet": r["Nhận xét"],
-                           "chi_tiet": {c: r[c] for c in cot_cau}} for r in df.to_dict("records") if r["Họ tên"]])
+            ts_cham = cham.get("ts") or ban_cham.thong_so  # phiếu lúc chấm (kể cả kết quả mở từ Giao bài online)
+            state.ghi("cham_luu", lop_hien.id, ts_cham.mon, ts_cham.chu_de,
+                      cham.get("loai") or loai + (" – đề B" if de_b else ""),
+                      [{"ten": r["Họ tên"], "diem": float(r["Điểm"]) if pd.notna(r["Điểm"]) else None,
+                        "muc_tt27": r["Mức TT27"], "nhan_xet": r["Nhận xét"], "chi_tiet": {c: r[c] for c in cot_cau}}
+                       for r in df.to_dict("records") if r["Họ tên"]])
             st.session_state.cham_da_luu = cham["ver"]
             st.rerun()
 

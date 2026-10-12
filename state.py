@@ -14,6 +14,7 @@ TRANG = {
     "soan_phieu": "trang/soan_phieu.py",
     "thu_vien": "trang/thu_vien.py",
     "lop_hoc": "trang/lop_hoc.py",
+    "giao_bai": "trang/giao_bai.py",
     "cham_bai": "trang/cham_bai.py",
     "lop_cua_toi": "trang/lop_cua_toi.py",
     "tien_bo": "trang/tien_bo.py",
@@ -78,6 +79,12 @@ def bao_loi(e: Exception):
 def md(s: str) -> str:
     """Escape markdown để nội dung AI (vd '1.', '*') hiển thị đúng nguyên văn."""
     return re.sub(r"([\\`*_{}\[\]()#+\-.!|>~<])", r"\\\1", s).replace("\n", "  \n")
+
+
+def html_an_toan(s: str) -> str:
+    """Nội dung AI/người dùng đưa vào st.html: escape + xuống dòng."""
+    import html
+    return html.escape(s).replace("\n", "<br>")
 
 
 def ten_file(s: str) -> str:

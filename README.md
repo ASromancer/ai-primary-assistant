@@ -24,6 +24,12 @@ Sổ tổng hợp sửa được trực tiếp và xuất Excel. Một nút cậ
 
 **🩺 Phân tích lỗi sai và phiếu bổ trợ**: sau khi chấm, biểu đồ cho thấy tỉ lệ học sinh chưa đạt từng câu (vạch ngưỡng 40%) và các lỗi thường gặp. Một nút để AI soạn **phiếu bổ trợ** nhắm đúng những nội dung còn yếu (đã kiểm định), mở ngay ở trang Soạn phiếu. Khép kín vòng *chấm bài → phát hiện chỗ hổng → dạy bù*. Không gửi tên học sinh cho AI.
 
+**📡 Giao bài online** (kiểu Google Form, không cần tài khoản học sinh): giáo viên bấm *Giao bài* để nhận mã 6 ký tự, link và QR (có chế độ chiếu toàn màn hình).
+- Học sinh quét QR hoặc nhập mã ở trang đầu, **chọn tên mình** rồi làm từng câu trên điện thoại. Mỗi em tự nhận **phiếu Xanh/Cam/Tím đúng nhóm** của mình.
+- Câu trắc nghiệm, đúng/sai, nối cột được chấm ngay khi nộp. Học sinh thấy ✓/✗ nhưng không thấy đáp án đúng.
+- Giáo viên theo dõi bảng nộp bài tự cập nhật 5 giây một lần. AI chấm phần điền khuyết, tự luận và viết nhận xét TT27 (không gửi tên học sinh). Có thể cho một em làm lại, đóng hoặc mở bài, và mở kết quả trong trang Chấm bài để phân tích lỗi và lưu hồ sơ.
+- Tên đã nộp sẽ bị khoá.
+
 **🔐 Cá nhân hoá (đăng nhập Google + database)**: hồ sơ giáo viên (form tự điền lựa chọn gần nhất), **📚 Thư viện** phiếu tự lưu (tìm không dấu, gắn sao, nhân bản), nhiều lớp lưu lâu dài, lưu kết quả chấm vào hồ sơ lớp. **📈 Tiến bộ**: bảng mức TT27 của từng em qua các lần chấm, biểu đồ từng em, AI gợi ý **nhận xét học bạ cuối kỳ** (không gửi tên học sinh), xuất Excel. Trang chủ có thống kê: số phiếu, số bài chấm, giờ tiết kiệm ước tính. Không cấu hình thì app chạy ở chế độ khách như bình thường.
 
 **💾 Lưu/mở lại phiếu (.json)** và **phiếu mẫu có sẵn** (kèm kết quả kiểm định): trình chiếu được cả khi không có mạng.
@@ -35,7 +41,8 @@ app.py               Điều hướng, thanh bên cài đặt dùng chung
 state.py             Trạng thái phiên, client AI, đăng nhập, tự lưu
 kho.py               Truy cập database (mọi truy vấn lọc theo email giáo viên)
 sql/schema.sql       Tạo bảng trên Supabase (chạy một lần)
-trang/               Các trang: trang_chu, soan_phieu, thu_vien, lop_hoc, cham_bai, lop_cua_toi, tien_bo
+trang/               Các trang: trang_chu, soan_phieu, thu_vien, lop_hoc, giao_bai, cham_bai, lop_cua_toi, tien_bo
+                     + lam_bai (trang của học sinh, mở bằng ?ma=...)
 ai.py                Gọi Gemini: soạn phiếu, kiểm định, đề B, chấm bài (JSON schema, tự chuyển model dự phòng)
 danh_gia.py          Mức TT27, khớp tên học sinh, sổ tổng hợp Excel
 docx_export.py       Xuất Word + ZIP (phiếu chung, phiếu nhóm, phiếu theo tên, đáp án)
@@ -111,6 +118,8 @@ url = "postgresql://postgres.MA_PROJECT:MAT_KHAU@aws-0-ap-southeast-1.pooler.sup
 ```
 
 **Bảo mật:** các bảng đã bật RLS và bị chặn với vai trò `anon`/`authenticated`, nên API công khai của Supabase không đọc được dữ liệu. Chỉ app (giữ chuỗi kết nối bí mật) mới truy cập được, và mọi truy vấn đều lọc theo email của giáo viên. Tên học sinh không gửi cho AI, trừ trường hợp tên nằm sẵn trong ảnh bài làm khi chấm.
+
+**Nâng cấp phiên bản:** khi app có bảng mới (ví dụ tính năng Giao bài online), mở **SQL Editor** và chạy lại toàn bộ file [sql/schema.sql](sql/schema.sql). File này chỉ thêm bảng còn thiếu, không ảnh hưởng dữ liệu cũ. Sau đó vào **Manage app → Reboot app**.
 
 **Lưu ý:** project Supabase gói miễn phí tự tạm dừng sau 7 ngày không ai dùng. Trước buổi demo, vào dashboard Supabase bấm **Restore** nếu project đang tạm dừng.
 

@@ -2,6 +2,11 @@ import streamlit as st
 
 import state
 
+if st.query_params.get("ma"):  # học sinh vào làm bài bằng mã: không cần đăng nhập, chỉ có trang làm bài
+    st.set_page_config(page_title="Làm bài", page_icon="📝", layout="centered", initial_sidebar_state="collapsed")
+    st.navigation([st.Page("trang/lam_bai.py", title="Làm bài", icon="📝")], position="hidden").run()
+    st.stop()
+
 cong = not state.da_dang_nhap() and not state.cho_phep_khach()  # chưa đăng nhập: chỉ hiện màn hình đăng nhập
 st.set_page_config(page_title="Trợ Lý Phân Hóa Tiểu Học - TT27", page_icon="📚", layout="wide",
                    initial_sidebar_state="collapsed" if cong else "auto")
@@ -34,6 +39,13 @@ Theo dõi tiến bộ và gợi ý nhận xét học bạ</div></div>""")
             state.nut_dang_nhap("dang_nhap_cong", nho=True)
             st.caption("🔒 Dữ liệu của mỗi giáo viên được tách riêng theo tài khoản Google. "
                        "Ứng dụng chỉ đọc tên và email của bạn.")
+        with st.container(border=True):  # học sinh vào bằng mã bài thầy cô chiếu trên lớp
+            st.markdown("#### 🎒 Học sinh vào làm bài")
+            with st.form("nhap_ma", border=False):
+                ma = st.text_input("Mã bài thầy cô cho", max_chars=6, placeholder="VD: K7Q2PX")
+                if st.form_submit_button("Vào làm bài", type="primary", width="stretch") and ma.strip():
+                    st.query_params["ma"] = ma.strip().upper()
+                    st.rerun()
     st.stop()
 
 # Giữ giá trị ô cài đặt khi chuyển trang (Streamlit xoá state của widget không còn hiển thị)
@@ -97,6 +109,7 @@ trang = st.navigation([
     st.Page(state.TRANG["soan_phieu"], title="Soạn phiếu", icon="✍️"),
     st.Page(state.TRANG["thu_vien"], title="Thư viện", icon="📚"),
     st.Page(state.TRANG["lop_hoc"], title="Lớp học", icon="🎬"),
+    st.Page(state.TRANG["giao_bai"], title="Giao bài", icon="📡"),
     st.Page(state.TRANG["cham_bai"], title="Chấm bài", icon="📷"),
     st.Page(state.TRANG["lop_cua_toi"], title="Lớp của tôi", icon="👥"),
     st.Page(state.TRANG["tien_bo"], title="Tiến bộ", icon="📈"),
