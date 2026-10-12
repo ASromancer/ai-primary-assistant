@@ -192,8 +192,6 @@ with phai:
                 a, b = st.columns(2)
                 a.markdown("  \n".join(f"{k + 1}\\. {md(x)}" for k, x in enumerate(ds)))
                 b.markdown("  \n".join(f"{chr(97 + k)}\\. {md(dx.bo_tien_to(x))}" for k, x in enumerate(c.cot_phai[:8])))
-            if c.goi_y_hs:
-                st.caption(f"💡 Gợi ý: {md(c.goi_y_hs)}")
             for k, v in enumerate(kd.van_de if kd else []):
                 if v.cau_so == i + 1:
                     with st.container(horizontal=True, vertical_alignment="center"):
@@ -201,7 +199,8 @@ with phai:
                         if st.button("🛠 Sửa theo góp ý", key=f"gy{i}_{k}"):
                             lam_lai(i, "gop_y", gop_y=f"{v.mo_ta}. Đề xuất: {v.de_xuat}", van_de=v)
             with st.expander("Đáp án & hướng dẫn chấm"):
-                st.markdown(f"**Đáp án:** {md(c.dap_an)}  \n**Hướng dẫn chấm:** {md(c.huong_dan_cham)}")
+                st.markdown(f"**Đáp án:**  \n{md(c.dap_an)}")
+                st.markdown(f"**Hướng dẫn chấm:** {md(c.huong_dan_cham)}")
 
             with st.container(horizontal=True):
                 if st.button("🔄 Đổi câu", key=f"doi{i}", help="AI soạn câu khác cùng mức"):
@@ -215,14 +214,13 @@ with phai:
                         nd = st.text_area("Đề bài", c.noi_dung)
                         lc = st.text_area("Lựa chọn / nhận định / cột trái (mỗi dòng một ý)", "\n".join(c.lua_chon))
                         cp = st.text_area("Cột phải", "\n".join(c.cot_phai)) if c.dang == "noi_cot" else ""
-                        gy = st.text_input("Gợi ý cho học sinh", c.goi_y_hs)
                         da = st.text_area("Đáp án", c.dap_an)
                         diem = st.number_input("Điểm", min_value=0.0, max_value=10.0, value=float(c.diem), step=0.25)
                         if st.form_submit_button("💾 Lưu", type="primary"):
                             tach = lambda s: [x.strip() for x in s.splitlines() if x.strip()]
                             st.session_state.hoan_tac = (id(ban), i, c)
                             phieu.cau_hoi[i] = c.model_copy(update=dict(
-                                noi_dung=nd, lua_chon=tach(lc), cot_phai=tach(cp), goi_y_hs=gy, dap_an=da, diem=diem))
+                                noi_dung=nd, lua_chon=tach(lc), cot_phai=tach(cp), dap_an=da, diem=diem))
                             st.rerun()
                 ht = st.session_state.get("hoan_tac")
                 if ht and ht[:2] == (id(ban), i) and st.button("↩️ Hoàn tác", key=f"ht{i}", type="tertiary"):

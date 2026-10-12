@@ -371,6 +371,17 @@ def test_cham_bai_tra_loi_go():
     assert client.contents == [client.contents[0]] and "42 | 84 | 65" in client.contents[0]  # chỉ gửi chữ, không ảnh
 
 
+def test_khong_goi_y_va_dap_an_chuan():
+    cu = BAN.phieu.cau_hoi[0].model_dump() | {"goi_y_hs": "Tách 5 = 2 + 3"}  # phiếu cũ còn gợi ý vẫn mở được
+    assert not hasattr(ai.CauHoi.model_validate(cu), "goi_y_hs")
+    import html_export as hx
+    assert "Gợi ý" not in "".join(hx.cac_trang(BAN).values()) and "Gợi ý" not in cx.trinh_chieu(BAN, [], 0, False)
+    for quy_tac in ("Bài giải", "(quyển vở)", "Đáp số:", "a) Đ; b) S; c) Đ", "1 – b; 2 – c; 3 – a", "45 000"):
+        assert quy_tac in ai.SYSTEM
+    assert BAN.phieu.cau_hoi[3].dap_an.splitlines() == ["Bài giải", "Số bạn lớp 2A có tất cả là:", "28 + 17 = 45 (bạn)", "Đáp số: 45 bạn."]
+    assert dg.dap_an_dung_sai(BAN.phieu.cau_hoi[4]) == [True, False, True]  # vẫn tự chấm được với đáp án kèm giải thích
+
+
 def test_bo_tien_to():
     assert dx.bo_tien_to("A. 43") == "43"
     assert dx.bo_tien_to("2) quả cam") == "quả cam"
@@ -728,6 +739,17 @@ def test_giao_vien_giao_bai():
             bl = kho.bai_lam_ds(dn.db, dn.email, gb["id"])[0]
             assert bl["trang_thai"] == "da_cham" and bl["nhan_xet"] == "Em làm tốt."
             assert [x["dat"] for x in bl["ket_qua"]] == ["dung", "dung", "sai", "dung"]  # câu 3 code chấm sai được giữ
+            # chấm tay: sửa câu 3 thành một phần, điểm tự tính, nhận xét của giáo viên
+            at.selectbox(key="gb_ct_ten").set_value("An").run()
+            assert not at.exception and any("Bài làm" in i.value for i in at.info)
+            at.button_group(key=f"gb_ct_{bl['id']}_3").set_value("mot_phan")
+            assert at.number_input(key=f"gb_ct_{bl['id']}_3_d").value is None  # điểm đúng quy tắc: để trống, tự tính lại
+            at.text_area[-1].input("Em cần đọc kỹ đề.")
+            next(b for b in at.button if "Lưu kết quả chấm" in b.label).click().run()
+            assert not at.exception
+            sua = kho.bai_lam_ds(dn.db, dn.email, gb["id"])[0]
+            assert sua["ket_qua"][2]["dat"] == "mot_phan" and sua["ket_qua"][2]["diem_dat"] == 0.75  # nửa điểm câu nối cột 1,5
+            assert sua["nhan_xet"] == "Em cần đọc kỹ đề." and sua["muc_tt27"]
             at.button(key="gb_mo_cham").click().run()
             assert not at.exception
             assert at.session_state.cham["rows"][0]["Họ tên"] == "An" and len(at.session_state.cham["cau"]) == 4

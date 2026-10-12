@@ -28,7 +28,9 @@ Sổ tổng hợp sửa được trực tiếp và xuất Excel. Một nút cậ
 - Học sinh quét QR hoặc nhập mã ở trang đầu, **chọn tên mình** rồi làm từng câu trên điện thoại. Mỗi em tự nhận **phiếu Xanh/Cam/Tím đúng nhóm** của mình.
 - Câu trắc nghiệm, đúng/sai, nối cột được chấm ngay khi nộp. Học sinh thấy ✓/✗ nhưng không thấy đáp án đúng.
 - Giáo viên theo dõi bảng nộp bài tự cập nhật 5 giây một lần. AI chấm phần điền khuyết, tự luận và viết nhận xét TT27 (không gửi tên học sinh). Có thể cho một em làm lại, đóng hoặc mở bài, và mở kết quả trong trang Chấm bài để phân tích lỗi và lưu hồ sơ.
-- Tên đã nộp sẽ bị khoá.
+- Tên đã nộp sẽ bị khoá. Giáo viên có thể **chấm tay** từng câu (đúng / một phần / sai / bỏ trống, sửa điểm, ghi lỗi, nhận xét) mà không cần AI. Sổ tổng hợp ở trang Chấm bài cũng sửa trực tiếp được điểm và kết quả từng câu.
+
+**📐 Đáp án theo chuẩn tiểu học**: toán có lời văn trình bày "Bài giải", câu lời giải, phép tính kèm đơn vị trong ngoặc đơn, "Đáp số" (lớp 1 chỉ cần phép tính và câu trả lời). Dùng dấu × và : cho phép nhân, chia; số lớn tách lớp bằng dấu cách như sách giáo khoa. Phiếu không in gợi ý cho học sinh.
 
 **🔐 Cá nhân hoá (đăng nhập Google + database)**: hồ sơ giáo viên (form tự điền lựa chọn gần nhất), **📚 Thư viện** phiếu tự lưu (tìm không dấu, gắn sao, nhân bản), nhiều lớp lưu lâu dài, lưu kết quả chấm vào hồ sơ lớp. **📈 Tiến bộ**: bảng mức TT27 của từng em qua các lần chấm, biểu đồ từng em, AI gợi ý **nhận xét học bạ cuối kỳ** (không gửi tên học sinh), xuất Excel. Trang chủ có thống kê: số phiếu, số bài chấm, giờ tiết kiệm ước tính. Không cấu hình thì app chạy ở chế độ khách như bình thường.
 

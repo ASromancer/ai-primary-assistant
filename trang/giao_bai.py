@@ -11,10 +11,15 @@ import danh_gia as dg
 import docx_export as dx
 import kho
 import state
-from ai import KetQuaCau, cham_bai
+from ai import DANG_BAI, KetQuaCau, KetQuaCham, cham_bai
 
 VN = ZoneInfo("Asia/Ho_Chi_Minh")
 TRANG_THAI = {"cho_ai": "📥 Đã nộp – chờ chấm", "da_cham": "✅ Đã chấm"}
+NHAN_DAT = {"dung": "✓ Đúng", "mot_phan": "½ Một phần", "sai": "✗ Sai", "bo_trong": "– Bỏ trống"}
+
+
+def diem_tu_tinh(dat: str, diem_cau: float) -> float:
+    return {"dung": diem_cau, "mot_phan": diem_cau / 2}.get(dat, 0.0)
 
 st.markdown("## 📡 Giao bài online")
 st.caption("Học sinh quét mã QR hoặc mở link, chọn tên mình rồi làm bài trên điện thoại/máy tính – không cần tài khoản. "
@@ -149,9 +154,8 @@ def theo_doi():
         "Học sinh": t, "Phiếu": p,
         "Trạng thái": TRANG_THAI.get(b["trang_thai"], "") if b else "— chưa nộp",
         "Nộp lúc": gio_vn(b["nop_luc"]) if b else "",
-        "Điểm": b["diem"] if b else None, "Mức TT27": b["muc_tt27"] if b else ""} for t, p, b in hang])
-    if len(bang):
-        bang["Điểm"] = pd.to_numeric(bang["Điểm"])  # ô trống thay vì "None"
+        "Điểm": state.so_vn(b["diem"]) if b and b["diem"] is not None else "",  # ô trống, không hiện "None"
+        "Mức TT27": b["muc_tt27"] if b else ""} for t, p, b in hang])
     st.dataframe(bang, hide_index=True, width="stretch")
     st.caption("🔄 Tự cập nhật mỗi 5 giây. Điểm của bài chờ chấm mới gồm phần tự chấm (trắc nghiệm, đúng/sai, nối cột).")
 
@@ -198,6 +202,51 @@ with c2.container(border=True):
     if st.button("Xoá bài đã nộp để em làm lại", key="gb_lam_lai", disabled=not ten, width="stretch"):
         state.ghi("bai_lam_xoa", next(b["id"] for b in bl if b["ten"] == ten))
         st.rerun()
+
+with st.container(border=True):
+    st.markdown("**✍️ Chấm tay**")
+    st.caption("Xem bài làm của từng em cạnh đáp án, chọn kết quả từng câu và viết nhận xét – không cần AI. "
+               "Câu trắc nghiệm, đúng/sai, nối cột đã được chấm sẵn, thầy cô vẫn sửa được.")
+    ten_ct = st.selectbox("Bài của học sinh", [b["ten"] for b in bl], index=None, placeholder="Chọn tên học sinh",
+                          key="gb_ct_ten", format_func=lambda t: t + (" ✅" if next(
+                              b for b in bl if b["ten"] == t)["trang_thai"] == "da_cham" else " ⏳"))
+    if ten_ct:
+        b = next(x for x in bl if x["ten"] == ten_ct)
+        ids = ids_cua_phieu(ban, b["phieu"])
+        kq_cu = {x["cau_so"]: x for x in b["ket_qua"]}
+        with st.form(f"gb_ct_{b['id']}"):
+            chon = []
+            for k, i in enumerate(ids, 1):
+                c, cu = ban.phieu.cau_hoi[i], kq_cu.get(k, {})
+                tl = b["tra_loi"][k - 1] if k - 1 < len(b["tra_loi"]) else None
+                st.markdown(f"**Câu {k}** · {DANG_BAI[c.dang]} · {state.so_vn(c.diem)} điểm  \n{state.md(c.noi_dung)}")
+                st.info(f"✏️ **Bài làm:** {state.md(dg.hien_thi_tra_loi(c, tl))}")
+                st.caption(f"**Đáp án:**  \n{state.md(c.dap_an)}")
+                c1, c2, c3 = st.columns([3, 1.3, 3], vertical_alignment="bottom")
+                dat = c1.segmented_control("Kết quả", list(NHAN_DAT), format_func=NHAN_DAT.get, key=f"gb_ct_{b['id']}_{k}",
+                                           default=cu.get("dat") if cu.get("dat") in NHAN_DAT else None)
+                diem = c2.number_input("Điểm", 0.0, float(c.diem), step=0.25, placeholder="tự tính",
+                                       key=f"gb_ct_{b['id']}_{k}_d", help="Để trống: Đúng = đủ điểm, Một phần = nửa điểm",
+                                       # chỉ điền sẵn điểm sửa tay; điểm đúng quy tắc để trống -> đổi kết quả là tính lại
+                                       value=float(cu["diem_dat"]) if cu.get("dat") in NHAN_DAT and
+                                       cu["diem_dat"] != diem_tu_tinh(cu["dat"], c.diem) else None)
+                ghi = c3.text_input("Ghi chú lỗi (tuỳ chọn)", value=cu.get("ghi_chu", ""), key=f"gb_ct_{b['id']}_{k}_g")
+                chon.append((k, c, dat, diem, ghi))
+                st.divider()
+            nx = st.text_area("Nhận xét (theo Thông tư 27)", value=b["nhan_xet"], height=90,
+                              placeholder="Nêu điều em làm tốt, điều cần cố gắng và lời động viên")
+            if st.form_submit_button("💾 Lưu kết quả chấm", type="primary"):
+                if any(dat is None for _, _, dat, _, _ in chon):
+                    st.error("Thầy cô chọn kết quả cho tất cả các câu trước khi lưu nhé.")
+                else:
+                    kq = KetQuaCham(ten_tren_phieu="", nhan_xet=nx.strip(), cau=[KetQuaCau(
+                        cau_so=k, dat=dat, ghi_chu=ghi.strip(),
+                        diem_dat=diem if diem is not None else diem_tu_tinh(dat, c.diem))
+                        for k, c, dat, diem, ghi in chon])
+                    state.ghi("bai_lam_cham", b["id"], [x.model_dump() for x in kq.cau],
+                              round(sum(x.diem_dat for x in kq.cau), 2), dg.muc_tt27(ban.phieu, ids, kq), kq.nhan_xet)
+                    st.toast(f"Đã lưu kết quả của {ten_ct}", icon="✅")
+                    st.rerun()
 
 with st.container(border=True):
     st.markdown("**📊 Phân tích & lưu hồ sơ**")

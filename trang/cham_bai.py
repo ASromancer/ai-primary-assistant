@@ -91,15 +91,15 @@ with st.container(border=True):
         st.session_state.cham_goc_ver = cham["ver"]
     df = st.data_editor(
         st.session_state.cham_goc, hide_index=True, width="stretch", key=f"bang_cham_{cham['ver']}",
-        disabled=[c for c in st.session_state.cham_goc.columns if c not in ("Họ tên", "Mức TT27", "Nhận xét")],
+        disabled=["STT", "Ảnh"],  # chấm tay: sửa được điểm, kết quả từng câu, mức, nhận xét
         column_config={
             "Mức TT27": st.column_config.SelectboxColumn(options=dg.MUC_TT27, required=True, width="medium"),
             "Nhận xét": st.column_config.TextColumn(width="large"),
             "Họ tên": st.column_config.TextColumn(width="medium"),
-            "Điểm": st.column_config.NumberColumn(format="%.2f"),
+            "Điểm": st.column_config.NumberColumn(format="%.2f", min_value=0.0, max_value=10.0, step=0.25),
         })
-    st.caption("Có thể sửa họ tên, mức TT27 và nhận xét trực tiếp trong bảng. "
-               "✓ đúng · ½ đúng một phần · ✗ sai · – bỏ trống.")
+    st.caption("✍️ Chấm tay: bấm đúp vào ô để sửa điểm, kết quả từng câu (gõ ✓ đúng · ½ một phần · ✗ sai · – bỏ trống, "
+               "có thể ghi thêm lỗi sau ký hiệu), mức TT27 và nhận xét. Phân tích lỗi bên dưới cập nhật theo bảng.")
 
     tong = len(df)
     cols = o_thong_ke.columns(3)

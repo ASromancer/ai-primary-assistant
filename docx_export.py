@@ -74,8 +74,6 @@ def _cau(doc, so_cau: int, c: CauHoi):
     p.paragraph_format.space_before = Pt(8)
     p.add_run(f"Câu {so_cau} ({so(c.diem)} điểm). ").bold = True
     p.add_run(c.noi_dung)
-    if c.goi_y_hs:
-        _para(doc, f"Gợi ý: {c.goi_y_hs}", italic=True, size=12)
     ds = [bo_tien_to(x) for x in c.lua_chon]
     if c.dang == "trac_nghiem":
         for i, x in enumerate(ds):

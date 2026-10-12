@@ -32,7 +32,7 @@ def trinh_chieu(ban: BanLuu, ten_hs: list[str], giay: int, doc_to: bool) -> str:
         "cau": [{
             "so": k + 1, "muc": c.muc, "dang": c.dang, "ten_dang": DANG_BAI[c.dang], "noi_dung": c.noi_dung,
             "lua_chon": [bo_tien_to(x) for x in c.lua_chon][:8], "cot_phai": [bo_tien_to(x) for x in c.cot_phai][:8],
-            "goi_y": c.goi_y_hs, "dap_an": c.dap_an, "dung": dap_an_dung(c),
+            "dap_an": c.dap_an, "dung": dap_an_dung(c),
         } for k, c in enumerate(phieu.cau_hoi[i] for i in thu_tu)],
     }
     return HTML.replace("__DATA__", json.dumps(data, ensure_ascii=False).replace("</", "<\\/"))
@@ -56,7 +56,6 @@ body { font-family: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif; backgro
 .bia p { font-size: 22px; opacity: .85; }
 .bia .go { margin-top: 30px; font-size: 18px; opacity: .7; }
 .de { font-size: clamp(24px, 3.2vw, 40px); font-weight: 600; line-height: 1.35; padding-right: 110px; }
-.goiy { font-size: 20px; opacity: .8; font-style: italic; }
 .luoi { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .pa { border-radius: 16px; padding: 20px 24px; font-size: clamp(20px, 2.6vw, 32px); font-weight: 600;
       display: flex; gap: 16px; align-items: center; transition: opacity .3s, transform .3s, box-shadow .3s; }
@@ -68,8 +67,10 @@ body { font-family: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif; backgro
 .cot div { background: rgba(255,255,255,.08); border-radius: 12px; padding: 12px 18px; }
 .ds { display: flex; flex-direction: column; gap: 12px; font-size: clamp(20px, 2.4vw, 30px); }
 .ds div { background: rgba(255,255,255,.08); border-radius: 12px; padding: 12px 18px; display: flex; justify-content: space-between; }
-#dapan { display: none; background: #FFF8E1; color: #4E342E; border-radius: 16px; padding: 18px 24px; font-size: clamp(20px, 2.4vw, 30px); }
+#dapan { white-space: pre-line; display: none; background: #FFF8E1; color: #4E342E; border-radius: 16px; padding: 18px 24px; font-size: clamp(20px, 2.4vw, 30px); }
 #dapan.hien { display: block; animation: len .4s; }
+#dapan .nhan { font-size: .7em; font-weight: 700; color: #2E7D32; margin-bottom: 4px; }
+#dapan .bg { text-align: center; font-weight: 700; text-decoration: underline; }
 @keyframes len { from { transform: translateY(20px); opacity: 0; } }
 #dong { position: absolute; top: 22px; right: 28px; width: 92px; height: 92px; display: none; }
 #dong.hien { display: block; }
@@ -133,7 +134,6 @@ function ve() {
   muc.style.display = ""; muc.className = "chip m" + c.muc; muc.textContent = "★".repeat(c.muc) + " Mức " + c.muc;
   vt.textContent = "Câu " + c.so + "/" + N + " · " + c.ten_dang;
   s.append(el("div", "de", "Câu " + c.so + ". " + c.noi_dung));
-  if (c.goi_y) s.append(el("div", "goiy", "💡 Gợi ý: " + c.goi_y));
   if (c.dang === "trac_nghiem") {
     const g = el("div", "luoi");
     c.lua_chon.forEach((x, k) => { const p = el("div", "pa"); p.append(el("b", null, "ABCDEFGH"[k]), el("span", null, x)); g.append(p); });
@@ -150,7 +150,10 @@ function ve() {
     c.lua_chon.forEach(x => { const r = el("div"); r.append(el("span", null, x), el("span", null, "Đ / S")); g.append(r); });
     s.append(g);
   }
-  const da = el("div", null, "✅ Đáp án: " + c.dap_an); da.id = "dapan"; s.append(da);
+  const da = el("div"); da.id = "dapan";  // đáp án nhiều dòng; "Bài giải" căn giữa như sách giáo khoa
+  da.append(el("div", "nhan", "✅ Đáp án"));
+  c.dap_an.split("\n").forEach(d => da.append(el("div", d.trim() === "Bài giải" ? "bg" : null, d)));
+  s.append(da);
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.id = "dong"; svg.setAttribute("viewBox", "0 0 100 100");
   svg.innerHTML = '<circle cx="50" cy="50" r="44" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.15)" stroke-width="8"/>' +

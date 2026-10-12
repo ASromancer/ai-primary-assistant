@@ -65,8 +65,6 @@ def _dau(ban: BanLuu, ten_phieu: str, mau: str = XANH_DAM, ho_ten: str = "", ten
 
 def _cau(stt: int, c: CauHoi) -> str:
     out = [f'<div class="cau"><b>Câu {stt} ({so(c.diem)} điểm).</b> {t(c.noi_dung)}']
-    if c.goi_y_hs:
-        out.append(f'<div class="goiy">Gợi ý: {t(c.goi_y_hs)}</div>')
     ds = [bo_tien_to(x) for x in c.lua_chon]
     if c.dang == "trac_nghiem":
         out += [f'<div class="lc">{"ABCDEFGH"[i]}. {t(x)}</div>' for i, x in enumerate(ds[:8])]

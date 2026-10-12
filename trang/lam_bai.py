@@ -137,8 +137,6 @@ if buoc < n:
     with st.container(border=True):
         st.markdown(f"**Câu {buoc + 1}/{n}** · {c.diem:g} điểm".replace(".", ","))
         st.html(f'<div class="de-bai">{state.html_an_toan(c.noi_dung)}</div>')
-        if c.goi_y_hs:
-            st.caption(f"💡 Gợi ý: {state.md(c.goi_y_hs)}")
         cu = tra_loi.get(buoc)
         ds = [dx.bo_tien_to(x) for x in c.lua_chon]
         if c.dang == "trac_nghiem":

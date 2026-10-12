@@ -77,8 +77,8 @@ def yeu_cau_bo_tro(cau_hoi: list, phan_tich: list[dict], toi_da: int = 4) -> tup
         dong.append(f"- Câu {p['cau']} (Mức {c.muc}): \"{c.noi_dung}\" – đáp án: {c.dap_an}. "
                     f"{p['chua_dat']:.0%} học sinh chưa đạt" + (f"; lỗi thường gặp: {'; '.join(p['loi'])}" if p["loi"] else ""))
     yc = ("Đây là PHIẾU BỔ TRỢ soạn sau khi chấm bài. Học sinh còn yếu ở các nội dung sau:\n" + "\n".join(dong) +
-          "\nHãy tập trung luyện lại đúng các kiến thức, kỹ năng này (không lặp nguyên câu cũ): Mức 1 có hướng dẫn mẫu "
-          "từng bước và chỉ ra cách tránh lỗi thường gặp; Mức 2, 3 vận dụng lại trong tình huống mới.")
+          "\nHãy tập trung luyện lại đúng các kiến thức, kỹ năng này (không lặp nguyên câu cũ): Mức 1 chia nhỏ từng "
+          "bước, giúp tránh lỗi thường gặp; Mức 2, 3 vận dụng lại trong tình huống mới.")
     return yc, [p["cau"] for p in chon]
 
 

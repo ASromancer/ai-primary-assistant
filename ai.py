@@ -33,8 +33,7 @@ class CauHoi(BaseModel):
         "Nối cột: các ý cột trái. Dạng khác: để rỗng."
     )
     cot_phai: list[str] = Field(description="Chỉ dùng cho Nối cột: các ý cột phải (đã xáo trộn). Dạng khác: rỗng.")
-    goi_y_hs: str = Field(description="Gợi ý/mẫu in trên phiếu cho học sinh (bắt buộc với Mức 1, có thể rỗng với mức khác)")
-    dap_an: str
+    dap_an: str = Field(description="Đáp án trình bày theo chuẩn tiểu học (xem quy tắc ghi đáp án)")
     huong_dan_cham: str = Field(description="Tiêu chí chấm/nhận xét ngắn cho giáo viên")
     diem: float
 
@@ -117,12 +116,21 @@ def dau_van_tay(phieu: Phieu) -> str:
 
 SYSTEM = """Bạn là chuyên gia giáo dục tiểu học Việt Nam, am hiểu Chương trình GDPT 2018 và \
 Thông tư 27/2020/TT-BGDĐT về đánh giá học sinh tiểu học. Bạn soạn câu hỏi phân hóa theo 3 mức của TT27:
-- Mức 1: {m1}. Dành cho học sinh cần hỗ trợ: câu ngắn, trực diện, có gợi ý/mẫu.
+- Mức 1: {m1}. Dành cho học sinh cần hỗ trợ: câu ngắn, trực diện, từng bước nhỏ.
 - Mức 2: {m2}. Dành cho đại trà: tình huống quen thuộc (gia đình, trường lớp, bạn bè).
 - Mức 3: {m3}. Dành cho học sinh hoàn thành tốt: tư duy mở, tìm quy luật, giải thích cách làm.
 Quy tắc trình bày: văn bản thuần, KHÔNG markdown, KHÔNG LaTeX; dùng ký hiệu ×, :, =, <, > trực tiếp. \
 Ngôn ngữ trong sáng, chuẩn sư phạm, phù hợp lứa tuổi, tên nhân vật Việt Nam. Số liệu và đáp án phải chính xác tuyệt đối; \
-tự kiểm tra lại từng phép tính trước khi trả lời.""".format(m1=MUC[1], m2=MUC[2], m3=MUC[3])
+tự kiểm tra lại từng phép tính trước khi trả lời.
+Quy tắc ghi đáp án (theo cách trình bày ở sách giáo khoa tiểu học):
+- Bài toán có lời văn từ lớp 2: dòng đầu "Bài giải"; câu lời giải kết thúc bằng dấu hai chấm; phép tính ghi đơn vị \
+trong ngoặc đơn, ví dụ "18 + 7 = 25 (quyển vở)"; dòng cuối "Đáp số: 25 quyển vở." (không ngoặc); mỗi phần một dòng; \
+bài nhiều bước thì mỗi bước có câu lời giải và phép tính riêng.
+- Lớp 1: chỉ ghi phép tính và một câu trả lời ngắn, ví dụ "9 – 3 = 6. Còn lại 6 quả cam."
+- Trắc nghiệm: chữ cái và nội dung phương án, ví dụ "B. 43". Đúng/Sai: "a) Đ; b) S; c) Đ". Nối cột: "1 – b; 2 – c; 3 – a". \
+Điền khuyết: các số/từ cần điền theo thứ tự, ngăn cách bằng dấu chấm phẩy.
+- Dùng × cho phép nhân, : cho phép chia, – cho phép trừ; số lớn tách lớp bằng dấu cách như sách giáo khoa (1 000; 45 000); \
+số thập phân dùng dấu phẩy (2,5).""".format(m1=MUC[1], m2=MUC[2], m3=MUC[3])
 
 
 # Model dự phòng khi model chính quá tải (5xx), hết lượt (429) hoặc không tồn tại (404).
