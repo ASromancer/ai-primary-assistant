@@ -1,7 +1,9 @@
 """Điền nội dung hồ sơ vào MẪU của Ban Tổ chức (giữ nguyên thiết kế đầu trang, logo, chân trang, phông chữ).
 
 Đầu vào:  docs/Mẫu Slide 2026.pptx, docs/Mẫu Poster 2026.pptx
-Đầu ra:   docs/du-thi/Slide-du-thi.pptx (14 trang), docs/du-thi/Poster-du-thi.pptx (A0)
+Đầu ra:   docs/du-thi/ban-nop/Slide-du-thi.pptx (14 trang, có lời thuyết trình trong phần ghi chú),
+          docs/du-thi/ban-nop/Poster-du-thi.pptx (A0). Thư mục ban-nop/ không đưa lên GitHub.
+Link/QR dùng thử và video lấy từ ban-nop/ nếu đã tạo bằng tao_ma_demo.py.
 Chạy:     .venv/bin/python docs/du-thi/dien_mau.py      (cần: pip install python-pptx)
 
 Sửa nội dung ở các hằng số SLIDE_* và POSTER_* rồi chạy lại. Chỗ ⟦…⟧ là thông tin/số liệu THẬT cần điền.
@@ -21,6 +23,7 @@ from pptx.util import Emu, Inches, Pt
 DU_THI = Path(__file__).parent
 DOCS = DU_THI.parent
 ANH = DU_THI / "anh"
+RA = DU_THI / "ban-nop"  # chứa mã dùng thử, QR, file nộp – không đưa lên GitHub công khai
 NAVY = RGBColor(0x00, 0x00, 0x54)
 NAVY2 = RGBColor(0x09, 0x00, 0x81)
 NEN = RGBColor(0xF1, 0xF5, 0xFC)
@@ -30,8 +33,11 @@ TEN_SP = "TRỢ LÝ GIẢNG DẠY – PHIẾU BÀI TẬP PHÂN HÓA VÀ ĐÁNH G
 TEN_GV = "⟦Họ và tên⟧"
 DON_VI = ["Đơn vị công tác:", "⟦Trường Tiểu học …⟧", "⟦Địa chỉ trường⟧"]
 EMAIL = ["Email:", "⟦email giáo viên⟧"]
-LINK_DEMO = "⟦https://tro-ly-giang-day.streamlit.app/?demo=MA_DEMO⟧"
-LINK_VIDEO = "⟦link Google Drive video⟧"
+_ma = RA / "ma-demo.txt"
+LINK_DEMO = (f"https://tro-ly-giang-day.streamlit.app/?demo={_ma.read_text(encoding='utf-8').strip()}" if _ma.exists()
+             else "⟦https://tro-ly-giang-day.streamlit.app/?demo=MA_DEMO⟧")
+_vd = RA / "link-video.txt"
+LINK_VIDEO = _vd.read_text(encoding="utf-8").strip() if _vd.exists() else "⟦link Google Drive video⟧"
 
 # ---------------- Nội dung slide ----------------
 # Mỗi trang: (tiêu đề, [(cấp, chữ)], [ảnh bên phải]) — cấp 1 = gạch đầu dòng, 2 = ý con, 0 = không gạch
@@ -145,6 +151,39 @@ DINH_KEM = [
 ]
 
 
+# Lời thuyết trình từng trang (đưa vào phần ghi chú của slide; khớp kịch bản video)
+LOI_NOI = [
+    "Xin chào Ban Giám khảo. Tôi là ⟦họ tên⟧, giáo viên lớp ⟦…⟧ Trường ⟦…⟧. Tôi xin giới thiệu Trợ Lý Giảng Dạy – công cụ AI "
+    "giúp giáo viên tiểu học soạn phiếu phân hóa và đánh giá học sinh theo Thông tư 27.",
+    "Bài trình bày gồm: bối cảnh và vấn đề, ý tưởng giải pháp theo vòng khép kín 6 bước, các tính năng, cách tôi bảo đảm dùng AI "
+    "có trách nhiệm, quá trình triển khai, kết quả và hướng phát triển.",
+    "Lớp tôi có ⟦…⟧ em với trình độ rất khác nhau. Để mỗi em làm bài vừa sức, tôi phải soạn phiếu ba mức, in cho từng nhóm, chấm và "
+    "nhận xét từng em – mỗi phiếu mất khoảng ⟦…⟧ phút, chấm cả lớp mất ⟦…⟧ phút. Thử dùng chatbot AI thì câu trả lời rời rạc, "
+    "không theo mẫu Thông tư 27, và đáp án đôi khi sai mà không ai kiểm tra.",
+    "Giải pháp của tôi là một vòng khép kín 6 bước theo Thông tư 27. Ở mỗi bước AI đề xuất, giáo viên quyết định. Tôi dùng Google "
+    "Gemini vì đọc được ảnh trang sách và chữ viết tay, hỗ trợ tiếng Việt tốt và có gói miễn phí; toàn bộ chi phí là 0 đồng.",
+    "Tôi chỉ cần nhập tên bài hoặc chụp trang sách giáo khoa. Khoảng 30 giây, AI soạn xong phiếu ba mức có đáp án trình bày đúng như "
+    "vở học sinh. Sau đó một lượt AI thứ hai đóng vai tổ trưởng chuyên môn, tự giải lại từng câu để soát lỗi – trong thí điểm "
+    "đã phát hiện ⟦…⟧ lỗi.",
+    "Một phiếu tự tách thành ba phiếu Xanh, Cam, Tím. Tên màu trung tính để các em không cảm thấy bị xếp loại. Có thêm đề A/B "
+    "và phiếu in sẵn tên từng em.",
+    "Trên lớp, tôi trình chiếu từng câu như trò chơi, hoặc chiếu mã QR để các em làm bài trên máy: chạm vào tên mình, không cần "
+    "tài khoản, tự nhận đúng phiếu nhóm, câu trắc nghiệm được chấm ngay.",
+    "Với bài viết tay, tôi chụp ảnh để AI chấm và viết nhận xét theo Thông tư 27. Mức đạt tính theo quy tắc công khai và tôi sửa "
+    "được từng câu. Biểu đồ cho thấy cả lớp còn yếu ở đâu; một nút bấm là có phiếu bổ trợ đúng chỗ đó.",
+    "Kết quả lưu theo từng em; cuối kỳ AI gợi ý nhận xét học bạ dựa trên cả quá trình mà không cần gửi tên học sinh.",
+    "Tôi dùng AI có trách nhiệm: giáo viên duyệt mọi đề, điểm, nhận xét; AI kiểm định hai lượt; không gửi tên học sinh cho AI; "
+    "học sinh không cần tài khoản; dữ liệu từng giáo viên tách riêng.",
+    "Tôi triển khai từ ⟦…⟧ tại lớp ⟦…⟧ với ⟦…⟧ học sinh, trong soạn bài, giờ dạy và đánh giá; ⟦…⟧ đồng nghiệp dùng thử.",
+    "Sau ⟦…⟧ ngày thí điểm: soạn phiếu giảm từ ⟦…⟧ xuống ⟦…⟧ phút, chấm và nhận xét từ ⟦…⟧ xuống ⟦…⟧ phút; tỉ lệ chưa đạt ở câu "
+    "yếu giảm từ ⟦…⟧ xuống ⟦…⟧ sau một buổi bổ trợ. ⟦Trích phản hồi⟧.",
+    "So với cách cũ, đây là một quy trình hoàn chỉnh theo Thông tư 27. Sản phẩm miễn phí, chạy trên trình duyệt, dùng được cho khối "
+    "1 đến 5 và ba bộ sách. Giới hạn hiện tại là quota gói miễn phí và AI vẫn cần giáo viên duyệt. Hướng tới: chia sẻ trong tổ "
+    "chuyên môn và tin nhắn phụ huynh.",
+    "Mời Ban Giám khảo quét mã QR để dùng thử. Xin cảm ơn!",
+]
+
+
 # ---------------- Tiện ích ----------------
 def tim(slide, ten):
     for sh in slide.shapes:
@@ -206,7 +245,7 @@ def viet(shape, dong, co=None, mau_p=None):
 
 
 def anh_vua_khung(slide, ten, trai, tren, rong, cao, vien=True):
-    duong = ANH / ten
+    duong = RA / ten if (RA / ten).exists() else ANH / ten
     if not duong.exists():
         return None
     h = slide.shapes.add_picture(str(duong), trai, tren)
@@ -340,7 +379,10 @@ def lam_slide():
     # (chỉ số theo thứ tự hiện có: 0..8 là mẫu gốc, 9..14 là trang nhân bản; bỏ trang 2 = hướng dẫn)
     xep_thu_tu(prs, [0, 1, 2, 3, 4, 9, 10, 11, 12, 13, 14, 5, 6, 7, 8])
     xoa_trang(prs, 2)
-    ra = DU_THI / "Slide-du-thi.pptx"
+    for trang, loi in zip(prs.slides, LOI_NOI):  # lời thuyết trình vào phần ghi chú (không hiện khi xuất PDF)
+        trang.notes_slide.notes_text_frame.text = loi
+    RA.mkdir(exist_ok=True)
+    ra = RA / "Slide-du-thi.pptx"
     prs.save(ra)
     print(f"Đã tạo {ra} ({len(prs.slides)} trang)")
 
@@ -447,7 +489,8 @@ def lam_poster():
     doan(s, X, y + Inches(2.4), W, Inches(0.6),
          ["Phần lập trình được thực hiện với sự hỗ trợ của công cụ AI Claude Code ⟦và …⟧."], co=24
          ).paragraphs[0].alignment = PP_ALIGN.CENTER
-    ra = DU_THI / "Poster-du-thi.pptx"
+    RA.mkdir(exist_ok=True)
+    ra = RA / "Poster-du-thi.pptx"
     prs.save(ra)
     print(f"Đã tạo {ra}")
 

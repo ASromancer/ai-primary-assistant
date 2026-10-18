@@ -8,6 +8,18 @@ Yêu cầu của Ban Tổ chức:
 Kịch bản dưới đây dài khoảng **4 phút 45 giây** (đọc chậm khoảng 130 chữ/phút), còn dư 15 giây an toàn.
 Người dẫn là **giáo viên đứng tên dự thi**: vừa thể hiện quyền tác giả, vừa ghi điểm tính thuyết phục (15%).
 
+## Video nháp có sẵn
+
+`ban-nop/video-nhap.mp4` (4 phút 50 giây) đã ghép đúng trình tự kịch bản: ảnh slide và các đoạn quay màn hình app (dữ liệu, tên học sinh giả), kèm phụ đề là lời thuyết trình. Cách dùng nhanh nhất:
+
+1. Mở CapCut và nhập `video-nhap.mp4`, hoặc nhập 12 đoạn sạch trong `ban-nop/doan-quay/` cùng phụ đề `phu-de.srt`.
+2. Giáo viên **thu giọng đọc** theo phụ đề, đặt đè lên video, rồi xoá phụ đề cũ và tạo lại phụ đề theo giọng thật.
+3. **Thay đoạn "Kết quả"** (2:50–3:23) bằng số liệu thật và cảnh lớp học thật (không lộ mặt học sinh). Thay các chỗ `⟦…⟧`.
+4. **Quay lại đoạn "Soạn phiếu"** (1:14–1:44) bằng app thật có AI. Trong video nháp, đoạn này dùng AI giả lập trả phiếu mẫu và có ghi "minh họa".
+5. Thêm khung hình giáo viên ở đoạn mở đầu và kết (webcam).
+
+Không nộp nguyên video nháp: thể lệ yêu cầu video **thuyết trình** của tác giả.
+
 ## Chuẩn bị quay
 
 - **Quay màn hình:** OBS Studio (miễn phí) hoặc tính năng ghi màn hình của PowerPoint. Độ phân giải 1920×1080, trình duyệt Chrome toàn màn hình, phóng to trang 125%.

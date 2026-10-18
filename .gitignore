@@ -1,3 +1,6 @@
 .venv/
 __pycache__/
 .streamlit/secrets.toml
+
+# Hồ sơ nộp bài: chứa mã dùng thử, QR, video – không đưa lên GitHub công khai
+docs/du-thi/ban-nop/

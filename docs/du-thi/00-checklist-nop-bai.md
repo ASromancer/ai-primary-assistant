@@ -9,7 +9,8 @@ Trong toàn bộ hồ sơ, các chỗ đánh dấu `⟦…⟧` cần điền **t
 
 - [ ] **Gửi email hỏi Ban Tổ chức về quyền tác giả** (mẫu ở mục 6). Thể lệ ghi: *"Các trường hợp nhờ người khác hỗ trợ hoặc thực hiện thay sẽ không được công nhận."* Cần xác nhận việc giáo viên nhận hỗ trợ lập trình có được chấp nhận hay không, trước khi đầu tư thời gian cho hồ sơ.
 - [x] Tải bộ mẫu PowerPoint và Poster của Ban Tổ chức (đã có trong `docs/`, đã điền vào `Slide-du-thi.pptx` và `Poster-du-thi.pptx`).
-- [ ] Đặt `MA_DEMO` trong Secrets của app (ví dụ một chuỗi khó đoán), rồi tạo **link trải nghiệm cho giám khảo**: `https://tro-ly-giang-day.streamlit.app/?demo=<MA_DEMO>`. Tạo mã QR cho link này (xem mục 5).
+- [ ] **Thêm `MA_DEMO` vào Secrets của app rồi Reboot.** Mã đã được tạo sẵn trong `ban-nop/ma-demo.txt` (chạy `.venv/bin/python docs/du-thi/tao_ma_demo.py` để xem lại). Mở thử link dùng thử bằng cửa sổ ẩn danh.
+- [ ] In [in-thi-diem.pdf](in-thi-diem.pdf) (bảng ghi chép, khảo sát giáo viên, phiếu học sinh) cho đợt thí điểm.
 - [ ] Đăng nhập app bằng tài khoản Google của giáo viên dự thi. Tạo lớp thật, nhập danh sách học sinh và chia nhóm Xanh/Cam/Tím.
 - [ ] Xin phép Ban Giám hiệu cho thí điểm. Nếu quay hình hoặc chụp ảnh học sinh, xin phép phụ huynh và không để lộ mặt, tên thật của học sinh.
 
