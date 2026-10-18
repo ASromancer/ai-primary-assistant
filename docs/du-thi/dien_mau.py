@@ -11,6 +11,7 @@ Viết đậm một đoạn bằng **…**. Sau khi mở bằng PowerPoint, xu�
 """
 import json
 import re
+import tempfile
 from copy import deepcopy
 from pathlib import Path
 
@@ -88,7 +89,7 @@ TINH_NANG = [
         (1, "Đáp án chuẩn tiểu học: Bài giải – câu lời giải – phép tính (đơn vị) – Đáp số."),
         (1, "**Lượt AI thứ hai** đóng vai tổ trưởng chuyên môn: tự giải lại từng câu, soát đáp án sai, câu lệch mức."),
         *([(2, f"Thí điểm: phát hiện {_g('loi_kiem_dinh')} lỗi.")] if _co("loi_kiem_dinh") else []),
-    ], ["02-soan-phieu-kiem-dinh.png", "03-gop-y-kiem-dinh.png"]),
+    ], ["02-soan-phieu-kiem-dinh.png"]),
     ("③ PHÂN HÓA KHÔNG DÁN NHÃN", [
         (1, "Một phiếu tự tách thành **Phiếu Xanh / Cam / Tím** cho 3 nhóm; tên màu trung tính, "
             "học sinh không biết mình ở \"mức\" nào."),
@@ -100,7 +101,7 @@ TINH_NANG = [
         (1, "Giao bài online: chiếu mã QR, học sinh **chạm vào tên mình**, không cần tài khoản."),
         (1, "Mỗi em tự nhận **đúng phiếu của nhóm**; câu trắc nghiệm, đúng/sai, nối cột được chấm ngay."),
         (1, "Giáo viên theo dõi trực tiếp số bài đã nộp."),
-    ], ["05-lop-hoc-trinh-chieu.png", "20-hs-chon-ten.png", "21-hs-lam-cau.png"]),
+    ], ["05-lop-hoc-trinh-chieu.png", "21-hs-lam-cau.png"]),
     ("④ CHẤM, NHẬN XÉT TT27 · ⑤ PHÂN TÍCH LỖI", [
         (1, "Chấm từ **ảnh chụp bài viết tay** hoặc bài làm online; AI viết nhận xét theo tinh thần TT27."),
         (1, "Mức đạt theo **quy tắc công khai**: Chưa hoàn thành (Mức 1 < 50%) · Hoàn thành tốt "
@@ -112,7 +113,7 @@ TINH_NANG = [
         (1, "Mức TT27 của từng em qua các lần đánh giá; biểu đồ tiến bộ từng em."),
         (1, "AI gợi ý nhận xét cuối kỳ dựa trên cả quá trình (**không gửi tên học sinh**); giáo viên duyệt, xuất Excel."),
         (1, "Thư viện phiếu tự lưu, nhiều lớp, dữ liệu riêng cho từng giáo viên."),
-    ], ["12-tien-bo-bieu-do.png", "11-tien-bo.png"]),
+    ], ["12-tien-bo-bieu-do.png"]),
 ]
 
 TRACH_NHIEM = [
@@ -274,8 +275,51 @@ def viet(shape, dong, co=None, mau_p=None):
         tx.append(p)
 
 
-def anh_vua_khung(slide, ten, trai, tren, rong, cao, vien=True):
+# Vùng cắt (x0, y0, x1, y1) theo pixel ảnh gốc: bỏ thanh menu, lề trắng để chữ trong ảnh đủ to khi chèn
+CAT = {
+    "02-soan-phieu-kiem-dinh.png": (960, 380, 2440, 1800),
+    "03-gop-y-kiem-dinh.png": (1000, 600, 2445, 1500),
+    "05-lop-hoc-trinh-chieu.png": (160, 120, 2440, 1400),
+    "09-cham-bai-so-tong-hop.png": (160, 1240, 2440, 1800),
+    "10-phan-tich-loi-sai.png": (160, 900, 2440, 1800),
+    "12-tien-bo-bieu-do.png": (160, 520, 2440, 1600),
+    "13-lop-cua-toi-phieu-theo-ten.png": (1130, 580, 2440, 1800),
+    "20-hs-chon-ten.png": (0, 190, 1170, 1300),
+    "21-hs-lam-cau.png": (0, 190, 1170, 2280),
+    "31-phieu-xanh.png": (0, 0, 1588, 1800),
+}
+
+
+def tep_anh(ten):
     duong = RA / ten if (RA / ten).exists() else ANH / ten
+    if not duong.exists() or ten not in CAT:
+        return duong
+    from PIL import Image
+    ra = Path(tempfile.gettempdir()) / f"cat-{ten}"
+    Image.open(duong).crop(CAT[ten]).save(ra)
+    return ra
+
+
+def xep_anh(slide, ds, trai, tren, rong, cao, khe=Inches(0.2)):
+    """Xếp các ảnh vào vùng cho trước: thử 1 hàng (cùng cao) và 1 cột (cùng rộng), chọn cách cho ảnh to hơn."""
+    from PIL import Image
+    tl = [(lambda im: im.width / im.height)(Image.open(tep_anh(a))) for a in ds]
+    h_hang = min(cao, (rong - khe * (len(ds) - 1)) / sum(tl))
+    w_cot = min(rong, (cao - khe * (len(ds) - 1)) / sum(1 / t for t in tl))
+    if h_hang * h_hang * sum(tl) >= w_cot * w_cot * sum(1 / t for t in tl):
+        x = trai + (rong - h_hang * sum(tl) - khe * (len(ds) - 1)) / 2
+        for a, t in zip(ds, tl):
+            anh_vua_khung(slide, a, int(x), int(tren + (cao - h_hang) / 2), int(h_hang * t), int(h_hang))
+            x += h_hang * t + khe
+    else:
+        y = tren + (cao - w_cot * sum(1 / t for t in tl) - khe * (len(ds) - 1)) / 2
+        for a, t in zip(ds, tl):
+            anh_vua_khung(slide, a, int(trai + (rong - w_cot) / 2), int(y), int(w_cot), int(w_cot / t))
+            y += w_cot / t + khe
+
+
+def anh_vua_khung(slide, ten, trai, tren, rong, cao, vien=True):
+    duong = tep_anh(ten)
     if not duong.exists():
         return None
     h = slide.shapes.add_picture(str(duong), trai, tren)
@@ -391,11 +435,8 @@ def lam_slide():
         viet(than, dong, co=23 if anh else 27, mau_p=mau_than)
         than.height = Inches(7.6)
         if anh:
-            than.width = Inches(8.3)
-            vung_x, vung_w, vung_y, vung_h = Inches(9.4), Inches(9.9), Inches(2.1), Inches(7.4)
-            w = Emu(int(vung_w / len(anh)))
-            for k, a in enumerate(anh):
-                anh_vua_khung(t, a, vung_x + w * k, vung_y, w - Inches(0.15), vung_h)
+            than.width = Inches(7.4)
+            xep_anh(t, anh, Inches(8.3), Inches(1.75), Inches(11.2), Inches(8.0))
         trang_tn.append(t)
 
     viet(tim(trien_khai, "TextBox 3"), TRIEN_KHAI, co=28, mau_p=mau_than)
@@ -471,15 +512,16 @@ def lam_poster():
 
     X, W, G = Inches(1.96), Inches(29.27), Inches(0.45)
     # Hàng 1: Bối cảnh | Giải pháp
-    y, h = Inches(11.2), Inches(9.4)
+    y, h = Inches(11.2), Inches(8.4)
     w1 = Inches(13.4)
     khoi(s, X, y, w1, h, "1. BỐI CẢNH VÀ VẤN ĐỀ")
     doan(s, X + Inches(0.5), y + Inches(1.6), w1 - Inches(1), h - Inches(1.8), [
         f"• Lớp {LOP}: {SI_SO} học sinh, trình độ chênh lệch rõ.",
         "• TT27: đánh giá thường xuyên bằng nhận xét; bài tập **3 mức**.",
-        "• Soạn 1 phiếu phân hóa có đáp án ≈ ⟦…⟧ phút; chấm và nhận xét 1 lớp ≈ ⟦…⟧ phút.",
+        *([f"• Soạn 1 phiếu phân hóa có đáp án ≈ {_g('phut_soan_cu')} phút; chấm và nhận xét 1 lớp ≈ {_g('phut_cham_cu')} phút."]
+          if CO_CU else ["• Soạn 3 mức kèm đáp án, in theo nhóm, chấm và nhận xét từng em: tốn nhiều thời gian."]),
         "• Chatbot AI phổ thông: rời rạc, không theo TT27, không tự kiểm tra đáp án.",
-        "• **Đối tượng hưởng lợi:** học sinh và giáo viên tiểu học."], co=34)
+        "• **Đối tượng hưởng lợi:** học sinh và giáo viên tiểu học."], co=36)
     x2, w2 = X + w1 + G, W - w1 - G
     khoi(s, x2, y, w2, h, "2. GIẢI PHÁP: VÒNG KHÉP KÍN")
     anh_vua_khung(s, "so-do-vong-khep-kin.png", x2 + Inches(0.4), y + Inches(1.5), w2 - Inches(0.8), h - Inches(2.6), vien=False)
@@ -487,7 +529,7 @@ def lam_poster():
          ["AI đề xuất – **giáo viên quyết định**. Công cụ: Google Gemini · Streamlit · Supabase."], co=28)
 
     # Hàng 2: 6 ảnh
-    y, h = y + h + G, Inches(13.2)
+    y, h = y + h + G, Inches(15.6)
     khoi(s, X, y, W, h, "3. AI HOẠT ĐỘNG THẾ NÀO")
     anh6 = [("02-soan-phieu-kiem-dinh.png", "① Soạn phiếu 3 mức từ tên bài / ảnh SGK"),
             ("03-gop-y-kiem-dinh.png", "② AI kiểm định tự giải lại, soát đáp án sai"),
@@ -495,33 +537,33 @@ def lam_poster():
             ("21-hs-lam-cau.png", "③ Quét QR, chọn tên, làm bài trên điện thoại"),
             ("10-phan-tich-loi-sai.png", "④⑤ Chấm, nhận xét TT27, phân tích lỗi → bổ trợ"),
             ("12-tien-bo-bieu-do.png", "⑥ Tiến bộ từng em, gợi ý nhận xét học bạ")]
-    cw, ch = (W - Inches(1.4)) / 3, Inches(5.6)
+    cw, ch = (W - Inches(1.4)) / 3, (h - Inches(1.8)) / 2
     for k, (a, cap) in enumerate(anh6):
         cx = X + Inches(0.5) + int(cw * (k % 3))
-        cy = y + Inches(1.6) + (k // 3) * Inches(5.8)
-        anh_vua_khung(s, a, cx, cy, int(cw) - Inches(0.3), ch - Inches(1.1))
-        tf = doan(s, cx, cy + ch - Inches(1.05), int(cw) - Inches(0.3), Inches(1), [cap], co=28)
+        cy = y + Inches(1.6) + int((k // 3) * (ch + Inches(0.1)))
+        anh_vua_khung(s, a, cx, cy, int(cw) - Inches(0.3), int(ch) - Inches(1.1))
+        tf = doan(s, cx, cy + int(ch) - Inches(1.05), int(cw) - Inches(0.3), Inches(1), [cap], co=28)
         tf.paragraphs[0].alignment = PP_ALIGN.CENTER
 
     # Hàng 3: Kết quả | Trách nhiệm + Bền vững
-    y, h = y + h + G, Inches(7.2)
+    y, h = y + h + G, Inches(6.6)
     khoi(s, X, y, w1, h, "4. KẾT QUẢ THỰC TẾ" if CO_KQ else "4. THÍ ĐIỂM: CHỈ SỐ VÀ MỤC TIÊU")
     doan(s, X + Inches(0.5), y + Inches(1.6), w1 - Inches(1), h - Inches(1.8), [
         f"• Soạn 1 phiếu: {_g('phut_soan_cu')} → {_g('phut_soan_moi')} phút",
         f"• Chấm và nhận xét 1 lớp: {_g('phut_cham_cu')} → {_g('phut_cham_moi')} phút",
         f"• Câu yếu sau bổ trợ: chưa đạt {_g('phan_tram_chua_dat_truoc')}% → {_g('phan_tram_chua_dat_sau')}%",
         *([f"\"{PHAN_HOI}\""] if PHAN_HOI else [])] if CO_KQ else [
-        f"• Lớp {LOP} ({SI_SO} học sinh), 19–23/10/2026, so sánh trước – sau.",
-        "• Soạn 1 phiếu phân hóa: mục tiêu giảm ≥ 50% thời gian.",
-        "• Chấm và nhận xét 1 lớp: mục tiêu giảm ≥ 40% thời gian.",
+        f"• Lớp {LOP} ({SI_SO} học sinh), 19–23/10/2026.",
+        "• Soạn 1 phiếu: mục tiêu giảm ≥ 50% thời gian.",
+        "• Chấm, nhận xét 1 lớp: mục tiêu giảm ≥ 40% thời gian.",
         "• Câu yếu: tỉ lệ chưa đạt giảm sau 1 buổi bổ trợ.",
-        "• 100% đề, điểm, nhận xét do giáo viên duyệt."], co=32)
+        "• 100% đề, điểm, nhận xét do giáo viên duyệt."], co=34)
     khoi(s, x2, y, w2, h, "5. AI CÓ TRÁCH NHIỆM · BỀN VỮNG")
     doan(s, x2 + Inches(0.5), y + Inches(1.6), w2 - Inches(1), h - Inches(1.8), [
-        "• Giáo viên duyệt mọi đề, đáp án, điểm, nhận xét; kiểm định 2 lượt.",
+        "• Giáo viên duyệt mọi đề, điểm, nhận xét; kiểm định 2 lượt.",
         "• Không gửi tên học sinh cho AI; học sinh không cần tài khoản.",
         "• **0 đồng**, chạy trên trình duyệt; khối 1–5, 8 môn, 3 bộ sách.",
-        "• Định hướng: chia sẻ trong tổ chuyên môn, tin nhắn phụ huynh."], co=32)
+        "• Định hướng: chia sẻ trong tổ chuyên môn, tin nhắn phụ huynh."], co=34)
 
     # Hàng 4: QR + công khai
     y = y + h + Inches(0.35)
