@@ -20,13 +20,26 @@ Người dẫn là **giáo viên đứng tên dự thi**: vừa thể hiện quy
 
 ### Phương án lồng tiếng bằng AI (`ban-nop/video-long-tieng.mp4`)
 
-Thể lệ và trang giải thưởng **không cấm** lồng tiếng bằng AI. Yêu cầu chỉ có: thuyết trình nội dung PowerPoint, ≤ 5 phút, link Google Drive, không sửa sau khi nộp. Video dùng giọng đọc thần kinh tiếng Việt và luôn hiện dòng "Lồng tiếng: giọng đọc AI" để minh bạch.
+Thể lệ và trang giải thưởng **không cấm** lồng tiếng bằng AI. Yêu cầu chỉ có: thuyết trình nội dung PowerPoint, ≤ 5 phút, link Google Drive, không sửa sau khi nộp. Video luôn hiện dòng "Lồng tiếng: giọng đọc AI" để minh bạch.
 
-1. Điền `ban-nop/so-lieu.json` (họ tên, lớp, trường, sĩ số, số liệu thí điểm). Ô để trống thì lời đọc dùng câu chung, không đọc số. Muốn giọng nam thì đổi `"giong"` thành `"vi-VN-NamMinhNeural"`.
-2. Chạy `.venv/bin/python docs/du-thi/long_tieng.py` (cần mạng). Video tự giữ ≤ 5 phút (tự tăng tốc độ đọc nếu cần).
+Có hai bộ đọc, chọn ở mục `"may_doc"` trong `ban-nop/so-lieu.json`:
+
+| `may_doc` | Giọng | Ghi chú |
+|---|---|---|
+| `"gemini"` (mặc định) | Gemini TTS, giọng tự nhiên như người thật; chỉnh cách đọc bằng câu mô tả ở `"phong_cach"` | Cần `GEMINI_API_KEY`, gói miễn phí dùng được. Đổi giọng ở `"giong_gemini"`: nữ `Sulafat`, `Achernar`, `Vindemiatrix`; nam `Achird`, `Charon`, `Sadaltager` |
+| `"edge"` | Giọng đọc Microsoft (HoaiMy/NamMinh), nghe "máy" hơn | Không cần key. Tự dùng khi máy chưa có key Gemini |
+
+1. Điền `ban-nop/so-lieu.json` (họ tên, lớp, trường, sĩ số, số liệu thí điểm). Ô để trống thì lời đọc dùng câu chung, không đọc số.
+2. Đặt key Gemini **trên máy** (không gửi qua chat, không đưa lên GitHub), rồi chạy:
+   ```bash
+   GEMINI_API_KEY=... .venv/bin/python docs/du-thi/long_tieng.py
+   ```
+   Hoặc thêm dòng `GEMINI_API_KEY = "..."` vào `.streamlit/secrets.toml` (tệp này đã nằm trong `.gitignore`).
+   - Phụ đề tự chia theo dấu câu, tối đa 2 dòng × 42 ký tự, không ngắt giữa từ ghép ("học sinh", "Thông tư 27"…), thời gian khớp nhịp đọc.
+   - Đoạn slide dài vừa lời đọc. Đoạn quay app được tua nhanh tối đa 1,8 lần cho khớp lời, không còn khoảng lặng dài.
 3. **Nghe lại toàn bộ** để kiểm tra phát âm (AI, QR, tên riêng, số liệu).
 4. **Trước khi nộp vẫn phải:**
-   - Quay lại đoạn "Soạn phiếu" bằng AI thật. Đoạn này đang có nhãn "Minh họa".
+   - Quay lại đoạn "Soạn phiếu" bằng AI thật. Đoạn này đang có nhãn "Minh họa giao diện".
    - Thay slide kết quả bằng bản có số liệu thật. Đoạn này đang có nhãn "Chờ số liệu thí điểm thật".
 5. **Khuyến nghị:** thêm 10–15 giây giáo viên tự chào ở đầu và cảm ơn ở cuối, bằng giọng thật và có hình. Tiêu chí "Chất lượng trình bày và tính thuyết phục" (15%) đánh giá cả việc giáo viên thuyết phục được Ban Giám khảo, và vòng chung kết là thuyết trình trực tiếp.
 

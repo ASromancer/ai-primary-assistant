@@ -9,6 +9,7 @@ Chạy:     .venv/bin/python docs/du-thi/dien_mau.py      (cần: pip install py
 Sửa nội dung ở các hằng số SLIDE_* và POSTER_* rồi chạy lại. Chỗ ⟦…⟧ là thông tin/số liệu THẬT cần điền.
 Viết đậm một đoạn bằng **…**. Sau khi mở bằng PowerPoint, xuất PDF (File → Export → PDF) để nộp.
 """
+import json
 import re
 from copy import deepcopy
 from pathlib import Path
@@ -30,9 +31,14 @@ NEN = RGBColor(0xF1, 0xF5, 0xFC)
 
 # ---------------- Thông tin tác giả (điền thật) ----------------
 TEN_SP = "TRỢ LÝ GIẢNG DẠY – PHIẾU BÀI TẬP PHÂN HÓA VÀ ĐÁNH GIÁ HỌC SINH TIỂU HỌC THEO THÔNG TƯ 27 BẰNG AI"
-TEN_GV = "⟦Họ và tên⟧"
-DON_VI = ["Đơn vị công tác:", "⟦Trường Tiểu học …⟧", "⟦Địa chỉ trường⟧"]
-EMAIL = ["Email:", "⟦email giáo viên⟧"]
+# Thông tin thật lấy từ ban-nop/so-lieu.json (không đưa lên GitHub); ô trống giữ chỗ ⟦…⟧
+_sl = RA / "so-lieu.json"
+_tt = json.loads(_sl.read_text(encoding="utf-8")) if _sl.exists() else {}
+_g = lambda k, mac_dinh="⟦…⟧": str(_tt.get(k, "")).strip() or mac_dinh
+TEN_GV = _g("ho_ten", "⟦Họ và tên⟧")
+DON_VI = ["Đơn vị công tác:", _g("truong", "⟦Trường Tiểu học …⟧"), _g("dia_chi", "⟦Địa chỉ trường⟧")]
+EMAIL = ["Email:", _g("email", "⟦email giáo viên⟧")]
+LOP, SI_SO = _g("lop"), _g("si_so")
 _ma = RA / "ma-demo.txt"
 LINK_DEMO = (f"https://tro-ly-giang-day.streamlit.app/?demo={_ma.read_text(encoding='utf-8').strip()}" if _ma.exists()
              else "⟦https://tro-ly-giang-day.streamlit.app/?demo=MA_DEMO⟧")
@@ -46,7 +52,7 @@ DAN_Y = [(1, "Bối cảnh và vấn đề"), (1, "Ý tưởng và giải pháp:
          (1, "Triển khai thực tế"), (1, "Kết quả và tác động"), (1, "Thảo luận và tổng kết"), (1, "Tài liệu đính kèm")]
 
 BOI_CANH = [
-    (1, "Lớp ⟦…⟧ có ⟦sĩ số⟧ học sinh, trình độ chênh lệch rõ; đối tượng hưởng lợi: **học sinh và giáo viên tiểu học**."),
+    (1, f"Lớp {LOP} có {SI_SO} học sinh, trình độ chênh lệch rõ; đối tượng hưởng lợi: **học sinh và giáo viên tiểu học**."),
     (1, "Thông tư 27/2020: đánh giá thường xuyên bằng nhận xét; câu hỏi, bài tập theo **3 mức** "
         "(nhận biết – kết nối – vận dụng). Chương trình GDPT 2018 đòi hỏi dạy học phân hóa."),
     (1, "Dạy phân hóa tốn thời gian: soạn 3 mức kèm đáp án, in theo nhóm, chấm, viết nhận xét từng em."),
@@ -116,7 +122,7 @@ TRIEN_KHAI = [
     (1, "Hình thức: ứng dụng web <https://tro-ly-giang-day.streamlit.app> dùng trong soạn bài, giờ dạy và đánh giá."),
     (2, "Soạn phiếu trước giờ học; in phiếu nhóm hoặc giao bài bằng QR; chấm và phân tích lỗi sau giờ học; dạy bổ trợ."),
     (1, "Thời gian: ⟦từ …/…/2026 đến nay⟧ (thí điểm ⟦…⟧ ngày)."),
-    (1, "Đối tượng: lớp ⟦…⟧ – ⟦…⟧ học sinh, môn ⟦…⟧; ⟦…⟧ đồng nghiệp dùng thử."),
+    (1, f"Đối tượng: lớp {LOP} – {SI_SO} học sinh, môn ⟦…⟧; ⟦…⟧ đồng nghiệp dùng thử."),
     (1, "Số lượng sử dụng: ⟦…⟧ phiếu đã soạn, ⟦…⟧ bài đã chấm (thống kê trong app)."),
 ]
 
@@ -153,11 +159,11 @@ DINH_KEM = [
 
 # Lời thuyết trình từng trang (đưa vào phần ghi chú của slide; khớp kịch bản video)
 LOI_NOI = [
-    "Xin chào Ban Giám khảo. Tôi là ⟦họ tên⟧, giáo viên lớp ⟦…⟧ Trường ⟦…⟧. Tôi xin giới thiệu Trợ Lý Giảng Dạy – công cụ AI "
+    f"Xin chào Ban Giám khảo. Tôi là {TEN_GV}, giáo viên lớp {LOP}, {DON_VI[1]}, {DON_VI[2]}. Tôi xin giới thiệu Trợ Lý Giảng Dạy – công cụ AI "
     "giúp giáo viên tiểu học soạn phiếu phân hóa và đánh giá học sinh theo Thông tư 27.",
     "Bài trình bày gồm: bối cảnh và vấn đề, ý tưởng giải pháp theo vòng khép kín 6 bước, các tính năng, cách tôi bảo đảm dùng AI "
     "có trách nhiệm, quá trình triển khai, kết quả và hướng phát triển.",
-    "Lớp tôi có ⟦…⟧ em với trình độ rất khác nhau. Để mỗi em làm bài vừa sức, tôi phải soạn phiếu ba mức, in cho từng nhóm, chấm và "
+    f"Lớp tôi có {SI_SO} em với trình độ rất khác nhau. Để mỗi em làm bài vừa sức, tôi phải soạn phiếu ba mức, in cho từng nhóm, chấm và "
     "nhận xét từng em – mỗi phiếu mất khoảng ⟦…⟧ phút, chấm cả lớp mất ⟦…⟧ phút. Thử dùng chatbot AI thì câu trả lời rời rạc, "
     "không theo mẫu Thông tư 27, và đáp án đôi khi sai mà không ai kiểm tra.",
     "Giải pháp của tôi là một vòng khép kín 6 bước theo Thông tư 27. Ở mỗi bước AI đề xuất, giáo viên quyết định. Tôi dùng Google "
@@ -174,7 +180,7 @@ LOI_NOI = [
     "Kết quả lưu theo từng em; cuối kỳ AI gợi ý nhận xét học bạ dựa trên cả quá trình mà không cần gửi tên học sinh.",
     "Tôi dùng AI có trách nhiệm: giáo viên duyệt mọi đề, điểm, nhận xét; AI kiểm định hai lượt; không gửi tên học sinh cho AI; "
     "học sinh không cần tài khoản; dữ liệu từng giáo viên tách riêng.",
-    "Tôi triển khai từ ⟦…⟧ tại lớp ⟦…⟧ với ⟦…⟧ học sinh, trong soạn bài, giờ dạy và đánh giá; ⟦…⟧ đồng nghiệp dùng thử.",
+    f"Tôi triển khai từ ⟦…⟧ tại lớp {LOP} với {SI_SO} học sinh, trong soạn bài, giờ dạy và đánh giá; ⟦…⟧ đồng nghiệp dùng thử.",
     "Sau ⟦…⟧ ngày thí điểm: soạn phiếu giảm từ ⟦…⟧ xuống ⟦…⟧ phút, chấm và nhận xét từ ⟦…⟧ xuống ⟦…⟧ phút; tỉ lệ chưa đạt ở câu "
     "yếu giảm từ ⟦…⟧ xuống ⟦…⟧ sau một buổi bổ trợ. ⟦Trích phản hồi⟧.",
     "So với cách cũ, đây là một quy trình hoàn chỉnh theo Thông tư 27. Sản phẩm miễn phí, chạy trên trình duyệt, dùng được cho khối "
@@ -433,7 +439,7 @@ def lam_poster():
     w1 = Inches(13.4)
     khoi(s, X, y, w1, h, "1. BỐI CẢNH VÀ VẤN ĐỀ")
     doan(s, X + Inches(0.5), y + Inches(1.6), w1 - Inches(1), h - Inches(1.8), [
-        "• Lớp ⟦…⟧: ⟦…⟧ học sinh, trình độ chênh lệch rõ.",
+        f"• Lớp {LOP}: {SI_SO} học sinh, trình độ chênh lệch rõ.",
         "• TT27: đánh giá thường xuyên bằng nhận xét; bài tập **3 mức**.",
         "• Soạn 1 phiếu phân hóa có đáp án ≈ ⟦…⟧ phút; chấm và nhận xét 1 lớp ≈ ⟦…⟧ phút.",
         "• Chatbot AI phổ thông: rời rạc, không theo TT27, không tự kiểm tra đáp án.",

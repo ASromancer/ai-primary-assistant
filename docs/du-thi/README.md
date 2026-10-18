@@ -27,7 +27,7 @@ Thư mục này không đưa lên GitHub vì repo công khai và trong đó có 
 | `Poster-du-thi.pptx` | Poster A0 trên **mẫu của Ban Tổ chức** |
 | `ma-demo.txt`, `qr-trai-nghiem.png` | Mã dùng thử cho giám khảo và mã QR. **Phải thêm `MA_DEMO = "<mã>"` vào Secrets của app** rồi Reboot |
 | `video-nhap.mp4` | Video nháp 4:50 (ảnh slide + quay màn hình app + phụ đề), chưa có tiếng |
-| **`video-long-tieng.mp4`** | **Video 4:49 có lồng tiếng AI** (giọng nữ tiếng Việt), phụ đề khớp lời đọc, nhãn "Lồng tiếng: giọng đọc AI" |
+| **`video-long-tieng.mp4`** | **Video có lồng tiếng AI** (Gemini TTS giọng tự nhiên; thiếu key thì dùng edge-tts), phụ đề khớp lời đọc, nhãn "Lồng tiếng: giọng đọc AI" |
 | `so-lieu.json` | Thông tin giáo viên và số liệu thí điểm cho lời đọc; điền rồi chạy lại `long_tieng.py` |
 | `loi-doc.mp3`, `phu-de-long-tieng.srt` | Riêng phần tiếng và phụ đề, để dựng lại trong CapCut |
 | `phu-de.srt` | Phụ đề theo kịch bản, nhập vào CapCut khi dựng video thật |
@@ -40,7 +40,7 @@ Dựng lại khi cần:
 .venv/bin/python docs/du-thi/tao_ma_demo.py --video <link-drive>  # thêm QR video sau khi tải video lên Drive
 .venv/bin/python docs/du-thi/dien_mau.py                          # dựng lại slide và poster (ghi đè ban-nop/)
 .venv/bin/python docs/du-thi/tao_video_nhap.py                    # quay lại video nháp (khoảng 5 phút)
-.venv/bin/python docs/du-thi/long_tieng.py                        # lồng tiếng AI theo so-lieu.json (cần mạng)
+.venv/bin/python docs/du-thi/long_tieng.py                        # lồng tiếng AI theo so-lieu.json (cần mạng; GEMINI_API_KEY để có giọng tự nhiên)
 .venv/bin/python docs/du-thi/tao_phieu_khao_sat.py                # in lại bộ phiếu thí điểm
 ```
 
