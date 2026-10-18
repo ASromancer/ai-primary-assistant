@@ -45,7 +45,7 @@ MAU_SO_LIEU = {
 MODEL_TTS = "gemini-3.8-flash-tts"
 DOC_EDGE = [(r"\bAI\b", "ây ai"), (r"\bQR\b", "kiu a"), (r"Gemini", "Giê mi ni")]  # phát âm cho edge-tts
 GIOI_HAN = 298  # giây (thể lệ: tối đa 5 phút)
-MINH_HOA = {"04-soan-phieu": "Đã rút gọn thời gian chờ AI"}  # nhãn góc trên trái, chỉ hiện trong đoạn tương ứng
+MINH_HOA = {"04-soan-phieu": r"Đã rút gọn\Nthời gian chờ AI"}  # nhãn góc trên trái, chỉ hiện trong đoạn tương ứng
 TUA_TOI_DA = 1.8  # đoạn quay app dài hơn lời đọc: tua nhanh tối đa 1,8 lần để không có khoảng lặng dài
 SR = 24000
 DONG = 42                                   # ký tự tối đa mỗi dòng phụ đề, tối đa 2 dòng mỗi khung
@@ -293,7 +293,7 @@ def ass(cues, tong, nhan, het_bia=0.0) -> str:
             "StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n"
             "Style: Default,DejaVu Sans,42,&H00FFFFFF,&H00FFFFFF,&H00000000,&H30000000,0,0,0,0,100,100,0,0,4,0,0,2,80,80,135,1\n"
             "Style: Nhan,DejaVu Sans,26,&H00FFFFFF,&H00FFFFFF,&H00000000,&H88000000,0,1,0,0,100,100,0,0,4,0,0,9,30,30,24,1\n"
-            "Style: Minh,DejaVu Sans,28,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00A1470D,1,0,0,0,100,100,0,0,4,0,0,7,24,24,22,1\n\n"
+            "Style: Minh,DejaVu Sans,28,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00A1470D,1,0,0,0,100,100,0,0,4,0,0,7,30,30,560,1\n\n"
             "[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n" + "\n".join(dong) + "\n")
 
 

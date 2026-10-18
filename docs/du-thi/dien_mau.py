@@ -280,13 +280,14 @@ CAT = {  # ảnh chụp 1600×900 @2x (tao_anh.py), có thanh bên trái
     "02-soan-phieu-kiem-dinh.png": (1560, 380, 3060, 1800),
     "03-gop-y-kiem-dinh.png": (740, 100, 3060, 1800),
     "05-lop-hoc-trinh-chieu.png": (750, 120, 3040, 1730),
-    "09-cham-bai-so-tong-hop.png": (740, 120, 3060, 1800),
-    "10-phan-tich-loi-sai.png": (740, 120, 3060, 1800),
+    "09-cham-bai-so-tong-hop.png": (740, 300, 3060, 1150),
+    "10-phan-tich-loi-sai.png": (740, 540, 3060, 1650),
     "12-tien-bo-bieu-do.png": (740, 440, 3060, 1800),
     "13-lop-cua-toi-phieu-theo-ten.png": (1720, 600, 3060, 1800),
     "20-hs-chon-ten.png": (0, 190, 1170, 1600),
     "21-hs-lam-cau.png": (0, 190, 1170, 2160),
     "31-phieu-xanh.png": (0, 110, 1588, 1950),
+    "32-dap-an-ma-tran.png": (0, 110, 1588, 1500),
 }
 
 
@@ -436,7 +437,7 @@ def lam_slide():
         than.height = Inches(7.6)
         if anh:
             than.width = Inches(7.4)
-            xep_anh(t, anh, Inches(8.3), Inches(1.75), Inches(11.2), Inches(8.0))
+            xep_anh(t, anh, Inches(8.3), Inches(2.25), Inches(11.2), Inches(7.55))  # dưới tiêu đề dài
         trang_tn.append(t)
 
     viet(tim(trien_khai, "TextBox 3"), TRIEN_KHAI, co=28, mau_p=mau_than)
@@ -532,7 +533,7 @@ def lam_poster():
     y, h = y + h + G, Inches(15.6)
     khoi(s, X, y, W, h, "3. AI HOẠT ĐỘNG THẾ NÀO")
     anh6 = [("02-soan-phieu-kiem-dinh.png", "① Soạn phiếu 3 mức từ tên bài / ảnh SGK"),
-            ("03-gop-y-kiem-dinh.png", "② AI kiểm định tự giải lại, soát đáp án sai"),
+            ("32-dap-an-ma-tran.png", "② Đáp án chuẩn tiểu học, AI kiểm định lượt 2"),
             ("31-phieu-xanh.png", "③ Phiếu Xanh/Cam/Tím – không dán nhãn"),
             ("21-hs-lam-cau.png", "③ Quét QR, chọn tên, làm bài trên điện thoại"),
             ("10-phan-tich-loi-sai.png", "④⑤ Chấm, nhận xét TT27, phân tích lỗi → bổ trợ"),
