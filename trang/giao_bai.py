@@ -33,9 +33,10 @@ db, email = state.db(), state.email()
 
 
 def link_lam_bai(ma: str) -> str:
+    """Ưu tiên APP_URL trong Secrets (tên miền chính thức), sau đó địa chỉ trình duyệt đang mở."""
     url = urlsplit(st.context.url or "") if st.context.url else None
-    goc = f"{url.scheme}://{url.netloc}" if url and url.netloc else state._secret("APP_URL", "http://localhost:8501")
-    return f"{goc}/?ma={ma}"
+    goc = state._secret("APP_URL", "") or (f"{url.scheme}://{url.netloc}" if url and url.netloc else "http://localhost:8501")
+    return f"{goc.rstrip('/')}/?ma={ma}"
 
 
 def qr_png(noi_dung: str, scale: int = 8) -> bytes:
