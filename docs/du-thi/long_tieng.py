@@ -281,9 +281,11 @@ def doc_doan(ma: str, cau: list[str], d: dict, tam: Path, toc_do: str) -> tuple[
     return am + lang(0.2), moc
 
 
-def ass(cues, tong, nhan) -> str:
+def ass(cues, tong, nhan, het_bia=0.0) -> str:
     g = lambda t: f"{int(t // 3600)}:{int(t % 3600 // 60):02d}:{t % 60:05.2f}"
-    dong = [f"Dialogue: 0,{g(a)},{g(b)},Default,,0,0,0,,{c.replace(chr(10), chr(92) + 'N')}" for a, b, c in cues]
+    # trang bìa: phụ đề xuống sát đáy (vùng trắng) để không che tên, email giáo viên
+    dong = [f"Dialogue: 0,{g(a)},{g(b)},Default,,0,0,{30 if a < het_bia else 0},,{c.replace(chr(10), chr(92) + 'N')}"
+            for a, b, c in cues]
     dong.append(f"Dialogue: 1,{g(0)},{g(tong)},Nhan,,0,0,0,,Lồng tiếng: giọng đọc AI")
     dong += [f"Dialogue: 1,{g(a)},{g(b)},Minh,,0,0,0,,{c}" for a, b, c in nhan]
     return ("[Script Info]\nScriptType: v4.00+\nPlayResX: 1920\nPlayResY: 1080\nWrapStyle: 2\n\n[V4+ Styles]\n"
@@ -341,7 +343,7 @@ def main():
     ffmpeg("-i", str(tam / "loi.wav"), "-b:a", "128k", str(RA / "loi-doc.mp3"))
     (RA / "phu-de-long-tieng.srt").write_text(
         "\n".join(f"{k}\n{srt_gio(a)} --> {srt_gio(b)}\n{c}\n" for k, (a, b, c) in enumerate(cues, 1)), encoding="utf-8")
-    (tam / "pd.ass").write_text(ass(cues, t0, nhan), encoding="utf-8")
+    (tam / "pd.ass").write_text(ass(cues, t0, nhan, doan[KICH_BAN[0][0]][2]), encoding="utf-8")
 
     ds = []
     for ma, _, loai, _ in KICH_BAN:  # hình: app tua nhanh cho vừa lời đọc, slide cắt bớt; thiếu thì giữ khung cuối
