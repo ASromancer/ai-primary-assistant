@@ -19,7 +19,7 @@ Trong toàn bộ hồ sơ, các chỗ đánh dấu `⟦…⟧` cần điền **t
 Làm theo [05-ke-hoach-thi-diem-va-khao-sat.md](05-ke-hoach-thi-diem-va-khao-sat.md). Đầu ra cần có:
 
 - [ ] Bảng số liệu thời gian (soạn phiếu, chấm và nhận xét) trước và sau khi dùng app.
-- [ ] Kết quả phiếu bổ trợ: tỉ lệ học sinh chưa đạt ở câu yếu, trước và sau khi dạy bổ trợ.
+- [ ] Kết quả phiếu bổ trợ: tỉ lệ học sinh chưa đạt, trước và sau khi dạy bổ trợ.
 - [ ] Phiếu khảo sát học sinh và giáo viên (ít nhất 2–3 đồng nghiệp dùng thử).
 - [ ] Ảnh chụp màn hình thống kê ở Trang chủ (số phiếu, số bài chấm) bằng tài khoản thật.
 - [ ] 3–5 ảnh hoặc clip ngắn cảnh dùng trên lớp (không lộ mặt học sinh).

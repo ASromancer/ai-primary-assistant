@@ -5,7 +5,7 @@
 ## Tính năng
 
 **✍️ Soạn phiếu**
-- Phiếu 3 mức TT27 (nhận biết – kết nối – vận dụng), chọn lớp, môn, bộ sách (Kết nối tri thức, Chân trời sáng tạo, Cánh Diều), dạng bài, thời lượng 15/20/35 phút.
+- Phiếu 3 mức TT27 (nhận biết – kết nối – vận dụng), chọn lớp, môn (bộ sách Kết nối tri thức với cuộc sống, dùng thống nhất toàn quốc từ năm học 2026–2027), dạng bài, thời lượng 15/20/35 phút.
 - **Chụp ảnh trang SGK** (tối đa 3 ảnh): AI ra đề bám sát trang sách.
 - **AI kiểm định**: lượt AI thứ hai đóng vai tổ trưởng chuyên môn, soát đáp án sai, câu lệch mức, ngôn ngữ chưa hợp lứa tuổi. Kết quả là điểm chất lượng 0–100 và cảnh báo trên từng câu, kèm nút 🛠 *Sửa theo góp ý*.
 - Chỉnh từng câu: 🔄 Đổi câu · ➖ Dễ hơn · ➕ Khó hơn · ✏️ Sửa tay · ↩️ Hoàn tác.

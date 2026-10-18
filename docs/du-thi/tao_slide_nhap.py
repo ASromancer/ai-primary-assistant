@@ -74,7 +74,7 @@ TRANG = [
     ("Triển khai và kết quả thực tế",
      ["Phạm vi: lớp ⟦…⟧, ⟦…⟧ học sinh, ⟦…⟧ ngày, ⟦…⟧ đồng nghiệp dùng thử",
       "Soạn phiếu: ⟦…⟧ → ⟦…⟧ phút · chấm và nhận xét: ⟦…⟧ → ⟦…⟧ phút",
-      "Câu yếu sau bổ trợ: chưa đạt ⟦…%⟧ → ⟦…%⟧ · học sinh hài lòng ⟦…%⟧",
+      "Sau bổ trợ: chưa đạt ⟦…%⟧ → ⟦…%⟧ · học sinh hài lòng ⟦…%⟧",
       "\"⟦Trích phản hồi giáo viên⟧\""], []),
     ("AI có trách nhiệm · Bền vững và nhân rộng",
      ["AI đề xuất, giáo viên quyết định · kiểm định 2 lượt · không gửi tên học sinh cho AI",

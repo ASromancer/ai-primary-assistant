@@ -83,7 +83,7 @@ Theo ⟦khảo sát/ghi nhận của tác giả⟧, soạn một phiếu phân h
 | Thời gian chấm và nhận xét 1 lớp | ⟦… phút⟧ | ⟦… phút⟧ |
 | Số đáp án sai AI kiểm định phát hiện được / số phiếu | – | ⟦…⟧ |
 | Tỉ lệ học sinh hoàn thành bài (giao online hoặc phiếu nhóm) | ⟦…%⟧ | ⟦…%⟧ |
-| Tỉ lệ chưa đạt ở các câu yếu, trước và sau phiếu bổ trợ | ⟦…%⟧ | ⟦…%⟧ |
+| Tỉ lệ chưa đạt, trước và sau phiếu bổ trợ | ⟦…%⟧ | ⟦…%⟧ |
 | Mức độ hài lòng của học sinh (phiếu mặt cười) | – | ⟦…% 😊⟧ |
 | Đánh giá của giáo viên dùng thử (thang 5) | – | ⟦…/5⟧ |
 
@@ -100,7 +100,7 @@ Theo ⟦khảo sát/ghi nhận của tác giả⟧, soạn một phiếu phân h
 
 - **Chi phí 0 đồng** và chạy bằng trình duyệt trên thiết bị sẵn có của trường. Học sinh dùng điện thoại hoặc máy tính phòng tin học; không cần tài khoản.
 - **Mỗi giáo viên có không gian dữ liệu riêng** khi đăng nhập Google, nên nhiều giáo viên trong trường dùng cùng lúc được.
-- **Áp dụng cho khối 1–5**, gồm các môn: Toán, Tiếng Việt, Tự nhiên và Xã hội, Khoa học, Lịch sử và Địa lí, Đạo đức, Tin học, Công nghệ; cả 3 bộ sách giáo khoa (Kết nối tri thức, Chân trời sáng tạo, Cánh Diều).
+- **Áp dụng cho khối 1–5**, gồm các môn: Toán, Tiếng Việt, Tự nhiên và Xã hội, Khoa học, Lịch sử và Địa lí, Đạo đức, Tin học, Công nghệ; bám sát bộ sách **Kết nối tri thức với cuộc sống** – bộ sách giáo khoa dùng thống nhất toàn quốc từ năm học 2026–2027 (Quyết định 3588/QĐ-BGDĐT ngày 26/12/2025).
 - **Dễ chuyển giao:** có hướng dẫn cài đặt và sử dụng; trường khác có thể tự triển khai bản riêng trên hạ tầng miễn phí.
 - **Hướng phát triển:** chia sẻ phiếu trong tổ chuyên môn; tin nhắn gửi phụ huynh từ kết quả đánh giá; báo cáo minh chứng cho nhà trường.
 - **Giới hạn hiện tại (nêu thẳng):**

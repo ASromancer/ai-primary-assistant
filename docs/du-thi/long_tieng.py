@@ -45,7 +45,7 @@ MAU_SO_LIEU = {
 MODEL_TTS = "gemini-3.8-flash-tts"
 DOC_EDGE = [(r"\bAI\b", "ây ai"), (r"\bQR\b", "kiu a"), (r"Gemini", "Giê mi ni")]  # phát âm cho edge-tts
 GIOI_HAN = 298  # giây (thể lệ: tối đa 5 phút)
-MINH_HOA = {"04-soan-phieu": "Minh họa giao diện"}  # nhãn góc trên trái, chỉ hiện trong đoạn tương ứng
+MINH_HOA = {"04-soan-phieu": "Đã rút gọn thời gian chờ AI"}  # nhãn góc trên trái, chỉ hiện trong đoạn tương ứng
 TUA_TOI_DA = 1.8  # đoạn quay app dài hơn lời đọc: tua nhanh tối đa 1,8 lần để không có khoảng lặng dài
 SR = 24000
 DONG = 42                                   # ký tự tối đa mỗi dòng phụ đề, tối đa 2 dòng mỗi khung
@@ -71,13 +71,13 @@ def loi_doc(d: dict) -> dict[str, list[str]]:
     ket_qua = ([f"Sau {d['so_ngay']} ngày thí điểm với {d['so_hoc_sinh']} học sinh, thời gian soạn một phiếu giảm từ "
                 f"{d['phut_soan_cu']} xuống {d['phut_soan_moi']} phút, thời gian chấm và nhận xét một lớp giảm từ "
                 f"{d['phut_cham_cu']} xuống {d['phut_cham_moi']} phút.",
-                f"Ở các câu yếu, tỉ lệ học sinh chưa đạt giảm từ {d['phan_tram_chua_dat_truoc']} xuống "
+                f"Tỉ lệ học sinh chưa đạt giảm từ {d['phan_tram_chua_dat_truoc']} xuống "
                 f"{d['phan_tram_chua_dat_sau']} phần trăm sau một buổi bổ trợ."]
                if co("so_ngay", "so_hoc_sinh", "phut_soan_cu", "phut_soan_moi", "phut_cham_cu", "phut_cham_moi",
                      "phan_tram_chua_dat_truoc", "phan_tram_chua_dat_sau")
                else [f"Tôi thí điểm từ ngày 19 đến 23 tháng 10 tại lớp {d['lop'] or 'mình'}, so sánh trước và sau trên cùng lớp.",
                      "Mục tiêu là giảm ít nhất một nửa thời gian soạn phiếu, giảm bốn mươi phần trăm thời gian chấm và nhận xét, "
-                     "và giảm tỉ lệ học sinh chưa đạt ở câu yếu sau một buổi bổ trợ."])
+                     "và giảm tỉ lệ học sinh chưa đạt sau một buổi bổ trợ."])
     if d.get("phan_hoi", "").strip():
         ket_qua.append(d["phan_hoi"].strip())
     return {
@@ -109,7 +109,7 @@ def loi_doc(d: dict) -> dict[str, list[str]]:
         "09-tien-bo": ["Kết quả được lưu theo từng em.",
                        "Cuối kỳ, AI gợi ý nhận xét học bạ dựa trên cả quá trình, mà không cần gửi tên học sinh."],
         "10-ket-qua": ket_qua,
-        "11-trach-nhiem": ["Sản phẩm hoàn toàn miễn phí, chạy trên trình duyệt, dùng được cho khối một đến khối năm và cả ba bộ sách giáo khoa.",
+        "11-trach-nhiem": ["Sản phẩm hoàn toàn miễn phí, chạy trên trình duyệt, dùng được cho khối một đến khối năm, bám sát bộ sách giáo khoa dùng chung toàn quốc.",
                            "Tên học sinh không được gửi cho AI.", "Mọi đề, điểm và nhận xét đều do giáo viên duyệt."],
         "12-ket": ["Mong rằng Trợ Lý Giảng Dạy sẽ giúp mỗi học sinh được học vừa sức, và giáo viên có thêm thời gian cho từng em.",
                    "Xin trân trọng cảm ơn Ban Giám khảo."],

@@ -10,10 +10,13 @@ Cần:    Chrome, playwright, imageio-ffmpeg, LibreOffice (để chuyển slide 
   - phu-de.srt             phụ đề (nhập vào CapCut nếu dựng lại)
   - doan-quay/*.mp4        từng đoạn quay màn hình sạch (không phụ đề) để ghép tự do
 
-Dữ liệu trong video là dữ liệu giả (tên học sinh giả). Đoạn soạn phiếu dùng AI giả lập trả phiếu mẫu
-(máy dựng video không có API key) và được ghi rõ "minh họa" trên phụ đề.
+Dữ liệu: giáo viên, trường, lớp và danh sách học sinh thật (ban-nop/so-lieu.json, ban-nop/danh-sach-lop.xlsx);
+điểm, nhận xét là dữ liệu minh họa. Phiếu mẫu lớp 4 do Gemini soạn và kiểm định thật (ban-nop/phieu-mau-lop4.json);
+khi quay, AI được giả lập trả lại phiếu đó để rút gọn thời gian chờ.
 """
+import contextlib
 import json
+import re
 import os
 import shutil
 import socket
@@ -49,29 +52,30 @@ KICH_BAN = [
      "và câu lệch mức. Trong thí điểm, nó đã phát hiện ⟦…⟧ lỗi."),
     ("06-phan-hoa", 20, "app:inphieu", "Một phiếu tự tách thành ba phiếu Xanh, Cam, Tím cho ba nhóm. Tên màu trung tính, nên các em "
      "không cảm thấy bị xếp loại."),
-    ("07-giao-bai", 35, "app:giaobai", "Trên lớp, tôi chiếu mã QR. Các em quét bằng máy tính bảng, chạm vào tên mình, không cần tài khoản, "
+    ("07-giao-bai", 50, "app:giaobai", "Trên lớp, tôi chiếu mã QR. Các em quét bằng máy tính bảng, chạm vào tên mình, không cần tài khoản, "
      "và tự nhận đúng phiếu của nhóm. Câu trắc nghiệm được chấm ngay. Tôi theo dõi trực tiếp em nào đã nộp."),
     ("08-cham-bai", 30, "app:chambai", "Với bài viết tay, tôi chụp ảnh để AI chấm và viết nhận xét theo Thông tư 27; mức đạt tính theo quy tắc công khai "
      "và tôi sửa được từng câu. Biểu đồ cho thấy cả lớp còn yếu ở đâu – một nút bấm là có phiếu bổ trợ đúng chỗ đó."),
     ("09-tien-bo", 15, "app:tienbo", "Kết quả được lưu theo từng em. Cuối kỳ, AI gợi ý nhận xét học bạ dựa trên cả quá trình, không cần gửi tên học sinh."),
     ("10-ket-qua", 33, "slide:12", "Sau ⟦…⟧ ngày thí điểm với ⟦…⟧ học sinh: thời gian soạn phiếu giảm từ ⟦…⟧ xuống ⟦…⟧ phút, chấm và nhận xét "
-     "từ ⟦…⟧ xuống ⟦…⟧ phút; tỉ lệ chưa đạt ở câu yếu giảm từ ⟦…⟧ xuống ⟦…⟧ sau một buổi bổ trợ. (Thay bằng số liệu và cảnh lớp học thật.)"),
-    ("11-trach-nhiem", 20, "slide:10", "Sản phẩm miễn phí, chạy trên trình duyệt, dùng cho khối 1 đến 5 và cả ba bộ sách. Tên học sinh không được gửi cho AI; "
+     "từ ⟦…⟧ xuống ⟦…⟧ phút; tỉ lệ chưa đạt giảm từ ⟦…⟧ xuống ⟦…⟧ sau một buổi bổ trợ. (Thay bằng số liệu và cảnh lớp học thật.)"),
+    ("11-trach-nhiem", 20, "slide:10", "Sản phẩm miễn phí, chạy trên trình duyệt, dùng cho khối 1 đến 5 và bộ sách giáo khoa dùng chung toàn quốc. Tên học sinh không được gửi cho AI; "
      "mọi đề, điểm và nhận xét đều do giáo viên duyệt."),
     ("12-ket", 13, "slide:14", "Mong rằng Trợ Lý Giảng Dạy sẽ giúp mỗi học sinh được học vừa sức, và giáo viên có thêm thời gian cho từng em. "
      "Xin cảm ơn Ban Giám khảo!"),
 ]
 
 HARNESS = r'''
-# Tệp tạm do tao_video_nhap.py sinh ra – dựng dữ liệu giả để quay màn hình
-import time
+# Tệp tạm do tao_video_nhap.py sinh ra – dựng dữ liệu minh họa để quay màn hình
+import json, time
 import streamlit as st
 from sqlalchemy import create_engine
 import ai, state
 DB = create_engine("sqlite:///__DB__")
-state.email, state.co_db, state.db = (lambda: "co.lan@truong.vn"), (lambda: True), (lambda: DB)
+DL = json.load(open("__DL__", encoding="utf-8"))
+state.email, state.co_db, state.db = (lambda: "gv@truong.vn"), (lambda: True), (lambda: DB)
 state.tu_luu = lambda: None
-MAU = ai.BanLuu.model_validate_json(open("mau/phieu_mau.json", encoding="utf-8").read())
+MAU = ai.BanLuu.model_validate_json(open("__MAU__", encoding="utf-8").read())
 def _tao(client, model, ts, dang, anh, ghi_chu=""):
     time.sleep(4); return MAU.phieu.model_copy(deep=True)
 def _kd(client, model, ts, phieu):
@@ -80,26 +84,83 @@ ai.tao_phieu, ai.kiem_dinh = _tao, _kd
 che_do = st.query_params.get("kb", "")
 if "khoi_tao" not in st.session_state and not st.query_params.get("ma"):
     st.session_state.khoi_tao = True
-    st.session_state.ho_so = {"lop_mac_dinh": 2, "mon_mac_dinh": "Toán"}
+    st.session_state.ho_so = {"lop_mac_dinh": MAU.thong_so.lop, "mon_mac_dinh": "Toán"}
     if che_do != "soan":
         state.dat_phieu(MAU.model_copy(deep=True))
-    o = [["✓","✓","✓","✓","✓","✓","½ chưa nêu quy luật"],["✓","✗ quên nhớ 1","✓","½ thiếu đáp số","✓","✗ nhầm ít hơn thành trừ","–"],
-         ["✓","✗ quên nhớ 1","½","✗","✗","–","–"],["✓","✓","✓","✓","✓","✗ nhầm ít hơn thành trừ","✓"],
-         ["✗","✗ quên nhớ 1","✓","½ thiếu đáp số","✓","✗ nhầm ít hơn thành trừ","–"],["✓","✓","✓","✓","½","½ thiếu bước tìm số của Hà","✓"],
-         ["✓","✓","✓","✓","✓","✗ nhầm ít hơn thành trừ","½"],["✓","✗ quên nhớ 1","✓","✓","✓","✓","✓"]]
-    ten = ["Nguyễn Minh An","Lê Gia Bình","Trần Bảo Chi","Phạm Đức Duy","Hoàng Thu Hà","Vũ Khánh Linh","Đỗ Gia Huy","Bùi Ngọc Mai"]
-    muc = ["Hoàn thành tốt","Hoàn thành","Chưa hoàn thành","Hoàn thành tốt","Hoàn thành","Hoàn thành tốt","Hoàn thành","Hoàn thành"]
-    nx = ["Em tính nhanh, trình bày rõ ràng.","Em cần đọc kỹ đề bài toán có lời văn.","Em cần luyện thêm phép cộng có nhớ.",
-          "Em làm bài cẩn thận, chính xác.","Em chú ý dạng toán ít hơn.","Em trình bày đủ các bước giải nhé.","Em đọc kỹ câu hỏi nhé.","Em nhớ thêm 1 khi cộng có nhớ."]
     st.session_state.cham = {"ver": 1, "loi": [], "cau": MAU.phieu.cau_hoi, "ts": MAU.thong_so, "loai": "Phiếu chung",
-        "rows": [{"STT": k + 1, "Họ tên": t, "Điểm": [9.5,6,3.5,9,5.5,8.5,7,7.5][k], "Mức TT27": muc[k], "Nhận xét": nx[k],
-                  **{f"Câu {j + 1}": o[k][j] for j in range(7)}, "Ảnh": f"bai_{k + 1}.jpg"} for k, t in enumerate(ten)]}
+                             "rows": DL["rows"]}
 exec(open("app.py", encoding="utf-8").read())
 '''
 
 
-def tao_du_lieu(db_path: str) -> str:
-    """Dữ liệu giả: hồ sơ, 5 phiếu, lớp 2A (8 em), 4 lần chấm, 1 bài giao online. Trả mã bài."""
+CHU_DE = "Phép cộng các số có nhiều chữ số"
+PHIEU_MAU = RA / "phieu-mau-lop4.json"  # phiếu lớp 4 do Gemini soạn và kiểm định thật (sinh 1 lần, dùng lại)
+DANH_SACH = RA / "danh-sach-lop.xlsx"  # danh sách học sinh thật – chỉ nằm trong ban-nop/, không đưa lên GitHub
+
+
+def thong_tin() -> dict:
+    """Giáo viên, trường, lớp (ban-nop/so-lieu.json) và danh sách học sinh (ban-nop/danh-sach-lop.xlsx)."""
+    import openpyxl
+    d = json.loads((RA / "so-lieu.json").read_text(encoding="utf-8")) if (RA / "so-lieu.json").exists() else {}
+    hs = []
+    if DANH_SACH.exists():
+        for r in openpyxl.load_workbook(DANH_SACH, read_only=True).active.iter_rows(values_only=True):
+            if isinstance(r[0], int) and r[1]:
+                hs.append(" ".join(str(r[1]).split()))
+    truong = (d.get("truong") or "Hoa Sen").replace("Trường", "").replace("Tiểu học", "").strip()
+    return {"ten_gv": d.get("ho_ten") or "Nguyễn Thị Lan", "truong": truong,  # phiếu in sẵn "Trường Tiểu học: …"
+            "lop": d.get("lop") or "4A", "hoc_sinh": hs or [f"Học sinh {k}" for k in range(1, 9)]}
+
+
+def phieu_mau():
+    sys.path.insert(0, str(GOC))
+    import ai
+    if PHIEU_MAU.exists():
+        return ai.BanLuu.model_validate_json(PHIEU_MAU.read_text(encoding="utf-8"))
+    import tomllib
+
+    from google import genai
+    key = os.environ.get("GEMINI_API_KEY") or tomllib.loads((GOC / ".streamlit/secrets.toml").read_text())["GEMINI_API_KEY"]
+    client, model = genai.Client(api_key=key), "gemini-3.8-flash"
+    ts = ai.ThongSo(mon="Toán", lop=4, bo_sach="Kết nối tri thức với cuộc sống", chu_de=CHU_DE, thoi_luong=20,
+                    truong=thong_tin()["truong"])
+    phieu = ai.tao_phieu(client, model, ts, list(ai.DANG_BAI), [])
+    ban = ai.BanLuu(thong_so=ts, phieu=phieu, kiem_dinh=ai.kiem_dinh(client, model, ts, phieu), kiem_dinh_cho=ai.dau_van_tay(phieu))
+    PHIEU_MAU.write_text(ban.model_dump_json(indent=1), encoding="utf-8")
+    return ban
+
+
+# Lỗi minh họa theo dạng câu (dùng cho sổ tổng hợp, phân tích lỗi)
+LOI = {"trac_nghiem": ["✗ chọn sai"], "dung_sai": ["½ sai 1 ý"], "noi_cot": ["½ nối sai 1 cặp"],
+       "dien_khuyet": ["✗ quên nhớ", "½ đúng 1 chỗ"], "tu_luan": ["½ thiếu đáp số", "✗ đặt tính sai hàng", "½ thiếu câu lời giải"]}
+NHAN_XET = {"Hoàn thành tốt": ["Em tính nhanh, trình bày rõ ràng.", "Em làm bài cẩn thận, chính xác."],
+            "Hoàn thành": ["Em nhớ đặt tính thẳng hàng nhé.", "Em trình bày đủ câu lời giải và đáp số nhé.", "Em kiểm tra lại phép tính có nhớ."],
+            "Chưa hoàn thành": ["Em cần luyện thêm cộng có nhớ.", "Em đọc kỹ đề và đặt tính thẳng hàng nhé."]}
+
+
+def du_lieu_lop(ban, hoc_sinh: list[str]) -> tuple[list, list[dict]]:
+    """Chia nhóm và dựng sổ chấm minh họa (cố định, tái lập được) cho cả lớp."""
+    import random
+    r = random.Random(4)
+    nhom = [("Xanh", "Cam", "Tím")[0 if x < 0.25 else 1 if x < 0.75 else 2] for x in (r.random() for _ in hoc_sinh)]
+    cau, rows = ban.phieu.cau_hoi, []
+    for k, (ten, n) in enumerate(zip(hoc_sinh, nhom)):
+        gioi = {"Xanh": 0.55, "Cam": 0.78, "Tím": 0.93}[n]
+        o = []
+        for c in cau:
+            x = r.random() * (1.15 if c.muc == 3 else 1)
+            o.append("✓" if x < gioi else "–" if c.muc == 3 and x > 1.05 else r.choice(LOI[c.dang]))
+        diem = sum(c.diem * (1 if v == "✓" else 0.5 if v.startswith("½") else 0) for c, v in zip(cau, o))
+        tl = {m: [1 if v == "✓" else 0.5 if v.startswith("½") else 0 for c, v in zip(cau, o) if c.muc == m] for m in (1, 2, 3)}
+        dat = lambda m, ng: not tl[m] or sum(tl[m]) / len(tl[m]) >= ng
+        muc = "Chưa hoàn thành" if not dat(1, 0.5) else "Hoàn thành tốt" if dat(1, .8) and dat(2, .8) and dat(3, .5) else "Hoàn thành"
+        rows.append({"STT": k + 1, "Họ tên": ten, "Điểm": round(diem * 2) / 2, "Mức TT27": muc,
+                     "Nhận xét": r.choice(NHAN_XET[muc]), **{f"Câu {j + 1}": v for j, v in enumerate(o)}, "Ảnh": f"bai_{k + 1}.jpg"})
+    return nhom, rows
+
+
+def tao_du_lieu(db_path: str) -> tuple[str, Path]:
+    """Dữ liệu minh họa: hồ sơ giáo viên, thư viện phiếu, lớp thật (danh sách), 4 lần chấm, 1 bài giao online."""
     sys.path.insert(0, str(GOC))
     from datetime import datetime, timedelta, timezone
 
@@ -107,33 +168,36 @@ def tao_du_lieu(db_path: str) -> str:
 
     import ai
     import kho
-    db, e = create_engine(f"sqlite:///{db_path}"), "co.lan@truong.vn"
+    tt, ban = thong_tin(), phieu_mau()
+    db, e = create_engine(f"sqlite:///{db_path}"), "gv@truong.vn"
     kho.tao_bang(db)
-    ban = ai.BanLuu.model_validate_json((GOC / "mau/phieu_mau.json").read_text(encoding="utf-8"))
-    kho.ho_so_luu(db, e, ten="Nguyễn Thị Lan", truong="Tiểu học Hoa Sen")
-    for cd, mon in [("Bài toán về nhiều hơn, ít hơn", "Toán"), ("Cây xanh quanh em", "Tự nhiên và Xã hội"),
-                    ("Đọc hiểu: Chuyện quả bầu", "Tiếng Việt"), ("Phép cộng có nhớ trong phạm vi 100", "Toán")]:
+    kho.ho_so_luu(db, e, ten=tt["ten_gv"], truong=tt["truong"], lop_mac_dinh=ban.thong_so.lop, mon_mac_dinh="Toán")
+    for cd, mon in [("Số có sáu chữ số", "Toán"), ("Danh từ", "Tiếng Việt"), ("Một số tính chất của nước", "Khoa học"),
+                    ("Đo góc, đơn vị đo góc", "Toán"), (CHU_DE, "Toán")]:
         b = ban.model_copy(deep=True)
         b.thong_so.chu_de, b.thong_so.mon = cd, mon
         kho.phieu_luu(db, e, b)
-    ten = [("Nguyễn Minh An", "Xanh"), ("Lê Gia Bình", "Cam"), ("Trần Bảo Chi", "Xanh"), ("Phạm Đức Duy", "Tím"),
-           ("Hoàng Thu Hà", "Cam"), ("Vũ Khánh Linh", "Tím"), ("Đỗ Gia Huy", "Cam"), ("Bùi Ngọc Mai", "Cam")]
-    lop = ai.LopHoc(ten_lop="2A", hoc_sinh=[ai.HocSinh(stt=k + 1, ten=t, nhom=n) for k, (t, n) in enumerate(ten)])
+    nhom, rows = du_lieu_lop(ban, tt["hoc_sinh"])
+    lop = ai.LopHoc(ten_lop=tt["lop"], hoc_sinh=[ai.HocSinh(stt=k + 1, ten=t, nhom=n)
+                                                for k, (t, n) in enumerate(zip(tt["hoc_sinh"], nhom))])
     kho.lop_luu(db, e, lop)
     m = ["Chưa hoàn thành", "Hoàn thành", "Hoàn thành tốt"]
-    tien = [[0, 1, 1, 2], [1, 1, 2, 2], [0, 0, 1, 1], [2, 2, 2, 2], [1, 1, 1, 2], [1, 2, 2, 2], [1, 1, 1, 1], [0, 1, 1, 1]]
     goc = kho._bay_gio
-    for k, cd in enumerate(["Phép cộng có nhớ", "Phép trừ có nhớ", "Bài toán nhiều hơn", "Ôn tập cuối tháng"]):
+    for k, cd in enumerate(["Số có sáu chữ số", "Hàng và lớp", "Đo góc", CHU_DE]):
         kho._bay_gio = lambda k=k: datetime(2026, 9, 21, 2, tzinfo=timezone.utc) + timedelta(days=7 * k)
-        kho.cham_luu(db, e, lop.id, "Toán", cd, "Phiếu chung",
-                     [{"ten": t, "diem": 4 + 2.5 * tien[i][k], "muc_tt27": m[tien[i][k]], "nhan_xet": "..."} for i, (t, _) in enumerate(ten)])
+        cuoi = {r["Họ tên"]: m.index(r["Mức TT27"]) for r in rows}
+        kho.cham_luu(db, e, lop.id, "Toán", cd, "Phiếu chung",  # tiến bộ dần đến lần chấm cuối
+                     [{"ten": t, "diem": 4 + 2.5 * max(0, cuoi[t] - (3 - k) // 2 * (i % 2)), "nhan_xet": "...",
+                       "muc_tt27": m[max(0, cuoi[t] - (3 - k) // 2 * (i % 2))]} for i, t in enumerate(tt["hoc_sinh"])])
     kho._bay_gio = goc
     gb = kho.giao_bai_tao(db, e, ban, lop.id, "nhom", None)
     kq = lambda *d: [{"cau_so": i + 1, "dat": x, "diem_dat": 1 if x == "dung" else 0, "ghi_chu": ""} for i, x in enumerate(d)]
-    for t, p, d in [("Phạm Đức Duy", "Tím", ("dung", "dung", "dung")), ("Bùi Ngọc Mai", "Cam", ("dung", "dung", "dung")),
-                    ("Hoàng Thu Hà", "Cam", ("dung", "sai", "cho_cham"))]:
-        kho.hs_nop_bai(db, gb["id"], t, p, [], kq(*d), 3, "", "cho_ai")
-    return gb["ma"]
+    for i in (3, 9, 14, 20, 27):  # vài em đã nộp sẵn
+        kho.hs_nop_bai(db, gb["id"], tt["hoc_sinh"][i], nhom[i], [], kq("dung", "dung", "cho_cham"), 3, "", "cho_ai")
+    dl = Path(db_path).with_suffix(".json")
+    dl.write_text(json.dumps({"ten_gv": tt["ten_gv"], "truong": tt["truong"], "rows": rows,
+                              "hs_demo": tt["hoc_sinh"][1]}, ensure_ascii=False), encoding="utf-8")
+    return gb["ma"], dl
 
 
 def cong_trong() -> int:
@@ -172,23 +236,39 @@ def phu_de() -> str:
     return "\n".join(out)
 
 
-def main():
-    RA.mkdir(exist_ok=True)
-    DOAN.mkdir(exist_ok=True)
+@contextlib.contextmanager
+def may_chu():
+    """Chạy app với dữ liệu minh họa (database tạm, AI giả lập trả phiếu mẫu). Trả (URL, mã bài giao, thư mục tạm)."""
+    global HS_DEMO
     tam = Path(tempfile.mkdtemp())
     db_path = tam / "demo.db"
-    ma = tao_du_lieu(str(db_path))
+    ma, dl = tao_du_lieu(str(db_path))
+    HS_DEMO = json.loads(dl.read_text(encoding="utf-8"))["hs_demo"]
     harness = GOC / "_video_harness.py"
-    harness.write_text(HARNESS.replace("__DB__", str(db_path)), encoding="utf-8")
+    harness.write_text(HARNESS.replace("__DB__", str(db_path)).replace("__DL__", str(dl)).replace("__MAU__", str(PHIEU_MAU)),
+                       encoding="utf-8")
     secrets = GOC / ".streamlit" / "secrets.toml"
     sao_luu = secrets.read_bytes() if secrets.exists() else None
     secrets.write_text('APP_URL = "https://tro-ly-giang-day.streamlit.app"\nGEMINI_API_KEY = "khong-dung"\n', encoding="utf-8")
     port = cong_trong()
     sv = subprocess.Popen([PY, "-m", "streamlit", "run", str(harness), "--server.headless", "true", "--server.port", str(port),
                            "--client.toolbarMode", "viewer"], cwd=GOC, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    U = f"http://localhost:{port}"
     try:
         time.sleep(8)
+        yield f"http://localhost:{port}", ma, tam
+    finally:
+        sv.terminate()
+        harness.unlink(missing_ok=True)
+        if sao_luu is None:
+            secrets.unlink(missing_ok=True)
+        else:
+            secrets.write_bytes(sao_luu)
+
+
+def main():
+    RA.mkdir(exist_ok=True)
+    DOAN.mkdir(exist_ok=True)
+    with may_chu() as (U, ma, tam):
         anh_slide = slide_png(tam)
         with sync_playwright() as p:
             trinh_duyet = p.chromium.launch(channel="chrome")
@@ -202,13 +282,6 @@ def main():
                     quay(trinh_duyet, U, loai.split(":")[1], dai, ma, tam, ra)
                 print("✓", ma_doan)
             trinh_duyet.close()
-    finally:
-        sv.terminate()
-        harness.unlink(missing_ok=True)
-        if sao_luu is None:
-            secrets.unlink(missing_ok=True)
-        else:
-            secrets.write_bytes(sao_luu)
     # Ghép + phụ đề
     ds = tam / "ds.txt"
     ds.write_text("".join(f"file '{DOAN / f'{k[0]}.mp4'}'\n" for k in KICH_BAN), encoding="utf-8")
@@ -221,6 +294,39 @@ def main():
            str(RA / "video-nhap.mp4"))
     tong = sum(k[1] for k in KICH_BAN)
     print(f"Đã tạo {RA / 'video-nhap.mp4'} ({tong // 60}:{tong % 60:02d}), {RA / 'phu-de.srt'}, {DOAN}/")
+
+
+def lam_bai(hs, ten, cho):
+    """Học sinh chọn tên rồi làm lần lượt từng câu theo đáp án của phiếu mẫu, cuối cùng nộp bài."""
+    import ai  # noqa: F401  (đường dẫn GOC đã thêm khi dựng dữ liệu)
+    phieu = phieu_mau().phieu
+    hs.get_by_text(ten, exact=True).click(); cho(2000)
+    hs.get_by_role("button", name="Bắt đầu làm bài").click(); cho(3500)
+    for _ in range(len(phieu.cau_hoi)):
+        c = next((c for c in phieu.cau_hoi if hs.get_by_text(c.noi_dung.split("\n")[0][:30]).count()), None)
+        if c and c.dang == "trac_nghiem":
+            chu = c.dap_an.strip()[:1].upper()
+            k = "ABCD".index(chu) if chu in "ABCD" else 0
+            hs.get_by_role("radio").nth(k).check(force=True); cho(1200)
+        elif c and c.dang == "dung_sai":
+            for i, x in enumerate(re.findall(r"\b([ĐS])\b", c.dap_an)):
+                hs.get_by_text("Đúng" if x == "Đ" else "Sai", exact=True).nth(i).click(); cho(700)
+        elif c and c.dang == "dien_khuyet":
+            for i, x in enumerate(c.dap_an.split(";")):
+                o = hs.get_by_label(f"Chỗ trống {i + 1}")
+                if o.count():
+                    o.press_sequentially(x.strip(), delay=60)
+            cho(800)
+        elif c and c.dang == "tu_luan":
+            dong = next((d for d in c.dap_an.splitlines() if "=" in d), c.dap_an.splitlines()[0])
+            hs.get_by_role("textbox").first.press_sequentially(dong.strip(), delay=45); cho(800)
+        nut = hs.get_by_role("button").filter(has_text="▶")
+        if not nut.count():
+            break
+        nut.last.click(); cho(1800)
+        if hs.get_by_role("button", name="📤 Nộp bài").count():
+            break
+    hs.get_by_role("button", name="📤 Nộp bài").click(); cho(5000)
 
 
 def quay(trinh_duyet, U, canh, dai, ma, tam, ra):
@@ -245,14 +351,7 @@ def quay(trinh_duyet, U, canh, dai, ma, tam, ra):
         moc = time.monotonic() - bat_dau
         hs = pg.frame_locator("#hs")
         cho(3000)
-        hs.get_by_text("Lê Gia Bình", exact=True).click(); cho(2500)
-        hs.get_by_role("button", name="Bắt đầu làm bài").click(); cho(4000)
-        tiep = lambda: hs.get_by_role("button").filter(has_text="▶").last.click()
-        hs.get_by_role("textbox").first.press_sequentially("28 + 17 = 45 (bạn)", delay=70); cho(1000); tiep(); cho(2500)
-        for k, chon in enumerate(["Đúng", "Sai", "Đúng"]):  # câu đúng/sai: a) Đ, b) S, c) Đ
-            hs.get_by_text(chon, exact=True).nth(k).click(); cho(900)
-        tiep(); cho(2000); tiep(); cho(2500)
-        hs.get_by_role("button", name="📤 Nộp bài").click(); cho(6000)
+        lam_bai(hs, HS_DEMO, cho)
     else:
         url = {"soan": "/soan_phieu?kb=soan", "kiemdinh": "/soan_phieu", "inphieu": "/soan_phieu",
                "chambai": "/cham_bai", "tienbo": "/tien_bo"}[canh]
@@ -261,13 +360,16 @@ def quay(trinh_duyet, U, canh, dai, ma, tam, ra):
         if canh == "soan":
             cho(1500)
             o = pg.get_by_placeholder("VD: Phép cộng có nhớ trong phạm vi 100")
-            o.click(); o.press_sequentially("Phép cộng có nhớ trong phạm vi 100", delay=60); o.press("Enter"); cho(1500)
+            o.click(); o.press_sequentially(CHU_DE, delay=60); o.press("Enter"); cho(1500)
             pg.get_by_role("button", name="🚀 Tạo phiếu bài tập").click(); cho(9500)
             cuon_toi("★ Mức 1"); cho(4000)
             pg.mouse.wheel(0, 700); cho(4000)
         elif canh == "kiemdinh":
-            cuon_toi("Kiểm định AI"); cho(5000)
-            cuon_toi("🛠 Sửa theo góp ý"); cho(9000)
+            cuon_toi("Kiểm định AI"); cho(6000)
+            if pg.get_by_text("🛠 Sửa theo góp ý").count():
+                cuon_toi("🛠 Sửa theo góp ý"); cho(8000)
+            else:  # phiếu đạt, không có góp ý: lướt xem các câu Mức 3
+                cuon_toi("★★★ Mức 3"); cho(8000)
         elif canh == "inphieu":
             pg.get_by_role("tab", name="🖨️ In phiếu").click(); cho(3000)
             for nhom in ("Xanh", "Cam", "Tím"):

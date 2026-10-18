@@ -97,7 +97,7 @@ Bảng 3 cột: Bước | AI làm gì | Giáo viên làm gì. Lấy từ bảng 
 - **Bền vững:**
   - 0 đồng.
   - Chạy trên trình duyệt.
-  - Khối 1–5, 8 môn, 3 bộ sách.
+  - Khối 1–5, 8 môn, SGK dùng chung toàn quốc.
   - Nhiều giáo viên dùng song song.
   - Có hướng dẫn chuyển giao.
 - **Giới hạn và hướng phát triển:** quota gói miễn phí; chia sẻ phiếu trong tổ chuyên môn; tin nhắn phụ huynh.

@@ -62,8 +62,8 @@ th {{ background: #EAF1FB; }} td.o {{ width: 9mm; text-align: center; color: #88
 <tr><td>B5</td><td>Thời gian chấm và nhận xét 1 lớp (phút)</td><td></td><td></td><td></td></tr>
 <tr><td>B6</td><td>Số học sinh hoàn thành bài / sĩ số</td><td></td><td></td><td></td></tr>
 <tr><td>B7</td><td>Số bài AI chấm sai, giáo viên phải sửa / tổng số bài</td><td>–</td><td></td><td></td></tr>
-<tr><td>B8</td><td>Tỉ lệ học sinh chưa đạt ở câu yếu – TRƯỚC bổ trợ</td><td colspan="2"></td><td>Câu số: ……</td></tr>
-<tr><td>B9</td><td>Tỉ lệ học sinh chưa đạt ở câu yếu – SAU 1 buổi bổ trợ</td><td colspan="2"></td><td></td></tr>
+<tr><td>B8</td><td>Tỉ lệ học sinh chưa đạt – TRƯỚC bổ trợ</td><td colspan="2"></td><td>Câu số: ……</td></tr>
+<tr><td>B9</td><td>Tỉ lệ học sinh chưa đạt – SAU 1 buổi bổ trợ</td><td colspan="2"></td><td></td></tr>
 </table>
 <p class="ghi">Ghi trung thực cả B4 và B7: đó là minh chứng giáo viên luôn duyệt kết quả của AI. Bấm giờ bằng đồng hồ điện thoại.</p>
 <h2>Ghi chú quan sát trong giờ học</h2>

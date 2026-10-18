@@ -52,7 +52,7 @@ Nguyên tắc:
 **4. Kết quả thực tế** (chỉ số liệu thật, lấy từ mục 3 của [01-noi-dung-ho-so.md](01-noi-dung-ho-so.md))
 - Soạn phiếu: ⟦…⟧ → ⟦…⟧ phút
 - Chấm và nhận xét 1 lớp: ⟦…⟧ → ⟦…⟧ phút
-- Câu yếu sau bổ trợ: chưa đạt ⟦…%⟧ → ⟦…%⟧
+- Sau bổ trợ: chưa đạt ⟦…%⟧ → ⟦…%⟧
 - ⟦…%⟧ học sinh thích làm bài trên phiếu hoặc app
 - "⟦Trích phản hồi giáo viên⟧"
 
@@ -63,7 +63,7 @@ Nguyên tắc:
 
 **6. Bền vững và nhân rộng**
 - 0 đồng; chạy trên trình duyệt; điện thoại dùng được.
-- Khối 1–5, 8 môn, 3 bộ sách giáo khoa.
+- Khối 1–5, 8 môn, bộ sách giáo khoa dùng chung toàn quốc.
 - Mỗi giáo viên có dữ liệu riêng, nhiều giáo viên dùng song song.
 
 **Chân poster:**

@@ -80,7 +80,7 @@ th {{ color: #0D47A1; }}
    <tr><th>Chỉ số</th><th>Trước</th><th>Sau</th></tr>
    <tr><td>Soạn 1 phiếu phân hóa</td><td>⟦…⟧ phút</td><td>⟦…⟧ phút</td></tr>
    <tr><td>Chấm &amp; nhận xét 1 lớp</td><td>⟦…⟧ phút</td><td>⟦…⟧ phút</td></tr>
-   <tr><td>Câu yếu: tỉ lệ chưa đạt</td><td>⟦…%⟧</td><td>⟦…%⟧</td></tr>
+   <tr><td>Tỉ lệ chưa đạt</td><td>⟦…%⟧</td><td>⟦…%⟧</td></tr>
    <tr><td>Học sinh hài lòng</td><td>–</td><td>⟦…%⟧</td></tr></table>
    <p class="cc">"⟦Trích phản hồi giáo viên⟧"</p></div>
   <div class="khoi"><h3>5. AI có trách nhiệm</h3><ul>

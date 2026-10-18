@@ -13,7 +13,7 @@ MON_THEO_LOP = {
     4: ["Toán", "Tiếng Việt", "Khoa học", "Lịch sử và Địa lí", "Đạo đức", "Tin học", "Công nghệ"],
     5: ["Toán", "Tiếng Việt", "Khoa học", "Lịch sử và Địa lí", "Đạo đức", "Tin học", "Công nghệ"],
 }
-BO_SACH = ["Kết nối tri thức với cuộc sống", "Chân trời sáng tạo", "Cánh Diều"]
+BO_SACH = "Kết nối tri thức với cuộc sống"  # bộ sách dùng thống nhất toàn quốc từ năm học 2026–2027 (QĐ 3588/QĐ-BGDĐT)
 THOI_LUONG = {15: "15 phút", 20: "20 phút", 35: "35 phút"}
 SAO = dx.SAO
 # Màu mức độ trùng màu phiếu nhóm: Mức 1 ~ Phiếu Xanh, Mức 2 ~ Cam, Mức 3 ~ Tím
@@ -44,13 +44,14 @@ trai, phai = st.columns([1, 2], gap="large")
 with trai:
     with st.container(border=True):
         st.markdown("#### ① Thông tin bài học")
+        st.caption(f"Bộ sách: {BO_SACH} (dùng thống nhất toàn quốc từ năm học 2026–2027)")
         c1, c2 = st.columns(2)
         hs = st.session_state.get("ho_so", {})  # lựa chọn gần nhất của giáo viên
         vi_tri = lambda ds, x: ds.index(x) if x in ds else 0
         lop = c1.selectbox("Khối lớp", list(MON_THEO_LOP), index=vi_tri(list(MON_THEO_LOP), hs.get("lop_mac_dinh")),
                            format_func=lambda x: f"Lớp {x}")
         mon = c2.selectbox("Môn học", MON_THEO_LOP[lop], index=vi_tri(MON_THEO_LOP[lop], hs.get("mon_mac_dinh")))
-        bo_sach = st.selectbox("Bộ sách", BO_SACH, index=vi_tri(BO_SACH, hs.get("bo_sach_mac_dinh")))
+        bo_sach = BO_SACH
         thoi_luong = st.segmented_control(
             "Thời lượng làm bài", list(THOI_LUONG), default=20, format_func=THOI_LUONG.get, width="stretch",
             help="15 phút: khởi động/củng cố · 20 phút: luyện tập · 35 phút: phiếu cuối tuần")
@@ -86,7 +87,7 @@ with trai:
                     ts.chu_de = ts.chu_de or phieu.ten_bai
                     ban_moi = BanLuu(thong_so=ts, phieu=phieu)
                     dat_phieu(ban_moi)
-                    state.luu_mac_dinh(lop_mac_dinh=lop, mon_mac_dinh=mon, bo_sach_mac_dinh=bo_sach,
+                    state.luu_mac_dinh(lop_mac_dinh=lop, mon_mac_dinh=mon,
                                        yeu_cau_mau=ghi_chu.strip())
                     st.write("🔎 Tổ trưởng chuyên môn AI đang kiểm định phiếu")
                     chay_kiem_dinh(ban_moi)
@@ -100,7 +101,7 @@ with trai:
 with phai:
     if "ban" not in st.session_state:
         st.html("""<div class="buoc">
-<div><b>① Nhập bài học</b><p>Chọn lớp, môn, bộ sách và nhập tên bài, hoặc chụp ảnh trang sách giáo khoa.</p></div>
+<div><b>① Nhập bài học</b><p>Chọn lớp, môn và nhập tên bài, hoặc chụp ảnh trang sách giáo khoa.</p></div>
 <div><b>② Xem & chỉnh</b><p>AI soạn 3 mức độ theo TT27. Câu chưa ưng: đổi câu, làm dễ hơn/khó hơn hoặc sửa tay.</p></div>
 <div><b>③ In & phát phiếu</b><p>In ngay phiếu chung hoặc 3 phiếu nhóm Xanh/Cam/Tím, kèm đáp án và ma trận.</p></div>
 </div>""")

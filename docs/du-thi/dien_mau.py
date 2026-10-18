@@ -84,7 +84,7 @@ Y_TUONG = [
 
 TINH_NANG = [
     ("① SOẠN PHIẾU · ② AI KIỂM ĐỊNH", [
-        (1, "Soạn từ **tên bài** hoặc **ảnh chụp trang sách giáo khoa**; chọn lớp, môn, bộ sách, thời lượng."),
+        (1, "Soạn từ **tên bài** hoặc **ảnh chụp trang sách giáo khoa**; bám sát bộ sách **Kết nối tri thức với cuộc sống** (dùng thống nhất toàn quốc từ 2026–2027)."),
         (1, "Phiếu 3 mức TT27 kèm đáp án, hướng dẫn chấm, ma trận, yêu cầu cần đạt."),
         (1, "Đáp án chuẩn tiểu học: Bài giải – câu lời giải – phép tính (đơn vị) – Đáp số."),
         (1, "**Lượt AI thứ hai** đóng vai tổ trưởng chuyên môn: tự giải lại từng câu, soát đáp án sai, câu lệch mức."),
@@ -131,7 +131,7 @@ TRIEN_KHAI = [
     (1, "Hình thức: ứng dụng web <https://tro-ly-giang-day.streamlit.app> dùng trong soạn bài, giờ dạy và đánh giá."),
     (2, "Soạn phiếu trước giờ học; in phiếu nhóm hoặc giao bài bằng QR; chấm và phân tích lỗi sau giờ học; dạy bổ trợ."),
     (1, f"Thí điểm: 19–23/10/2026 tại lớp {LOP} ({SI_SO} học sinh), môn Toán; mời 2–3 đồng nghiệp trong khối dùng thử."),
-    (1, "Quy trình: tiết 1 soạn phiếu và giao bài → chấm, phân tích lỗi → 1 buổi bổ trợ câu yếu → đo lại; "
+    (1, "Quy trình: tiết 1 soạn phiếu và giao bài → chấm, phân tích lỗi → 1 buổi bổ trợ → đo lại; "
         "ghi chép bằng bảng in sẵn, khảo sát học sinh và giáo viên."),
     *([(1, f"Số lượng sử dụng: {_g('so_phieu')} phiếu đã soạn, {_g('so_bai')} bài đã chấm (thống kê trong app).")]
       if _co("so_phieu", "so_bai") else []),
@@ -142,7 +142,7 @@ KET_QUA = [
     (2, f"Giáo viên – soạn 1 phiếu phân hóa: {_g('phut_soan_cu')} → {_g('phut_soan_moi')} phút; "
         f"chấm và nhận xét 1 lớp: {_g('phut_cham_cu')} → {_g('phut_cham_moi')} phút."),
     *([(2, f"AI kiểm định phát hiện {_g('loi_kiem_dinh')} lỗi; giáo viên duyệt và sửa trước khi dùng.")] if _co("loi_kiem_dinh") else []),
-    (2, f"Học sinh – tỉ lệ chưa đạt ở câu yếu: {_g('phan_tram_chua_dat_truoc')}% → {_g('phan_tram_chua_dat_sau')}% sau 1 buổi bổ trợ."),
+    (2, f"Học sinh – tỉ lệ chưa đạt: {_g('phan_tram_chua_dat_truoc')}% → {_g('phan_tram_chua_dat_sau')}% sau 1 buổi bổ trợ."),
     *([(1, f"Phản hồi: \"{PHAN_HOI}\".")] if PHAN_HOI else []),
     (1, "Minh chứng: bảng ghi chép, khảo sát, ảnh phiếu và bài làm (đã che tên), thống kê sử dụng."),
 ] if CO_KQ else [
@@ -151,14 +151,14 @@ KET_QUA = [
     (2, "Thời gian soạn 1 phiếu phân hóa có đáp án: mục tiêu giảm ít nhất một nửa."),
     (2, "Thời gian chấm và nhận xét 1 lớp: mục tiêu giảm ít nhất 40%."),
     (2, "Chất lượng đề: ghi số lỗi AI kiểm định phát hiện và số lỗi giáo viên sửa thêm; 100% đề được giáo viên duyệt."),
-    (2, "Học sinh: tỉ lệ chưa đạt ở câu yếu giảm sau 1 buổi bổ trợ; ít nhất 80% học sinh thấy bài vừa sức."),
+    (2, "Học sinh: tỉ lệ chưa đạt giảm sau 1 buổi bổ trợ; ít nhất 80% học sinh thấy bài vừa sức."),
     (1, "Số liệu đo thật được cập nhật vào hồ sơ và trình bày tại vòng chung kết."),
 ]
 
 THAO_LUAN = [
     (1, "So với cách cũ và chatbot AI phổ thông: một **quy trình hoàn chỉnh theo TT27**, có kiểm định, "
         "phân hóa không dán nhãn, nối liền từ soạn phiếu đến học bạ."),
-    (1, "Bền vững, nhân rộng: **0 đồng**; chạy trên trình duyệt; khối 1–5, 8 môn, 3 bộ sách; "
+    (1, "Bền vững, nhân rộng: **0 đồng**; chạy trên trình duyệt; khối 1–5, 8 môn, bộ sách dùng chung toàn quốc; "
         "nhiều giáo viên dùng song song; có hướng dẫn chuyển giao."),
     (1, "Giới hạn: gói miễn phí giới hạn lượt AI; AI vẫn có thể sai nên luôn cần giáo viên duyệt; "
         "chọn tên khi làm bài online chưa ngăn được làm hộ."),
@@ -203,13 +203,13 @@ LOI_NOI = [
     f"Tôi thí điểm từ 19 đến 23 tháng 10 tại lớp {LOP} với {SI_SO} học sinh, trong soạn bài, giờ dạy và đánh giá, "
     "và mời đồng nghiệp trong khối dùng thử.",
     (f"Sau {_g('so_ngay')} ngày thí điểm: soạn phiếu giảm từ {_g('phut_soan_cu')} xuống {_g('phut_soan_moi')} phút, chấm và nhận xét "
-     f"từ {_g('phut_cham_cu')} xuống {_g('phut_cham_moi')} phút; tỉ lệ chưa đạt ở câu yếu giảm từ {_g('phan_tram_chua_dat_truoc')} "
+     f"từ {_g('phut_cham_cu')} xuống {_g('phut_cham_moi')} phút; tỉ lệ chưa đạt giảm từ {_g('phan_tram_chua_dat_truoc')} "
      f"xuống {_g('phan_tram_chua_dat_sau')} phần trăm sau một buổi bổ trợ. {PHAN_HOI}" if CO_KQ else
      "Tôi đánh giá bằng so sánh trước và sau trên cùng lớp: thời gian soạn phiếu, thời gian chấm và nhận xét, số lỗi AI kiểm định "
-     "phát hiện, và tỉ lệ học sinh chưa đạt ở câu yếu trước và sau một buổi bổ trợ. Số liệu đo thật sẽ được trình bày tại vòng "
+     "phát hiện, và tỉ lệ học sinh chưa đạt trước và sau một buổi bổ trợ. Số liệu đo thật sẽ được trình bày tại vòng "
      "chung kết."),
     "So với cách cũ, đây là một quy trình hoàn chỉnh theo Thông tư 27. Sản phẩm miễn phí, chạy trên trình duyệt, dùng được cho khối "
-    "1 đến 5 và ba bộ sách. Giới hạn hiện tại là quota gói miễn phí và AI vẫn cần giáo viên duyệt. Hướng tới: chia sẻ trong tổ "
+    "1 đến 5, bám sát bộ sách giáo khoa dùng chung toàn quốc. Giới hạn hiện tại là quota gói miễn phí và AI vẫn cần giáo viên duyệt. Hướng tới: chia sẻ trong tổ "
     "chuyên môn và tin nhắn phụ huynh.",
     "Mời Ban Giám khảo quét mã QR để dùng thử. Xin cảm ơn!",
 ]
@@ -276,17 +276,17 @@ def viet(shape, dong, co=None, mau_p=None):
 
 
 # Vùng cắt (x0, y0, x1, y1) theo pixel ảnh gốc: bỏ thanh menu, lề trắng để chữ trong ảnh đủ to khi chèn
-CAT = {
-    "02-soan-phieu-kiem-dinh.png": (960, 380, 2440, 1800),
-    "03-gop-y-kiem-dinh.png": (1000, 600, 2445, 1500),
-    "05-lop-hoc-trinh-chieu.png": (160, 120, 2440, 1400),
-    "09-cham-bai-so-tong-hop.png": (160, 1240, 2440, 1800),
-    "10-phan-tich-loi-sai.png": (160, 900, 2440, 1800),
-    "12-tien-bo-bieu-do.png": (160, 520, 2440, 1600),
-    "13-lop-cua-toi-phieu-theo-ten.png": (1130, 580, 2440, 1800),
-    "20-hs-chon-ten.png": (0, 190, 1170, 1300),
-    "21-hs-lam-cau.png": (0, 190, 1170, 2280),
-    "31-phieu-xanh.png": (0, 0, 1588, 1800),
+CAT = {  # ảnh chụp 1600×900 @2x (tao_anh.py), có thanh bên trái
+    "02-soan-phieu-kiem-dinh.png": (1560, 380, 3060, 1800),
+    "03-gop-y-kiem-dinh.png": (740, 100, 3060, 1800),
+    "05-lop-hoc-trinh-chieu.png": (750, 120, 3040, 1730),
+    "09-cham-bai-so-tong-hop.png": (740, 120, 3060, 1800),
+    "10-phan-tich-loi-sai.png": (740, 120, 3060, 1800),
+    "12-tien-bo-bieu-do.png": (740, 440, 3060, 1800),
+    "13-lop-cua-toi-phieu-theo-ten.png": (1720, 600, 3060, 1800),
+    "20-hs-chon-ten.png": (0, 190, 1170, 1600),
+    "21-hs-lam-cau.png": (0, 190, 1170, 2160),
+    "31-phieu-xanh.png": (0, 110, 1588, 1950),
 }
 
 
@@ -551,18 +551,18 @@ def lam_poster():
     doan(s, X + Inches(0.5), y + Inches(1.6), w1 - Inches(1), h - Inches(1.8), [
         f"• Soạn 1 phiếu: {_g('phut_soan_cu')} → {_g('phut_soan_moi')} phút",
         f"• Chấm và nhận xét 1 lớp: {_g('phut_cham_cu')} → {_g('phut_cham_moi')} phút",
-        f"• Câu yếu sau bổ trợ: chưa đạt {_g('phan_tram_chua_dat_truoc')}% → {_g('phan_tram_chua_dat_sau')}%",
+        f"• Sau bổ trợ: chưa đạt {_g('phan_tram_chua_dat_truoc')}% → {_g('phan_tram_chua_dat_sau')}%",
         *([f"\"{PHAN_HOI}\""] if PHAN_HOI else [])] if CO_KQ else [
         f"• Lớp {LOP} ({SI_SO} học sinh), 19–23/10/2026.",
         "• Soạn 1 phiếu: mục tiêu giảm ≥ 50% thời gian.",
         "• Chấm, nhận xét 1 lớp: mục tiêu giảm ≥ 40% thời gian.",
-        "• Câu yếu: tỉ lệ chưa đạt giảm sau 1 buổi bổ trợ.",
+        "• Tỉ lệ chưa đạt giảm sau 1 buổi bổ trợ.",
         "• 100% đề, điểm, nhận xét do giáo viên duyệt."], co=34)
     khoi(s, x2, y, w2, h, "5. AI CÓ TRÁCH NHIỆM · BỀN VỮNG")
     doan(s, x2 + Inches(0.5), y + Inches(1.6), w2 - Inches(1), h - Inches(1.8), [
         "• Giáo viên duyệt mọi đề, điểm, nhận xét; kiểm định 2 lượt.",
         "• Không gửi tên học sinh cho AI; học sinh không cần tài khoản.",
-        "• **0 đồng**, chạy trên trình duyệt; khối 1–5, 8 môn, 3 bộ sách.",
+        "• **0 đồng**, chạy trên trình duyệt; khối 1–5, 8 môn, SGK dùng chung toàn quốc.",
         "• Định hướng: chia sẻ trong tổ chuyên môn, tin nhắn phụ huynh."], co=34)
 
     # Hàng 4: QR + công khai

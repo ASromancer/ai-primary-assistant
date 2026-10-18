@@ -37,8 +37,8 @@ Thời gian ngắn nên ghi rõ trong hồ sơ là *"kết quả thí điểm b�
 | B5 | Thời gian chấm và nhận xét 1 lớp (phút) | | |
 | B6 | Số học sinh / sĩ số hoàn thành bài | | |
 | B7 | Số bài AI chấm sai, giáo viên phải sửa / tổng số bài | – | |
-| B8 | Tỉ lệ chưa đạt ở câu yếu – trước bổ trợ | | |
-| B9 | Tỉ lệ chưa đạt ở câu yếu – sau bổ trợ | | |
+| B8 | Tỉ lệ chưa đạt – trước bổ trợ | | |
+| B9 | Tỉ lệ chưa đạt – sau bổ trợ | | |
 
 B4 và B7 cần ghi trung thực. Chúng chứng minh giáo viên thực sự duyệt kết quả của AI (điểm cộng cho "AI có trách nhiệm") và giúp trả lời câu hỏi "AI có sai không?" của giám khảo.
 
@@ -69,7 +69,7 @@ Học sinh tô vào mặt cười: 😊 Thích · 😐 Bình thường · 🙁 K
 | Thời gian chấm và nhận xét 1 lớp (phút) | B5 cũ | B5 app | |
 | Lỗi do kiểm định phát hiện | – | B3 | so với B4 |
 | Tỉ lệ hoàn thành bài | B6 cũ | B6 app | |
-| Tỉ lệ chưa đạt câu yếu | B8 | B9 | sau 1 buổi bổ trợ |
+| Tỉ lệ chưa đạt | B8 | B9 | sau 1 buổi bổ trợ |
 | Học sinh thích phiếu (% 😊) | – | C1 | n = ⟦…⟧ |
 | Giáo viên đánh giá chung (trung bình 1–5) | – | D1–D6 | n = ⟦…⟧ giáo viên |
 

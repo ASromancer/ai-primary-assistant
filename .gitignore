@@ -4,3 +4,4 @@ __pycache__/
 
 # Hồ sơ nộp bài: chứa mã dùng thử, QR, video – không đưa lên GitHub công khai
 docs/du-thi/ban-nop/
+docs/*.xlsx
