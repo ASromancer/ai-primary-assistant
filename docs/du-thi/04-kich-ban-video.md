@@ -26,7 +26,7 @@ Có hai bộ đọc, chọn ở mục `"may_doc"` trong `ban-nop/so-lieu.json`:
 
 | `may_doc` | Giọng | Ghi chú |
 |---|---|---|
-| `"gemini"` (mặc định) | Gemini TTS, giọng tự nhiên như người thật; chỉnh cách đọc bằng câu mô tả ở `"phong_cach"` | Cần `GEMINI_API_KEY`, gói miễn phí dùng được. Đổi giọng ở `"giong_gemini"`: nữ `Sulafat`, `Achernar`, `Vindemiatrix`; nam `Achird`, `Charon`, `Sadaltager` |
+| `"gemini"` (mặc định) | Gemini TTS, giọng tự nhiên như người thật; chỉnh cách đọc bằng câu mô tả ở `"phong_cach"` | Cần `GEMINI_API_KEY`. Gói miễn phí chỉ **10 lượt/ngày** (video cần 12 đoạn): mỗi đoạn đọc xong được lưu ở `ban-nop/tts-cache/`, hết lượt thì chạy lại sau 7 giờ sáng hôm sau để đọc tiếp, đoạn cũ không tốn lượt. Đổi giọng ở `"giong_gemini"`: nữ `Sulafat`, `Achernar`, `Vindemiatrix`; nam `Achird`, `Charon`, `Sadaltager` |
 | `"edge"` | Giọng đọc Microsoft (HoaiMy/NamMinh), nghe "máy" hơn | Không cần key. Tự dùng khi máy chưa có key Gemini |
 
 1. Điền `ban-nop/so-lieu.json` (họ tên, lớp, trường, sĩ số, số liệu thí điểm). Ô để trống thì lời đọc dùng câu chung, không đọc số.
@@ -35,6 +35,7 @@ Có hai bộ đọc, chọn ở mục `"may_doc"` trong `ban-nop/so-lieu.json`:
    GEMINI_API_KEY=... .venv/bin/python docs/du-thi/long_tieng.py
    ```
    Hoặc thêm dòng `GEMINI_API_KEY = "..."` vào `.streamlit/secrets.toml` (tệp này đã nằm trong `.gitignore`).
+   - Muốn dựng nhanh bản xem thử bằng giọng edge (không tốn lượt Gemini): `MAY_DOC=edge .venv/bin/python docs/du-thi/long_tieng.py`.
    - Phụ đề tự chia theo dấu câu, tối đa 2 dòng × 42 ký tự, không ngắt giữa từ ghép ("học sinh", "Thông tư 27"…), thời gian khớp nhịp đọc.
    - Đoạn slide dài vừa lời đọc. Đoạn quay app được tua nhanh tối đa 1,8 lần cho khớp lời, không còn khoảng lặng dài.
 3. **Nghe lại toàn bộ** để kiểm tra phát âm (AI, QR, tên riêng, số liệu).

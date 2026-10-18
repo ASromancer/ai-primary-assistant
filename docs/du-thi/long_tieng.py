@@ -14,7 +14,7 @@ chung, KHÔNG đọc số. Chạy:
 Đầu ra (ban-nop/): video-long-tieng.mp4, loi-doc.mp3, phu-de-long-tieng.srt
 """
 import asyncio
-import base64
+import hashlib
 import json
 import os
 import re
@@ -211,28 +211,38 @@ def key_gemini() -> str:
 
 
 def doc_gemini(van_ban: str, d: dict, tam: Path, ten: str) -> bytes:
+    """Gói miễn phí chỉ ~10 lượt/ngày/model: mỗi đoạn đã đọc được lưu lại (ban-nop/tts-cache), chạy lại không tốn lượt."""
     from google import genai
-    client = genai.Client(api_key=key_gemini())
-    for lan in range(6):  # gói miễn phí giới hạn số lượt/phút: chờ rồi thử lại
+    from google.genai import types
+    loi_nhac = f"{d['phong_cach']} Đọc nguyên văn đoạn sau:\n{van_ban}"
+    kho = RA / "tts-cache" / (hashlib.sha1(f"{MODEL_TTS}|{d['giong_gemini']}|{loi_nhac}".encode()).hexdigest()[:16] + ".pcm")
+    if kho.exists():
+        return kho.read_bytes()
+    client = genai.Client(api_key=key_gemini(), http_options=types.HttpOptions(timeout=120_000))
+    cau_hinh = types.GenerateContentConfig(response_modalities=["AUDIO"], speech_config=types.SpeechConfig(
+        language_code="vi-VN",
+        voice_config=types.VoiceConfig(prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=d["giong_gemini"]))))
+    for lan in range(4):
         try:
-            it = client.interactions.create(
-                model=MODEL_TTS,
-                input=[{"type": "user_input", "content": [{"type": "text", "text": van_ban, "annotations": [
-                    {"type": "speech_metadata", "style": d["phong_cach"]}]}]}],
-                response_format={"type": "audio"},
-                generation_config={"speech_config": [{"voice": d["giong_gemini"], "language": "vi-VN"}]})
+            r = client.models.generate_content(model=MODEL_TTS, config=cau_hinh, contents=loi_nhac)
             break
         except Exception as e:  # noqa: BLE001
-            if lan == 5 or "429" not in str(e) and "RESOURCE_EXHAUSTED" not in str(e):
+            if "PerDay" in str(e):
+                raise SystemExit(f"Hết lượt Gemini TTS miễn phí trong ngày (đoạn {ten}). Các đoạn đã đọc được lưu lại; "
+                                 "chạy lại sau khi hạn mức reset (khoảng 7 giờ sáng giờ Việt Nam) để đọc tiếp.")
+            if lan == 3 or "429" not in str(e):
                 raise
-            print("  … quá giới hạn lượt, chờ 30 giây")
+            print("  … quá giới hạn lượt/phút, chờ 30 giây")
             time.sleep(30)
-    am = base64.b64decode(it.output_audio.data)
-    if am[:4] != b"RIFF":  # PCM thô (audio/L16; rate=24000) thay vì WAV
-        return cat_lang(am)
-    tep = tam / f"{ten}.wav"
-    tep.write_bytes(am)
-    return cat_lang(pcm(tep))
+    am = r.candidates[0].content.parts[0].inline_data.data
+    if am[:4] == b"RIFF":
+        tep = tam / f"{ten}.wav"
+        tep.write_bytes(am)
+        am = pcm(tep)
+    am = cat_lang(am)  # PCM thô 24 kHz
+    kho.parent.mkdir(exist_ok=True)
+    kho.write_bytes(am)
+    return am
 
 
 def doc_edge(van_ban: str, d: dict, tam: Path, ten: str, toc_do: str) -> bytes:
@@ -291,6 +301,7 @@ def main():
         SO_LIEU.write_text(json.dumps(MAU_SO_LIEU, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"Đã tạo mẫu {SO_LIEU} – điền số liệu thật rồi chạy lại để lời đọc có số liệu.")
     d = {**MAU_SO_LIEU, **json.loads(SO_LIEU.read_text(encoding="utf-8"))}
+    d["may_doc"] = os.environ.get("MAY_DOC", d["may_doc"])  # MAY_DOC=edge: dựng nhanh bản giọng edge, không tốn lượt Gemini
     if d["may_doc"] == "gemini" and not key_gemini():
         print("⚠ Chưa có GEMINI_API_KEY (biến môi trường hoặc .streamlit/secrets.toml trên máy) – tạm dùng giọng edge-tts.")
         d["may_doc"] = "edge"
