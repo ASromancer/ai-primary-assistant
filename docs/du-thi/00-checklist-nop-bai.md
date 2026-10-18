@@ -8,7 +8,7 @@ Trong toàn bộ hồ sơ, các chỗ đánh dấu `⟦…⟧` cần điền **t
 ## 1. Việc cần làm ngay (hôm nay, Chủ nhật 18/10)
 
 - [ ] **Gửi email hỏi Ban Tổ chức về quyền tác giả** (mẫu ở mục 6). Thể lệ ghi: *"Các trường hợp nhờ người khác hỗ trợ hoặc thực hiện thay sẽ không được công nhận."* Cần xác nhận việc giáo viên nhận hỗ trợ lập trình có được chấp nhận hay không, trước khi đầu tư thời gian cho hồ sơ.
-- [ ] Tải **bộ mẫu PowerPoint và Poster** của Ban Tổ chức: <https://apps.rmit.edu.vn/r/filemauGTPT2026>.
+- [x] Tải bộ mẫu PowerPoint và Poster của Ban Tổ chức (đã có trong `docs/`, đã điền vào `Slide-du-thi.pptx` và `Poster-du-thi.pptx`).
 - [ ] Đặt `MA_DEMO` trong Secrets của app (ví dụ một chuỗi khó đoán), rồi tạo **link trải nghiệm cho giám khảo**: `https://tro-ly-giang-day.streamlit.app/?demo=<MA_DEMO>`. Tạo mã QR cho link này (xem mục 5).
 - [ ] Đăng nhập app bằng tài khoản Google của giáo viên dự thi. Tạo lớp thật, nhập danh sách học sinh và chia nhóm Xanh/Cam/Tím.
 - [ ] Xin phép Ban Giám hiệu cho thí điểm. Nếu quay hình hoặc chụp ảnh học sinh, xin phép phụ huynh và không để lộ mặt, tên thật của học sinh.
@@ -27,8 +27,8 @@ Làm theo [05-ke-hoach-thi-diem-va-khao-sat.md](05-ke-hoach-thi-diem-va-khao-sat
 
 | Thành phần | Yêu cầu của Ban Tổ chức | Nội dung soạn sẵn |
 |---|---|---|
-| Slide | Mẫu của Ban Tổ chức, **xuất PDF, ≤ 15 trang, ≤ 100MB** | [02-slide.md](02-slide.md) và file nháp `slide-nhap.pptx` |
-| Poster | Mẫu của Ban Tổ chức, **A0 (84,1 × 118,9 cm), PDF chất lượng cao, ≤ 100MB** | [03-poster-A0.md](03-poster-A0.md) |
+| Slide | Mẫu của Ban Tổ chức, **xuất PDF, ≤ 15 trang, ≤ 100MB** | **`Slide-du-thi.pptx`** (14 trang, đã trên mẫu); lời thuyết trình ở [02-slide.md](02-slide.md) |
+| Poster | Mẫu của Ban Tổ chức, **A0 (84,1 × 118,9 cm), PDF chất lượng cao, ≤ 100MB** | **`Poster-du-thi.pptx`** (đã trên mẫu) |
 | Video | **≤ 5 phút**, thuyết trình nội dung slide, gửi **link Google Drive** | [04-kich-ban-video.md](04-kich-ban-video.md) |
 | Chuẩn bị trả lời giám khảo | Vòng chung kết thuyết trình trực tiếp | [06-hoi-dap-giam-khao.md](06-hoi-dap-giam-khao.md) |
 
