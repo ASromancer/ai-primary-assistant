@@ -88,6 +88,8 @@ Muốn đổi model AI (khi Google ngừng model cũ): thêm `GEMINI_MODEL = "te
 > **App bắt buộc đăng nhập Google.** Khi chưa cấu hình khối `[auth]`, app chỉ hiện màn hình đăng nhập với nút bị mờ.
 > Muốn tạm cho dùng không cần đăng nhập (ví dụ demo lúc mất mạng), thêm `CHE_DO_KHACH = true` vào Secrets.
 > Ở chế độ này dữ liệu chỉ nằm trong phiên làm việc, không được lưu lại.
+> **Link trải nghiệm cho giám khảo:** thêm `MA_DEMO = "ma-kho-doan"` vào Secrets, rồi gửi link `https://TEN-APP.streamlit.app/?demo=ma-kho-doan`.
+> Người mở link vào thẳng app, không cần đăng nhập, có sẵn phiếu mẫu, dữ liệu không được lưu và tối đa 15 lượt dùng AI mỗi phiên.
 
 Streamlit Cloud không giữ được file trên ổ đĩa, nên dữ liệu được lưu trên **Supabase** (Postgres miễn phí) và giáo viên đăng nhập bằng **Google**.
 

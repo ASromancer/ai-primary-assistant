@@ -49,7 +49,16 @@ def _client(key):
     return tao_client(key)
 
 
+GIOI_HAN_AI_DEMO = 15  # số lượt gọi AI tối đa mỗi phiên trải nghiệm (giữ quota của giáo viên)
+
+
 def client():
+    if la_demo():
+        dem = st.session_state.get("demo_ai", 0) + 1
+        if dem > GIOI_HAN_AI_DEMO:
+            raise RuntimeError(f"Chế độ trải nghiệm đã dùng hết {GIOI_HAN_AI_DEMO} lượt AI. "
+                               "Thầy cô có thể xem tiếp phiếu mẫu hoặc đăng nhập để dùng đầy đủ.")
+        st.session_state.demo_ai = dem
     return _client(api_key())
 
 
@@ -154,9 +163,14 @@ def email() -> str:
     return st.user.email if co_auth() and st.user.is_logged_in else ""
 
 
+def la_demo() -> bool:
+    """Phiên trải nghiệm cho giám khảo: mở bằng link ?demo=<MA_DEMO trong Secrets>, không lưu dữ liệu."""
+    return bool(st.session_state.get("che_do_demo"))
+
+
 def cho_phep_khach() -> bool:
     """Mặc định bắt buộc đăng nhập; đặt CHE_DO_KHACH = true trong Secrets để cho dùng không cần đăng nhập."""
-    return bool(_secret("CHE_DO_KHACH", False))
+    return bool(_secret("CHE_DO_KHACH", False)) or la_demo()
 
 
 def da_dang_nhap() -> bool:

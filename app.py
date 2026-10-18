@@ -7,6 +7,10 @@ if st.query_params.get("ma"):  # học sinh vào làm bài bằng mã: không c�
     st.navigation([st.Page("trang/lam_bai.py", title="Làm bài", icon="📝")], position="hidden").run()
     st.stop()
 
+ma_demo = state._secret("MA_DEMO", "")
+if ma_demo and st.query_params.get("demo") == ma_demo:  # link trải nghiệm cho giám khảo
+    st.session_state.che_do_demo = True
+
 cong = not state.da_dang_nhap() and not state.cho_phep_khach()  # chưa đăng nhập: chỉ hiện màn hình đăng nhập
 st.set_page_config(page_title="Trợ Lý Phân Hóa Tiểu Học - TT27", page_icon="📚", layout="wide",
                    initial_sidebar_state="collapsed" if cong else "auto")
@@ -47,6 +51,12 @@ Theo dõi tiến bộ và gợi ý nhận xét học bạ</div></div>""")
                     st.query_params["ma"] = ma.strip().upper()
                     st.rerun()
     st.stop()
+
+if state.la_demo():
+    if "ban" not in st.session_state:  # mở sẵn phiếu mẫu để giám khảo xem ngay
+        state.mo_phieu(state.PHIEU_MAU.read_text(encoding="utf-8"))
+    st.info(f"🧪 **Chế độ trải nghiệm** dành cho Ban Giám khảo: dữ liệu không được lưu, tối đa {state.GIOI_HAN_AI_DEMO} "
+            "lượt dùng AI. Thư viện, Giao bài và Tiến bộ cần đăng nhập Google.")
 
 # Giữ giá trị ô cài đặt khi chuyển trang (Streamlit xoá state của widget không còn hiển thị)
 for k in ("api_key_nhap", "ten_gv", "truong"):

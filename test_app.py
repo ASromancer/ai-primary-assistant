@@ -411,6 +411,25 @@ def test_bat_buoc_dang_nhap():
         assert not at.exception and not any("Đăng nhập để bắt đầu" in m.value for m in at.markdown)
 
 
+def test_che_do_trai_nghiem():
+    sai = AppTest.from_file("app.py", default_timeout=30)
+    sai.secrets["MA_DEMO"] = "giamkhao2026"
+    sai.query_params["demo"] = "doan-mo"
+    sai.run()
+    assert any("Đăng nhập để bắt đầu" in m.value for m in sai.markdown)  # sai mã: vẫn phải đăng nhập
+    at = AppTest.from_file("app.py", default_timeout=30)
+    at.secrets["MA_DEMO"] = "giamkhao2026"
+    at.secrets["GEMINI_API_KEY"] = "fake"
+    at.query_params["demo"] = "giamkhao2026"
+    at.run()
+    assert not at.exception and any("Chế độ trải nghiệm" in i.value for i in at.info)
+    assert at.session_state.ban is not None  # phiếu mẫu mở sẵn
+    at.switch_page("trang/soan_phieu.py").run()
+    at.session_state["demo_ai"] = 15  # đã dùng hết lượt AI
+    at.button(key="doi0").click().run()
+    assert not at.exception and any("hết 15 lượt AI" in e.value for e in at.error)
+
+
 def test_trang_chu_va_dieu_huong():
     at = _app()
     assert not at.exception
