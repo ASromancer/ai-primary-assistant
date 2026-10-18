@@ -45,13 +45,12 @@ MAU_SO_LIEU = {
 MODEL_TTS = "gemini-3.8-flash-tts"
 DOC_EDGE = [(r"\bAI\b", "ây ai"), (r"\bQR\b", "kiu a"), (r"Gemini", "Giê mi ni")]  # phát âm cho edge-tts
 GIOI_HAN = 298  # giây (thể lệ: tối đa 5 phút)
-MINH_HOA = {"04-soan-phieu": "Minh họa giao diện",
-            "10-ket-qua": "Chờ số liệu thí điểm thật"}  # nhãn góc trên trái, chỉ hiện trong đoạn tương ứng
+MINH_HOA = {"04-soan-phieu": "Minh họa giao diện"}  # nhãn góc trên trái, chỉ hiện trong đoạn tương ứng
 TUA_TOI_DA = 1.8  # đoạn quay app dài hơn lời đọc: tua nhanh tối đa 1,8 lần để không có khoảng lặng dài
 SR = 24000
 DONG = 42                                   # ký tự tối đa mỗi dòng phụ đề, tối đa 2 dòng mỗi khung
 GIU_NGUYEN = ["Thông tư 27", "Ban Giám khảo", "tổ trưởng chuyên môn", "Trợ Lý Giảng Dạy", "sách giáo khoa", "mã QR",
-              "yêu cầu cần đạt", "máy tính bảng", "ba mươi giây", "khối một", "khối năm", "ba mức", "thứ hai",
+              "yêu cầu cần đạt", "máy tính bảng", "bốn mươi phần trăm", "một buổi bổ trợ", "tháng 10", "ba mươi giây", "khối một", "khối năm", "ba mức", "thứ hai",
               "Xanh, Cam và Tím", "phiếu bài tập phân hóa", "soạn xong"]
 # Từ ghép 2 âm tiết: không xuống dòng giữa từ (phụ đề tiếng Việt ngắt theo từ, không theo âm tiết)
 TU_GHEP = ("học sinh", "giáo viên", "nhận xét", "đáp án", "công cụ", "bài tập", "phân hóa", "đánh giá", "tiểu học",
@@ -76,8 +75,9 @@ def loi_doc(d: dict) -> dict[str, list[str]]:
                 f"{d['phan_tram_chua_dat_sau']} phần trăm sau một buổi bổ trợ."]
                if co("so_ngay", "so_hoc_sinh", "phut_soan_cu", "phut_soan_moi", "phut_cham_cu", "phut_cham_moi",
                      "phan_tram_chua_dat_truoc", "phan_tram_chua_dat_sau")
-               else ["Kết quả thí điểm gồm thời gian soạn phiếu, thời gian chấm và nhận xét, cùng mức độ tiến bộ của học sinh "
-                     "sau khi được bổ trợ."])
+               else [f"Tôi thí điểm từ ngày 19 đến 23 tháng 10 tại lớp {d['lop'] or 'mình'}, so sánh trước và sau trên cùng lớp.",
+                     "Mục tiêu là giảm ít nhất một nửa thời gian soạn phiếu, giảm bốn mươi phần trăm thời gian chấm và nhận xét, "
+                     "và giảm tỉ lệ học sinh chưa đạt ở câu yếu sau một buổi bổ trợ."])
     if d.get("phan_hoi", "").strip():
         ket_qua.append(d["phan_hoi"].strip())
     return {

@@ -50,7 +50,7 @@ Có 2 cách:
 
 1. **Sửa trực tiếp** `ban-nop/Slide-du-thi.pptx` và `ban-nop/Poster-du-thi.pptx` bằng PowerPoint.
    - Thay các chỗ `⟦…⟧`.
-   - Trang bìa: bấm vào khung "⟦Ảnh giáo viên⟧", xoá đi rồi chèn ảnh chân dung của giáo viên.
+   - Trang bìa: đặt ảnh chân dung vuông (đã cắt) ở `ban-nop/chan-dung.jpg`, chạy lại `dien_mau.py` để tự cắt tròn và chèn.
    - Mã QR dùng thử đã có sẵn. Sau khi có link video, chạy `tao_ma_demo.py --video <link>` và `dien_mau.py`, hoặc tự chèn ảnh QR vào khung "⟦tạo QR⟧".
    - Xuất **PDF**: File → Export → PDF. Slide ≤ 15 trang; poster khổ A0.
 2. **Sửa nội dung trong script** `dien_mau.py` (các hằng `TEN_GV`, `DON_VI`, `BOI_CANH`, `KET_QUA`, `LOI_NOI`…), rồi chạy lại:
