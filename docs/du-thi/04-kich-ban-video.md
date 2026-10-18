@@ -14,7 +14,7 @@ Người dẫn là **giáo viên đứng tên dự thi**: vừa thể hiện quy
 
 1. Mở CapCut và nhập `video-nhap.mp4`, hoặc nhập 12 đoạn sạch trong `ban-nop/doan-quay/` cùng phụ đề `phu-de.srt`.
 2. Giáo viên **thu giọng đọc** theo phụ đề, đặt đè lên video, rồi xoá phụ đề cũ và tạo lại phụ đề theo giọng thật.
-3. **Thay đoạn "Kết quả"** (2:50–3:23) bằng số liệu thật và cảnh lớp học thật (không lộ mặt học sinh). Thay các chỗ `⟦…⟧`.
+3. **Thay đoạn "Kết quả"** (3:44–4:17) bằng số liệu thật và cảnh lớp học thật (không lộ mặt học sinh). Thay các chỗ `⟦…⟧`.
 4. **Quay lại đoạn "Soạn phiếu"** (1:14–1:44) bằng app thật có AI. Trong video nháp, đoạn này dùng AI giả lập trả phiếu mẫu và có ghi "minh họa".
 5. Thêm khung hình giáo viên ở đoạn mở đầu và kết (webcam).
 
