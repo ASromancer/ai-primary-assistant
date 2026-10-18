@@ -18,7 +18,17 @@ Người dẫn là **giáo viên đứng tên dự thi**: vừa thể hiện quy
 4. **Quay lại đoạn "Soạn phiếu"** (1:14–1:44) bằng app thật có AI. Trong video nháp, đoạn này dùng AI giả lập trả phiếu mẫu và có ghi "minh họa".
 5. Thêm khung hình giáo viên ở đoạn mở đầu và kết (webcam).
 
-Không nộp nguyên video nháp: thể lệ yêu cầu video **thuyết trình** của tác giả.
+### Phương án lồng tiếng bằng AI (`ban-nop/video-long-tieng.mp4`)
+
+Thể lệ và trang giải thưởng **không cấm** lồng tiếng bằng AI. Yêu cầu chỉ có: thuyết trình nội dung PowerPoint, ≤ 5 phút, link Google Drive, không sửa sau khi nộp. Video dùng giọng đọc thần kinh tiếng Việt và luôn hiện dòng "Lồng tiếng: giọng đọc AI" để minh bạch.
+
+1. Điền `ban-nop/so-lieu.json` (họ tên, lớp, trường, sĩ số, số liệu thí điểm). Ô để trống thì lời đọc dùng câu chung, không đọc số. Muốn giọng nam thì đổi `"giong"` thành `"vi-VN-NamMinhNeural"`.
+2. Chạy `.venv/bin/python docs/du-thi/long_tieng.py` (cần mạng). Video tự giữ ≤ 5 phút (tự tăng tốc độ đọc nếu cần).
+3. **Nghe lại toàn bộ** để kiểm tra phát âm (AI, QR, tên riêng, số liệu).
+4. **Trước khi nộp vẫn phải:**
+   - Quay lại đoạn "Soạn phiếu" bằng AI thật. Đoạn này đang có nhãn "Minh họa".
+   - Thay slide kết quả bằng bản có số liệu thật. Đoạn này đang có nhãn "Chờ số liệu thí điểm thật".
+5. **Khuyến nghị:** thêm 10–15 giây giáo viên tự chào ở đầu và cảm ơn ở cuối, bằng giọng thật và có hình. Tiêu chí "Chất lượng trình bày và tính thuyết phục" (15%) đánh giá cả việc giáo viên thuyết phục được Ban Giám khảo, và vòng chung kết là thuyết trình trực tiếp.
 
 ## Chuẩn bị quay
 
