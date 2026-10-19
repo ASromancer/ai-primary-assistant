@@ -37,8 +37,8 @@ Nội dung gốc chung cho cả 3 thành phần nằm ở [01-noi-dung-ho-so.md]
 
 ## 4. Kiểm tra và nộp (nộp sớm trong ngày 24/10 hoặc sáng Chủ nhật 25/10, không để sát 23h59)
 
-- [ ] Slide: đúng mẫu của Ban Tổ chức, ≤ 15 trang, đã xuất PDF, mở lại được.
-- [ ] Poster: đúng mẫu, A0, PDF, chữ đọc được khi in (cỡ chữ nội dung ≥ 24pt), các mã QR quét được.
+- [ ] Slide: đúng mẫu của Ban Tổ chức, ≤ 15 trang, mở lại được. Nộp file PDF `ban-nop/Slide-du-thi.pdf` do `dien_mau.py` xuất sẵn (đã nhúng phông Aptos của mẫu). Nếu tự xuất từ máy không có phông Aptos (WPS, Office cũ), chữ sẽ bị thay bằng phông khác và có thể tràn dòng.
+- [ ] Poster: đúng mẫu, A0, PDF (`ban-nop/Poster-du-thi.pdf`, đã nhúng phông), chữ đọc được khi in (cỡ chữ nội dung ≥ 24pt), các mã QR quét được.
 - [ ] Video: ≤ 5:00 (kiểm tra lại độ dài), âm thanh rõ, có phụ đề (khuyến khích).
   - Trên Drive: đặt quyền **"Bất kỳ ai có đường liên kết – Người xem"**.
   - **Không xoá hoặc sửa video sau khi nộp.**

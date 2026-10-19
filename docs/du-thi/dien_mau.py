@@ -548,7 +548,7 @@ def lam_poster():
 
     # Hàng 3: Kết quả | Trách nhiệm + Bền vững
     y, h = y + h + G, Inches(6.6)
-    khoi(s, X, y, w1, h, "4. KẾT QUẢ THỰC TẾ" if CO_KQ else "4. THÍ ĐIỂM: CHỈ SỐ VÀ MỤC TIÊU")
+    khoi(s, X, y, w1, h, "4. KẾT QUẢ THỰC TẾ" if CO_KQ else "4. THÍ ĐIỂM & MỤC TIÊU")
     doan(s, X + Inches(0.5), y + Inches(1.6), w1 - Inches(1), h - Inches(1.8), [
         f"• Soạn 1 phiếu: {_g('phut_soan_cu')} → {_g('phut_soan_moi')} phút",
         f"• Chấm và nhận xét 1 lớp: {_g('phut_cham_cu')} → {_g('phut_cham_moi')} phút",
@@ -559,7 +559,7 @@ def lam_poster():
         "• Chấm, nhận xét 1 lớp: mục tiêu giảm ≥ 40% thời gian.",
         "• Tỉ lệ chưa đạt giảm sau 1 buổi bổ trợ.",
         "• 100% đề, điểm, nhận xét do giáo viên duyệt."], co=34)
-    khoi(s, x2, y, w2, h, "5. AI CÓ TRÁCH NHIỆM · BỀN VỮNG")
+    khoi(s, x2, y, w2, h, "5. TRÁCH NHIỆM · BỀN VỮNG")
     doan(s, x2 + Inches(0.5), y + Inches(1.6), w2 - Inches(1), h - Inches(1.8), [
         "• Giáo viên duyệt mọi đề, điểm, nhận xét; kiểm định 2 lượt.",
         "• Không gửi tên học sinh cho AI; học sinh không cần tài khoản.",
@@ -584,6 +584,16 @@ def lam_poster():
     print(f"Đã tạo {ra}")
 
 
+def xuat_pdf():
+    """Xuất PDF để nộp (nhúng phông Aptos có sẵn trong mẫu, hiển thị giống nhau trên mọi máy)."""
+    import subprocess
+    for ten in ("Slide-du-thi", "Poster-du-thi"):
+        subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", str(RA), str(RA / f"{ten}.pptx")],
+                       check=True, capture_output=True)
+        print(f"Đã xuất {RA / ten}.pdf")
+
+
 if __name__ == "__main__":
     lam_slide()
     lam_poster()
+    xuat_pdf()
