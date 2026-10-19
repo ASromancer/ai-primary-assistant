@@ -4,6 +4,7 @@ import state
 
 if st.query_params.get("ma"):  # học sinh vào làm bài bằng mã: không cần đăng nhập, chỉ có trang làm bài
     st.set_page_config(page_title="Làm bài", page_icon="📝", layout="centered", initial_sidebar_state="collapsed")
+    state.chan_dich_tu_dong()
     st.navigation([st.Page("trang/lam_bai.py", title="Làm bài", icon="📝")], position="hidden").run()
     st.stop()
 
@@ -14,6 +15,7 @@ if ma_demo and st.query_params.get("demo") == ma_demo:  # link trải nghiệm c
 cong = not state.da_dang_nhap() and not state.cho_phep_khach()  # chưa đăng nhập: chỉ hiện màn hình đăng nhập
 st.set_page_config(page_title="Trợ Lý Phân Hóa Tiểu Học - TT27", page_icon="📚", layout="wide",
                    initial_sidebar_state="collapsed" if cong else "auto")
+state.chan_dich_tu_dong()
 
 st.html("""<style>
 .block-container { padding-top: 4.5rem; }

@@ -188,6 +188,17 @@ def nut_dang_nhap(key: str, nho: bool = False):
         st.caption("⚙️ Chưa bật đăng nhập: thêm khối `[auth]` (Google OAuth) vào Secrets của app.")
 
 
+def chan_dich_tu_dong():
+    """Streamlit khai báo trang là tiếng Anh (<html lang="en">) nên Chrome tự "dịch" giao diện tiếng Việt thành chữ vô nghĩa
+    (VD "Lớp của tôi" → "căn hộ"). Đánh dấu trang là tiếng Việt và cấm dịch."""
+    st.html("""<script>
+const h = document.documentElement; h.lang = "vi"; h.setAttribute("translate", "no"); h.classList.add("notranslate");
+if (!document.querySelector('meta[name="google"]')) {
+  const m = document.createElement("meta"); m.name = "google"; m.content = "notranslate"; document.head.appendChild(m);
+}
+</script>""", unsafe_allow_javascript=True)
+
+
 def chuan_hoa_url(url: str) -> str:
     """Chuỗi Supabase dán nguyên (postgresql://...) -> dùng driver psycopg2 đã cài.
     (SQLAlchemy 2.1 mặc định 'postgresql://' là psycopg v3, không được cài.)"""
