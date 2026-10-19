@@ -122,7 +122,7 @@ TRACH_NHIEM = [
         "mức TT27 tính bằng quy tắc công khai."),
     (1, "**Bảo vệ dữ liệu học sinh**: không gửi tên học sinh cho AI khi soạn, chấm online, gợi ý học bạ; "
         "ảnh bài làm chỉ gửi để chấm, không lưu."),
-    (2, "Học sinh không cần tài khoản; dữ liệu mỗi giáo viên tách riêng; cơ sở dữ liệu chặn truy cập công khai."),
+    (1, "**Riêng tư**: học sinh không cần tài khoản; dữ liệu mỗi giáo viên tách riêng; cơ sở dữ liệu chặn truy cập công khai."),
     (1, "**Công bằng**: phiếu nhóm dùng tên màu trung tính; học sinh làm online biết đúng/sai nhưng không thấy đáp án."),
     (1, "Thí điểm có sự đồng ý của nhà trường và phụ huynh; hình ảnh không lộ mặt học sinh."),
 ]
