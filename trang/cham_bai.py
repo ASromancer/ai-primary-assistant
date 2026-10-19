@@ -91,15 +91,17 @@ with st.container(border=True):
         st.session_state.cham_goc_ver = cham["ver"]
     df = st.data_editor(
         st.session_state.cham_goc, hide_index=True, width="stretch", key=f"bang_cham_{cham['ver']}",
-        disabled=["STT", "Ảnh"],  # chấm tay: sửa được điểm, kết quả từng câu, mức, nhận xét
-        column_config={
-            "Mức TT27": st.column_config.SelectboxColumn(options=dg.MUC_TT27, required=True, width="medium"),
+        disabled=["STT", "Ảnh"],  # chấm tay: sửa được kết quả từng câu, mức, nhận xét
+        column_config={  # TT27: đánh giá thường xuyên bằng nhận xét, không cho điểm → ẩn cột Điểm (vẫn lưu nội bộ)
+            "Điểm": None,
+            "Mức TT27": st.column_config.SelectboxColumn("Mức hoàn thành bài (tham khảo)", options=dg.MUC_TT27,
+                                                         required=True, width="medium"),
             "Nhận xét": st.column_config.TextColumn(width="large"),
             "Họ tên": st.column_config.TextColumn(width="medium"),
-            "Điểm": st.column_config.NumberColumn(format="%.2f", min_value=0.0, max_value=10.0, step=0.25),
         })
-    st.caption("✍️ Chấm tay: bấm đúp vào ô để sửa điểm, kết quả từng câu (gõ ✓ đúng · ½ một phần · ✗ sai · – bỏ trống, "
-               "có thể ghi thêm lỗi sau ký hiệu), mức TT27 và nhận xét. Phân tích lỗi bên dưới cập nhật theo bảng.")
+    st.caption("✍️ Chấm tay: bấm đúp vào ô để sửa kết quả từng câu (gõ ✓ đúng · ½ một phần · ✗ sai · – bỏ trống, "
+               "có thể ghi thêm lỗi sau ký hiệu), mức hoàn thành và nhận xét. Theo TT27, đánh giá thường xuyên bằng nhận xét, "
+               "không cho điểm. Phân tích lỗi bên dưới cập nhật theo bảng.")
 
     tong = len(df)
     cols = o_thong_ke.columns(3)
@@ -108,7 +110,7 @@ with st.container(border=True):
         col.metric(f"{icon} {muc}", f"{n} em", f"{n / tong:.0%} · gợi ý Phiếu {dg.NHOM_DE_XUAT[muc]}",
                    delta_color="off", delta_arrow="off", border=True)
 
-    df_xuat = df.assign(**{"Phiếu tiếp theo": df["Mức TT27"].map(dg.NHOM_DE_XUAT)})
+    df_xuat = df.drop(columns="Điểm", errors="ignore").assign(**{"Phiếu tiếp theo": df["Mức TT27"].map(dg.NHOM_DE_XUAT)})
     c1, c2 = st.columns(2)
     c1.download_button("📊 Tải sổ tổng hợp (.xlsx)", dg.so_tong_hop_excel(df_xuat.to_dict("records")),
                        state.ten_file(f"So_tong_hop_{lop.ten_lop}_{ban.thong_so.chu_de}") + ".xlsx",

@@ -1,4 +1,6 @@
-# Slide thuyết trình (15 trang, xuất PDF)
+# Slide thuyết trình (xuất PDF)
+
+> **Bản thiết kế ban đầu – nội dung thực tế nằm trong `dien_mau.py` (slide 14 trang, poster 5 khối).** Lời thuyết trình từng trang là `LOI_NOI` trong `dien_mau.py`; file nộp là `ban-nop/Slide-du-thi.pdf`. Thứ tự và số trang dưới đây có thể khác bản thực tế.
 
 Dùng **mẫu PowerPoint của Ban Tổ chức**. File `slide-nhap.pptx` trong thư mục này là bản nháp đã sắp sẵn chữ và ảnh: copy từng trang sang mẫu chính thức rồi chỉnh màu, phông theo mẫu. Ảnh ở thư mục [anh/](anh/).
 
@@ -12,17 +14,17 @@ Nguyên tắc trình bày:
 ### Trang 1 – Bìa
 - **TRỢ LÝ GIẢNG DẠY**
 - Phiếu bài tập phân hóa và đánh giá học sinh tiểu học theo Thông tư 27 bằng AI
-- ⟦Họ tên tác giả⟧ – ⟦chức vụ⟧ – Trường ⟦…⟧, ⟦tỉnh/thành⟧
+- Trần Thị Hiền Minh – giáo viên lớp 4A3 – Trường Tiểu học Ngô Quyền, phường Quảng Yên, TP. Quảng Ninh
 - Bảng A · Chủ đề: Giảng dạy, học tập và đánh giá
 - Ảnh: `anh/01-trang-chu.png` (mờ làm nền) + `anh/qr-app.png`
 
 ### Trang 2 – Bối cảnh
-- Lớp ⟦…⟧: ⟦sĩ số⟧ học sinh, trình độ chênh lệch rõ.
+- Lớp 4A3: 34 học sinh, trình độ chênh lệch rõ.
 - TT27: đánh giá thường xuyên bằng nhận xét; bài tập 3 mức.
 - Phân hóa là cần thiết nhưng **tốn thời gian**: soạn 3 mức, đáp án, in theo nhóm, chấm, nhận xét.
 - Số liệu: soạn 1 phiếu ≈ ⟦…⟧ phút; chấm và nhận xét 1 lớp ≈ ⟦…⟧ phút.
 
-**Lời nói:** "Lớp tôi có ⟦…⟧ em, có em làm xong bài trong 5 phút, có em cần cả tiết. Muốn mỗi em được làm bài vừa sức, tôi phải soạn 3 mức, in theo nhóm, chấm và nhận xét từng em. Mỗi phiếu mất khoảng ⟦…⟧ phút…"
+**Lời nói:** "Lớp tôi có 34 em, có em làm xong bài trong 5 phút, có em cần cả tiết. Muốn mỗi em được làm bài vừa sức, tôi phải soạn 3 mức, in theo nhóm, chấm và nhận xét từng em. Mỗi phiếu mất khoảng ⟦…⟧ phút…"
 
 ### Trang 3 – Vấn đề và nguyên nhân
 1. Soạn đề 3 mức đúng chuẩn TT27 tốn thời gian, chất lượng không đều.
@@ -40,7 +42,7 @@ Bảng 3 cột: Bước | AI làm gì | Giáo viên làm gì. Lấy từ bảng 
 - **Chi phí: 0 đồng.**
 
 ### Trang 6 – ① Soạn phiếu từ tên bài hoặc ảnh sách giáo khoa
-- Chọn lớp, môn, bộ sách, thời lượng; hoặc **chụp trang sách giáo khoa**.
+- Chọn lớp, môn, thời lượng (bộ sách Kết nối tri thức với cuộc sống); hoặc **chụp trang sách giáo khoa**.
 - Phiếu 3 mức kèm đáp án, hướng dẫn chấm, ma trận, yêu cầu cần đạt.
 - Đáp án theo chuẩn tiểu học: Bài giải – lời giải – phép tính (đơn vị) – Đáp số.
 - Ảnh: `anh/02-soan-phieu-kiem-dinh.png`
@@ -72,7 +74,7 @@ Bảng 3 cột: Bước | AI làm gì | Giáo viên làm gì. Lấy từ bảng 
 - Ảnh: `anh/09-cham-bai-so-tong-hop.png`
 
 ### Trang 11 – ⑤ Phân tích lỗi và phiếu bổ trợ
-- Biểu đồ tỉ lệ chưa đạt từng câu (ngưỡng 40%) và lỗi thường gặp ("quên nhớ 1", "nhầm ít hơn thành trừ"…).
+- Biểu đồ tỉ lệ chưa đạt từng câu (ngưỡng 40%) và lỗi thường gặp (ví dụ Bài 14: "so sánh từ phải sang trái", "đếm thiếu chữ số"…).
 - 1 nút: AI soạn **phiếu bổ trợ** đúng chỗ hổng kiến thức.
 - Ảnh: `anh/10-phan-tich-loi-sai.png`
 
@@ -82,7 +84,8 @@ Bảng 3 cột: Bước | AI làm gì | Giáo viên làm gì. Lấy từ bảng 
 - Ảnh: `anh/12-tien-bo-bieu-do.png`
 
 ### Trang 13 – Triển khai và kết quả thực tế
-- Phạm vi: lớp ⟦…⟧, ⟦…⟧ học sinh, ⟦…⟧ ngày, ⟦…⟧ đồng nghiệp dùng thử.
+- Phạm vi: lớp 4A3, 34 học sinh, 5 ngày (19–23/10/2026), Toán 4 Bài 14–15, ⟦…⟧ đồng nghiệp dùng thử.
+- Chưa có số đo: trang này trình bày thiết kế đo và mục tiêu; sau khi điền `ban-nop/so-lieu.json`, `dien_mau.py` tự thay bằng số thật.
 - Bảng "Trước – Sau" (mục 3 của [01-noi-dung-ho-so.md](01-noi-dung-ho-so.md)), **chỉ số liệu thật**.
 - 1–2 trích dẫn phản hồi của giáo viên và học sinh.
 - Ảnh lớp học thật (che mặt học sinh) + ảnh thống kê Trang chủ bằng tài khoản thật.

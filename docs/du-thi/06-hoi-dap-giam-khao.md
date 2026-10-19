@@ -21,8 +21,8 @@ Chatbot trả lời từng câu rời rạc. Ở đây là cả quy trình theo 
 - Dữ liệu mỗi giáo viên tách riêng theo tài khoản Google; cơ sở dữ liệu chặn truy cập công khai.
 - Thí điểm có xin phép nhà trường và phụ huynh, theo đúng quy định hiện hành về bảo vệ dữ liệu cá nhân.
 
-**4. Chấm chữ viết tay của học sinh lớp 1–2 có chính xác không?**
-Chưa hoàn hảo, nhất là chữ còn nguệch ngoạc. Trong thí điểm, ⟦B7⟧ bài phải sửa. Vì vậy mọi kết quả đều hiện để giáo viên duyệt, có chấm tay từng câu. Với lớp 1–2, tôi khuyến khích làm bài online dạng chạm chọn (trắc nghiệm, đúng/sai, nối cột) vì được chấm chính xác bằng quy tắc, không cần AI.
+**4. Chấm chữ viết tay của học sinh có chính xác không?**
+Chưa hoàn hảo. Ví dụ ở lớp 4A3, Bài 14 "So sánh các số có nhiều chữ số": số nhiều chữ số viết sát nhau, dấu >, < viết nhỏ hoặc mờ có thể bị đọc nhầm. Trong thí điểm, ⟦B7⟧ bài phải sửa. Vì vậy mọi kết quả đều hiện để giáo viên duyệt, có chấm tay từng câu. Với dạng bài điền dấu hay chọn số lớn nhất, có thể giao online dạng chạm chọn (trắc nghiệm, đúng/sai, nối cột), được chấm chính xác bằng quy tắc, không cần AI.
 
 **5. Quy tắc xếp mức Hoàn thành tốt / Hoàn thành / Chưa hoàn thành dựa vào đâu?**
 TT27 quy định 3 mức đánh giá và 3 mức câu hỏi, nhưng **không quy định ngưỡng phần trăm** cho từng bài thường xuyên. Quy tắc trong app do tôi đề xuất dựa trên tinh thần TT27:
@@ -58,12 +58,40 @@ Dẫn số liệu B3/B4 và một ví dụ cụ thể trong thí điểm (câu n
 
 **13. Kế hoạch sau cuộc thi?**
 - Tiếp tục dùng trong học kỳ I và theo dõi số liệu.
-- Chia sẻ trong tổ chuyên môn và trường ⟦…⟧.
+- Chia sẻ trong tổ chuyên môn khối 4, Trường Tiểu học Ngô Quyền, rồi đến các khối khác trong trường.
 - Phát triển chia sẻ phiếu giữa giáo viên và tin nhắn gửi phụ huynh.
 - Tập huấn ngắn cho đồng nghiệp.
 
 **14. Vì sao chọn Gemini?**
 Đọc được ảnh (trang sách, bài viết tay), hỗ trợ tiếng Việt tốt, có gói miễn phí để giáo viên dùng không tốn chi phí, và trả kết quả theo khung cấu trúc nên dễ kiểm soát định dạng.
+
+**15. Giọng trong video là giọng AI – vì sao?**
+Giọng đọc AI được ghi rõ trên video ("Lồng tiếng: giọng đọc AI"). Nội dung, kịch bản và toàn bộ sản phẩm do tôi xây dựng; giọng AI giúp video rõ, đúng thời lượng. Thể lệ không cấm lồng tiếng AI, và ở vòng chung kết tôi thuyết trình trực tiếp.
+
+**16. Sản phẩm khác gì Azota, OLM hay Quizizz?**
+Theo tôi biết, các nền tảng đó chủ yếu tập trung vào ngân hàng câu hỏi và làm bài trắc nghiệm trực tuyến. Trợ Lý Giảng Dạy đi theo một vòng khép kín cho giáo viên tiểu học:
+- soạn phiếu 3 mức theo TT27, đáp án trình bày theo chuẩn tiểu học;
+- một lượt AI kiểm định lại phiếu;
+- phiếu nhóm Xanh/Cam/Tím, không dán nhãn học sinh;
+- chấm từ ảnh bài viết tay kèm nhận xét theo TT27;
+- phân tích lỗi rồi soạn phiếu bổ trợ;
+- gợi ý nhận xét học bạ.
+
+Hai cách có thể dùng bổ sung cho nhau.
+
+**17. Dữ liệu gửi Gemini gói miễn phí có bị dùng để huấn luyện không?**
+Nói thẳng: với gói miễn phí, theo điều khoản hiện hành Google có thể dùng nội dung gửi lên để cải thiện dịch vụ. Vì vậy:
+- ứng dụng không gửi danh sách lớp cho AI;
+- gợi ý nhận xét học bạ không kèm tên học sinh;
+- tôi khuyến nghị che tên trên bài làm trước khi chụp ảnh để chấm.
+
+Nếu nhà trường cần mức bảo mật cao hơn, có thể dùng khóa API trả phí, chi phí rất thấp.
+
+**18. Thí điểm 5 ngày có đủ để kết luận không?**
+Chưa đủ để kết luận lâu dài. Đây là thí điểm bước đầu, đo thời gian soạn, chấm và mức độ cải thiện ngay sau một buổi bổ trợ trên lớp 4A3. Tôi tiếp tục theo dõi trong học kỳ I và sẽ cập nhật số liệu.
+
+**19. Học sinh dùng thiết bị gì?**
+Máy tính bảng hoặc máy tính của trường, hoặc điện thoại. Nếu thiếu thiết bị, tôi in phiếu nhóm và chấm bằng ảnh chụp bài làm, không cần máy cho từng em.
 
 ---
 

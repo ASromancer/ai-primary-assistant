@@ -2,21 +2,38 @@
 
 **Hạn nộp: 23h59 ngày 25/10/2026 (giờ Việt Nam).** Nộp tại <https://apps.rmit.edu.vn/r/nopsanphamGTTP2026>.
 Bảng dự thi: **Bảng A** (giáo viên, cán bộ quản lý Mầm non và Tiểu học).
+Tác giả: Trần Thị Hiền Minh – giáo viên lớp 4A3 (34 học sinh) – Trường Tiểu học Ngô Quyền, phường Quảng Yên, TP. Quảng Ninh.
 
-Trong toàn bộ hồ sơ, các chỗ đánh dấu `⟦…⟧` cần điền **thông tin hoặc số liệu thật**. Tuyệt đối không ghi số liệu ước đoán như thể là số đo thật.
+Trong toàn bộ hồ sơ, các chỗ đánh dấu `⟦…⟧` cần điền **thông tin hoặc số liệu thật**. Tuyệt đối không ghi số liệu ước đoán như thể là số đo thật. Hiện chưa có số đo thí điểm: trang kết quả đang trình bày **thiết kế đo và mục tiêu**; khi điền `ban-nop/so-lieu.json` sau 23/10, `dien_mau.py` tự chuyển sang số thật.
 
-## 1. Việc cần làm ngay (hôm nay, Chủ nhật 18/10)
+## 1. Việc cần làm ngay (Thứ Hai 19/10)
 
-- [ ] **Gửi email hỏi Ban Tổ chức về quyền tác giả** (mẫu ở mục 6). Thể lệ ghi: *"Các trường hợp nhờ người khác hỗ trợ hoặc thực hiện thay sẽ không được công nhận."* Cần xác nhận việc giáo viên nhận hỗ trợ lập trình có được chấp nhận hay không, trước khi đầu tư thời gian cho hồ sơ.
+- [ ] **Gửi email hỏi Ban Tổ chức về quyền tác giả.** Bản đã điền sẵn nằm ở `ban-nop/email-gui-ban-to-chuc.txt` (gửi ieeai@rmit.edu.vn từ email của giáo viên). Thể lệ ghi: *"Các trường hợp nhờ người khác hỗ trợ hoặc thực hiện thay sẽ không được công nhận."* Cần xác nhận việc giáo viên nhận hỗ trợ lập trình có được chấp nhận hay không.
+- [ ] **Thêm `MA_DEMO` vào Secrets của app trên Streamlit Cloud rồi Reboot.** Mã nằm trong `ban-nop/ma-demo.txt` (chạy `.venv/bin/python docs/du-thi/tao_ma_demo.py` để in lại). Mở thử link dùng thử bằng **cửa sổ ẩn danh**. Không ghi mã này vào bất kỳ file nào trên GitHub.
 - [x] Tải bộ mẫu PowerPoint và Poster của Ban Tổ chức (đã có trong `docs/`, đã điền vào `Slide-du-thi.pptx` và `Poster-du-thi.pptx`).
-- [ ] **Thêm `MA_DEMO` vào Secrets của app rồi Reboot.** Mã đã được tạo sẵn trong `ban-nop/ma-demo.txt` (chạy `.venv/bin/python docs/du-thi/tao_ma_demo.py` để xem lại). Mở thử link dùng thử bằng cửa sổ ẩn danh.
-- [ ] In [in-thi-diem.pdf](in-thi-diem.pdf) (bảng ghi chép, khảo sát giáo viên, phiếu học sinh) cho đợt thí điểm.
-- [ ] Đăng nhập app bằng tài khoản Google của giáo viên dự thi. Tạo lớp thật, nhập danh sách học sinh và chia nhóm Xanh/Cam/Tím.
-- [ ] Xin phép Ban Giám hiệu cho thí điểm. Nếu quay hình hoặc chụp ảnh học sinh, xin phép phụ huynh và không để lộ mặt, tên thật của học sinh.
+- [ ] Xin phép **Ban Giám hiệu** cho thí điểm trong tuần này; gửi **thông báo cho phụ huynh** lớp 4A3. Thông báo cần nói rõ hồ sơ dự thi có hiện họ tên học sinh trong ảnh chụp màn hình phần mềm (xin đồng ý); ảnh, clip trên lớp không để lộ mặt học sinh.
+- [ ] In [in-thi-diem.pdf](in-thi-diem.pdf):
+  - Trang 1 (bảng ghi chép giáo viên): 1 bản.
+  - Trang 2 (khảo sát giáo viên A và D): 1 bản cho mình + 1 bản cho mỗi đồng nghiệp dùng thử (thường 3–4 bản).
+  - Trang 3–4 (phiếu mặt cười, 8 phiếu/bộ): **5 bộ = 40 phiếu** cho 34 em, dư vài phiếu dự phòng.
+- [ ] Đăng nhập app bằng tài khoản Google của giáo viên dự thi. Kiểm tra lớp 4A3 đã có danh sách và chia nhóm Xanh/Cam/Tím.
+- [ ] Xác nhận sản phẩm là **sản phẩm gốc** và **chưa từng đạt giải cấp quốc gia** (đúng điều kiện thể lệ).
 
-## 2. Thí điểm và thu số liệu (thứ Hai 19/10 – thứ Sáu 23/10)
+## 2. Lịch từng ngày 19–25/10
 
-Làm theo [05-ke-hoach-thi-diem-va-khao-sat.md](05-ke-hoach-thi-diem-va-khao-sat.md). Đầu ra cần có:
+| Ngày | Việc làm |
+|---|---|
+| **T2 19/10** | Gửi email Ban Tổ chức; thêm `MA_DEMO` + Reboot + thử ẩn danh; xin phép Ban Giám hiệu, thông báo phụ huynh; in phiếu; giáo viên làm khảo sát **A (trước)**; bấm giờ **B1** soạn phiếu theo cách cũ. |
+| **T3 20/10** | Dạy **Bài 14 "So sánh các số có nhiều chữ số"** bằng phiếu nhóm in hoặc giao bài qua QR; bấm giờ chấm và nhận xét **B5** (cách cũ và dùng app). |
+| **T4 21/10** | Phân tích lỗi sai → soạn phiếu bổ trợ → dạy bổ trợ → kiểm tra lại, ghi **B8/B9**. Dạy **Bài 15 "Làm quen với dãy số tự nhiên"**. |
+| **T5 22/10** | Phát phiếu khảo sát học sinh (C) và đồng nghiệp (D); chụp 3–5 ảnh không lộ mặt; chụp màn hình thống kê ở Trang chủ. |
+| **T6 23/10** | Điền `ban-nop/so-lieu.json`; chạy `dien_mau.py` và `long_tieng.py`. |
+| **T7 24/10** | Tải video lên Drive; tạo link + QR (mục 5); xuất lại slide, poster; đọc soát PDF (không còn `⟦…⟧`); **nộp bài** và lưu xác nhận nộp. |
+| **CN 25/10** | Dự phòng. Không để sát 23h59. |
+
+## 3. Thí điểm và thu số liệu (Thứ Hai 19/10 – Thứ Sáu 23/10)
+
+Làm theo [05-ke-hoach-thi-diem-va-khao-sat.md](05-ke-hoach-thi-diem-va-khao-sat.md) (Toán 4, Bài 14 và Bài 15). Đầu ra cần có:
 
 - [ ] Bảng số liệu thời gian (soạn phiếu, chấm và nhận xét) trước và sau khi dùng app.
 - [ ] Kết quả phiếu bổ trợ: tỉ lệ học sinh chưa đạt, trước và sau khi dạy bổ trợ.
@@ -24,42 +41,50 @@ Làm theo [05-ke-hoach-thi-diem-va-khao-sat.md](05-ke-hoach-thi-diem-va-khao-sat
 - [ ] Ảnh chụp màn hình thống kê ở Trang chủ (số phiếu, số bài chấm) bằng tài khoản thật.
 - [ ] 3–5 ảnh hoặc clip ngắn cảnh dùng trên lớp (không lộ mặt học sinh).
 
-## 3. Làm hồ sơ (song song từ 21/10, hoàn thiện thứ Bảy 24/10)
+## 4. Hồ sơ nộp
 
-| Thành phần | Yêu cầu của Ban Tổ chức | Nội dung soạn sẵn |
+| Thành phần | Yêu cầu của Ban Tổ chức | File nộp |
 |---|---|---|
-| Slide | Mẫu của Ban Tổ chức, **xuất PDF, ≤ 15 trang, ≤ 100MB** | **`Slide-du-thi.pptx`** (14 trang, đã trên mẫu); lời thuyết trình ở [02-slide.md](02-slide.md) |
-| Poster | Mẫu của Ban Tổ chức, **A0 (84,1 × 118,9 cm), PDF chất lượng cao, ≤ 100MB** | **`Poster-du-thi.pptx`** (đã trên mẫu) |
-| Video | **≤ 5 phút**, thuyết trình nội dung slide, gửi **link Google Drive** | [04-kich-ban-video.md](04-kich-ban-video.md) |
+| Slide | Mẫu của Ban Tổ chức, **xuất PDF, ≤ 15 trang, ≤ 100MB** | **`ban-nop/Slide-du-thi.pdf`** (14 trang, `dien_mau.py` xuất sẵn, đã nhúng phông); lời thuyết trình là `LOI_NOI` trong `dien_mau.py` |
+| Poster | Mẫu của Ban Tổ chức, **A0 (84,1 × 118,9 cm), PDF chất lượng cao, ≤ 100MB** | **`ban-nop/Poster-du-thi.pdf`** (đã nhúng phông) |
+| Video | **≤ 5 phút**, thuyết trình nội dung slide, gửi **link Google Drive** | **`ban-nop/video-long-tieng.mp4`** (khoảng 3:07), xem [04-kich-ban-video.md](04-kich-ban-video.md) |
 | Chuẩn bị trả lời giám khảo | Vòng chung kết thuyết trình trực tiếp | [06-hoi-dap-giam-khao.md](06-hoi-dap-giam-khao.md) |
 
-Nội dung gốc chung cho cả 3 thành phần nằm ở [01-noi-dung-ho-so.md](01-noi-dung-ho-so.md). Ảnh chụp màn hình và mã QR nằm trong thư mục [anh/](anh/).
+Nội dung gốc chung nằm ở [01-noi-dung-ho-so.md](01-noi-dung-ho-so.md). Ảnh chụp màn hình dùng cho slide và poster được `tao_anh.py` tạo lại trong `ban-nop/` (không đưa lên GitHub).
 
-## 4. Kiểm tra và nộp (nộp sớm trong ngày 24/10 hoặc sáng Chủ nhật 25/10, không để sát 23h59)
+## 5. Kiểm tra và nộp (nộp trong ngày Thứ Bảy 24/10, Chủ nhật 25/10 để dự phòng)
 
-- [ ] Slide: đúng mẫu của Ban Tổ chức, ≤ 15 trang, mở lại được. Nộp file PDF `ban-nop/Slide-du-thi.pdf` do `dien_mau.py` xuất sẵn (đã nhúng phông Aptos của mẫu). Nếu tự xuất từ máy không có phông Aptos (WPS, Office cũ), chữ sẽ bị thay bằng phông khác và có thể tràn dòng.
-- [ ] Poster: đúng mẫu, A0, PDF (`ban-nop/Poster-du-thi.pdf`, đã nhúng phông), chữ đọc được khi in (cỡ chữ nội dung ≥ 24pt), các mã QR quét được.
-- [ ] Video: ≤ 5:00 (kiểm tra lại độ dài), âm thanh rõ, có phụ đề (khuyến khích).
-  - Trên Drive: đặt quyền **"Bất kỳ ai có đường liên kết – Người xem"**.
-  - **Không xoá hoặc sửa video sau khi nộp.**
+- [ ] Slide: đúng mẫu của Ban Tổ chức, ≤ 15 trang, mở lại được. Nộp `ban-nop/Slide-du-thi.pdf` do `dien_mau.py` xuất sẵn (đã nhúng phông Aptos của mẫu). Nếu tự xuất từ máy không có phông Aptos (WPS, Office cũ), chữ sẽ bị thay bằng phông khác và có thể tràn dòng.
+- [ ] Poster: đúng mẫu, A0, PDF (`ban-nop/Poster-du-thi.pdf`), chữ đọc được khi in, các mã QR quét được.
+- [ ] Đọc soát cả 2 file PDF: **không còn chỗ `⟦…⟧`**, đúng tên, lớp, trường.
+- [ ] Video: ≤ 5:00, âm thanh rõ, có phụ đề.
+  - Tải video lên **Google Drive của chính giáo viên dự thi** (không dùng Drive của người khác).
+  - Đặt quyền **"Bất kỳ ai có đường liên kết – Người xem"**, mở thử link bằng cửa sổ ẩn danh.
+  - **Sau khi nộp, không xoá, không sửa, không thay file video trên Drive.**
+- [ ] Tạo link và mã QR video:
+
+  ```bash
+  .venv/bin/python docs/du-thi/tao_ma_demo.py --video <link-drive>   # ghi ban-nop/link-video.txt và ban-nop/qr-video.png
+  .venv/bin/python docs/du-thi/dien_mau.py                           # chèn QR vào slide, poster và xuất lại PDF
+  ```
+
+  Mọi file sinh ra đều nằm trong `ban-nop/` (không đưa lên GitHub). Không tự tạo mã QR dùng thử vào thư mục `anh/`, vì `anh/` được đưa lên GitHub và sẽ làm lộ mã dùng thử. Mã QR trang chủ app có sẵn: [anh/qr-app.png](anh/qr-app.png).
 - [ ] Mở link trải nghiệm bằng cửa sổ ẩn danh để chắc giám khảo vào được không cần đăng nhập.
-- [ ] Supabase không ở trạng thái tạm dừng. Nếu tạm dừng thì bấm Restore. Mở app một lần cho app "thức".
-- [ ] Mọi chỗ `⟦…⟧` đã được thay bằng thông tin thật.
 - [ ] Hồ sơ có câu công khai việc sử dụng AI và hỗ trợ kỹ thuật (xem mục "Minh bạch" trong [01-noi-dung-ho-so.md](01-noi-dung-ho-so.md)).
 - [ ] Mỗi giáo viên chỉ nộp **một** sản phẩm.
+- [ ] Nộp xong: chụp màn hình hoặc lưu email **xác nhận nộp bài**.
 
-## 5. Tạo mã QR cho link trải nghiệm và link video
+## 6. Giữ app hoạt động đến vòng chung kết
 
-Chạy trong thư mục dự án, thay đường dẫn bằng link thật:
+Mỗi tuần một lần (và trước mỗi vòng chấm), cho đến hết vòng chung kết:
 
-```bash
-.venv/bin/python -c "import segno; segno.make('https://tro-ly-giang-day.streamlit.app/?demo=MA_DEMO', error='h').save('docs/du-thi/anh/qr-trai-nghiem.png', scale=20, border=2)"
-.venv/bin/python -c "import segno; segno.make('LINK_GOOGLE_DRIVE_VIDEO', error='h').save('docs/du-thi/anh/qr-video.png', scale=20, border=2)"
-```
+- [ ] Mở app để app "thức" (Streamlit Cloud cho app ngủ khi lâu không có người dùng).
+- [ ] Vào Supabase kiểm tra dự án **không bị tạm dừng**; nếu tạm dừng thì bấm Restore.
+- [ ] Mở link dùng thử bằng cửa sổ ẩn danh.
 
-Mã QR trang chủ app có sẵn: [anh/qr-app.png](anh/qr-app.png).
+## 7. Email mẫu hỏi Ban Tổ chức (đã thay bằng bản trong `ban-nop/`)
 
-## 6. Email mẫu hỏi Ban Tổ chức (gửi ieeai@rmit.edu.vn)
+Mẫu này chỉ để tham khảo. **Bản đã điền đầy đủ để gửi là `ban-nop/email-gui-ban-to-chuc.txt`.**
 
 > **Tiêu đề:** Hỏi về quy định tác giả – Giải thưởng Tiên phong Ứng dụng AI trong Giáo dục 2026
 >

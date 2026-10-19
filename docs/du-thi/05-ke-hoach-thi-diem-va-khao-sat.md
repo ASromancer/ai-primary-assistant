@@ -1,11 +1,13 @@
-# Kế hoạch thí điểm và bộ khảo sát (18–23/10/2026)
+# Kế hoạch thí điểm và bộ khảo sát (19–23/10/2026)
+
+**Lớp 4A3 (34 học sinh), Trường Tiểu học Ngô Quyền.** Môn Toán 4: Bài 14 "So sánh các số có nhiều chữ số" và Bài 15 "Làm quen với dãy số tự nhiên".
 
 **Mục đích:** có **số liệu thật** cho tiêu chí "Tác động và kết quả thực tế" (25%) và "Tính thực tiễn" (25%).
 Thời gian ngắn nên ghi rõ trong hồ sơ là *"kết quả thí điểm bước đầu"*. Số liệu nhỏ nhưng thật có giá trị hơn số liệu đẹp mà không kiểm chứng được.
 
 **Đạo đức thí điểm:**
 - Báo cáo và xin phép Ban Giám hiệu.
-- Không đưa tên thật học sinh vào hồ sơ.
+- Ảnh chụp màn hình trong hồ sơ dùng danh sách lớp 4A3 thật: cần phụ huynh đồng ý trước khi nộp; ảnh, clip trên lớp không để lộ mặt học sinh.
 - Ảnh và video không lộ mặt học sinh, trừ khi có đồng ý bằng văn bản của phụ huynh.
 - Phiếu khảo sát học sinh ẩn danh.
 
@@ -13,11 +15,11 @@ Thời gian ngắn nên ghi rõ trong hồ sơ là *"kết quả thí điểm b�
 
 | Ngày | Việc làm | Số liệu cần ghi |
 |---|---|---|
-| **18/10 (CN)** | Tạo lớp trong app, nhập danh sách, chia nhóm Xanh/Cam/Tím theo kết quả đánh giá gần nhất. Gửi phiếu khảo sát **giáo viên – trước** (mục A) cho bản thân và 2–3 đồng nghiệp. | A1–A4 |
-| **19/10 (T2)** | **Đo cách làm cũ:** soạn 1 phiếu phân hóa 3 mức có đáp án cho bài sắp dạy theo cách thường làm (Word hoặc giấy), bấm giờ. **Đo cách mới:** soạn phiếu cho bài kế tiếp bằng app, bấm giờ từ lúc mở app đến lúc in xong 3 phiếu nhóm (gồm cả thời gian đọc kiểm định và chỉnh sửa). Ghi số lỗi kiểm định phát hiện và số lỗi bạn tự phát hiện thêm. | B1–B4 |
-| **20/10 (T3)** | Dạy bằng phiếu nhóm (in) hoặc giao bài online bằng QR. Chấm 1 lớp **theo cách cũ** (chấm tay, viết nhận xét), bấm giờ. Chấm bài tương đương **bằng app** (chụp ảnh hoặc bài online, duyệt, sửa), bấm giờ. Ghi tỉ lệ học sinh hoàn thành bài. | B5–B7 |
-| **21/10 (T4)** | Xem mục "Phân tích lỗi sai", ghi tỉ lệ chưa đạt ở 1–3 câu yếu nhất. Soạn phiếu bổ trợ bằng app và dạy bổ trợ 15–20 phút. Cho làm lại 1 bài kiểm tra ngắn cùng dạng, ghi tỉ lệ chưa đạt sau bổ trợ. | B8–B9 |
-| **22–23/10 (T5–T6)** | Phát phiếu khảo sát **học sinh** (mục C). Đồng nghiệp dùng thử ít nhất 1 lần, rồi làm khảo sát **giáo viên – sau** (mục D). Chụp màn hình thống kê ở Trang chủ app. Tổng hợp bảng kết quả (mục E). | C, D, E |
+| **19/10 (T2)** | Kiểm tra lớp 4A3 trong app: danh sách 34 em, nhóm Xanh/Cam/Tím theo kết quả đánh giá gần nhất. Gửi phiếu khảo sát **giáo viên – trước** (mục A) cho bản thân và 2–3 đồng nghiệp. **Đo cách làm cũ:** soạn 1 phiếu phân hóa 3 mức có đáp án theo cách thường làm (Word hoặc giấy), bấm giờ. **Đo cách mới:** soạn phiếu **Bài 14 "So sánh các số có nhiều chữ số"** bằng app (chụp trang sách 48–50), bấm giờ từ lúc mở app đến lúc in xong 3 phiếu nhóm (gồm cả thời gian đọc kiểm định và chỉnh sửa). Ghi số lỗi kiểm định phát hiện và số lỗi tự phát hiện thêm. | A1–A4, B1–B4 |
+| **20/10 (T3)** | Dạy **Bài 14** bằng phiếu nhóm (in) hoặc giao bài online bằng QR. Chấm 1 lớp **theo cách cũ** (chấm tay, viết nhận xét), bấm giờ. Chấm bài tương đương **bằng app** (chụp ảnh hoặc bài online, duyệt, sửa), bấm giờ. Ghi tỉ lệ học sinh hoàn thành bài. | B5–B7 |
+| **21/10 (T4)** | Xem mục "Phân tích lỗi sai" của Bài 14, ghi tỉ lệ chưa đạt ở 1–3 câu yếu nhất. Soạn phiếu bổ trợ bằng app và dạy bổ trợ 15–20 phút. Cho làm lại 1 bài kiểm tra ngắn cùng dạng, ghi tỉ lệ chưa đạt sau bổ trợ. Dạy **Bài 15 "Làm quen với dãy số tự nhiên"** (phiếu soạn bằng app). | B8–B9 |
+| **22/10 (T5)** | Phát phiếu khảo sát **học sinh** (mục C, 34 em). Đồng nghiệp dùng thử ít nhất 1 lần, rồi làm khảo sát **giáo viên – sau** (mục D). Chụp 3–5 ảnh không lộ mặt học sinh. Chụp màn hình thống kê ở Trang chủ app. | C, D |
+| **23/10 (T6)** | Tổng hợp bảng kết quả (mục E). Điền `ban-nop/so-lieu.json`, chạy lại `dien_mau.py` và `long_tieng.py`. | E |
 
 ## A. Khảo sát giáo viên – trước khi dùng (Google Form)
 
@@ -42,14 +44,14 @@ Thời gian ngắn nên ghi rõ trong hồ sơ là *"kết quả thí điểm b�
 
 B4 và B7 cần ghi trung thực. Chúng chứng minh giáo viên thực sự duyệt kết quả của AI (điểm cộng cho "AI có trách nhiệm") và giúp trả lời câu hỏi "AI có sai không?" của giám khảo.
 
-## C. Khảo sát học sinh (phiếu giấy, đọc to cho lớp 1–2; ẩn danh)
+## C. Khảo sát học sinh (phiếu giấy, ẩn danh; giáo viên đọc to từng câu)
 
 Học sinh tô vào mặt cười: 😊 Thích · 😐 Bình thường · 🙁 Không thích
 
 1. Em có thích làm phiếu bài tập hôm nay không?
 2. Bài tập hôm nay có vừa sức với em không? *(😊 Vừa · 😐 Hơi khó/hơi dễ · 🙁 Quá khó/quá dễ)*
 3. *(Nếu làm online)* Em có thích làm bài trên máy không?
-4. Em muốn nói gì với cô/thầy về phiếu bài tập? *(học sinh lớp 3–5 viết; lớp 1–2 giáo viên ghi lại lời em nói)*
+4. Em muốn nói gì với cô/thầy về phiếu bài tập? *(học sinh tự viết)*
 
 ## D. Khảo sát giáo viên – sau khi dùng thử (Google Form, thang 1–5)
 
@@ -70,7 +72,7 @@ Học sinh tô vào mặt cười: 😊 Thích · 😐 Bình thường · 🙁 K
 | Lỗi do kiểm định phát hiện | – | B3 | so với B4 |
 | Tỉ lệ hoàn thành bài | B6 cũ | B6 app | |
 | Tỉ lệ chưa đạt | B8 | B9 | sau 1 buổi bổ trợ |
-| Học sinh thích phiếu (% 😊) | – | C1 | n = ⟦…⟧ |
+| Học sinh thích phiếu (% 😊) | – | C1 | n = 34 (hoặc số em có mặt) |
 | Giáo viên đánh giá chung (trung bình 1–5) | – | D1–D6 | n = ⟦…⟧ giáo viên |
 
-**Cách viết kết quả trung thực:** *"Thí điểm 5 ngày tại lớp ⟦…⟧ (⟦n⟧ học sinh) và ⟦n⟧ đồng nghiệp dùng thử cho thấy bước đầu: … Số liệu còn nhỏ; tác giả sẽ tiếp tục theo dõi trong học kỳ I."*
+**Cách viết kết quả trung thực:** *"Thí điểm 5 ngày tại lớp 4A3 (34 học sinh) và ⟦n⟧ đồng nghiệp dùng thử cho thấy bước đầu: … Số liệu còn nhỏ; tác giả sẽ tiếp tục theo dõi trong học kỳ I."*

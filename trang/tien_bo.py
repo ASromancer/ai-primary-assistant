@@ -78,7 +78,7 @@ truc_y = alt.Axis(values=[1, 2, 3], title=None, grid=True, gridColor="#EEF1F5",
 goc = alt.Chart(df).encode(
     x=alt.X("Thứ tự:Q", title="Lần chấm", axis=alt.Axis(tickMinStep=1, format="d", grid=False)),
     y=alt.Y("Bậc:Q", scale=alt.Scale(domain=[0.7, 3.3]), axis=truc_y),
-    tooltip=["Lần", "Chủ đề", "Mức", "Điểm", "Ngày"])
+    tooltip=["Lần", "Chủ đề", "Mức", "Ngày"])
 st.altair_chart((goc.mark_line(color="#1565C0", strokeWidth=2)
                  + goc.mark_point(color="#1565C0", filled=True, size=110))
                 .properties(height=240, title=f"Mức đạt TT27 của {em} qua các lần chấm"), width="stretch")

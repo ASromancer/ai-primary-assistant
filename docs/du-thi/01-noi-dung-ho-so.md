@@ -1,10 +1,10 @@
 # Nội dung hồ sơ dự thi
 
 **Tên sản phẩm:** Trợ Lý Giảng Dạy – Phiếu bài tập phân hóa và đánh giá học sinh tiểu học theo Thông tư 27 bằng AI
-**Tác giả:** ⟦Họ tên⟧ – ⟦chức vụ, môn/lớp phụ trách⟧ – Trường ⟦tên trường⟧, ⟦tỉnh/thành⟧
+**Tác giả:** Trần Thị Hiền Minh – giáo viên lớp 4A3 – Trường Tiểu học Ngô Quyền, phường Quảng Yên, TP. Quảng Ninh
 **Bảng:** A (Mầm non và Tiểu học)
 **Chủ đề chính:** Giảng dạy, học tập và đánh giá. **Chủ đề liên quan:** Lớp học số tích hợp AI; Ứng dụng AI có trách nhiệm.
-**Địa chỉ sản phẩm:** <https://tro-ly-giang-day.streamlit.app> · Link trải nghiệm cho Ban Giám khảo: ⟦https://tro-ly-giang-day.streamlit.app/?demo=MA_DEMO⟧
+**Địa chỉ sản phẩm:** <https://tro-ly-giang-day.streamlit.app> · Link trải nghiệm cho Ban Giám khảo: ghi trong slide trang 14 (mã riêng, không công khai)
 
 > Tài liệu này là nội dung gốc cho slide, poster và video. Thứ tự các phần theo đúng 5 nội dung thể lệ yêu cầu. Chỗ `⟦…⟧` cần điền thông tin hoặc số liệu thật sau khi thí điểm.
 
@@ -19,7 +19,7 @@
 
 Chương trình GDPT 2018 đồng thời đòi hỏi dạy học phân hóa, phù hợp năng lực từng em.
 
-**Vấn đề thực tế tại lớp ⟦tên lớp⟧ (⟦sĩ số⟧ học sinh).** Trình độ học sinh trong lớp chênh lệch rõ. Muốn dạy phân hóa, mỗi tuần giáo viên phải:
+**Vấn đề thực tế tại lớp 4A3 (34 học sinh).** Trình độ học sinh trong lớp chênh lệch rõ. Muốn dạy phân hóa, mỗi tuần giáo viên phải:
 - soạn phiếu bài tập ở 3 mức kèm đáp án và ma trận;
 - in phiếu riêng cho từng nhóm;
 - chấm bài, viết nhận xét cho từng em;
@@ -48,7 +48,7 @@ Theo ⟦khảo sát/ghi nhận của tác giả⟧, soạn một phiếu phân h
 
 | Bước | AI làm gì | Giáo viên làm gì |
 |---|---|---|
-| ① Soạn phiếu | Từ tên bài hoặc **ảnh chụp trang sách giáo khoa**, AI soạn phiếu 3 mức TT27 kèm đáp án, hướng dẫn chấm, ma trận, yêu cầu cần đạt. Đáp án trình bày theo chuẩn tiểu học ("Bài giải – câu lời giải – phép tính (đơn vị) – Đáp số"). | Chọn lớp, môn, bộ sách, thời lượng; đổi câu, làm dễ hơn hoặc khó hơn, sửa tay. |
+| ① Soạn phiếu | Từ tên bài hoặc **ảnh chụp trang sách giáo khoa**, AI soạn phiếu 3 mức TT27 kèm đáp án, hướng dẫn chấm, ma trận, yêu cầu cần đạt. Đáp án trình bày theo chuẩn tiểu học ("Bài giải – câu lời giải – phép tính (đơn vị) – Đáp số"). | Chọn lớp, môn, thời lượng (bộ sách cố định: Kết nối tri thức với cuộc sống); đổi câu, làm dễ hơn hoặc khó hơn, sửa tay. |
 | ② Kiểm định | Một **lượt AI thứ hai đóng vai tổ trưởng chuyên môn**: tự giải lại từng câu, phát hiện đáp án sai, câu lệch mức, từ ngữ chưa phù hợp lứa tuổi. Kết quả là điểm chất lượng 0–100 và góp ý từng câu. | Đọc góp ý, bấm "Sửa theo góp ý" hoặc giữ nguyên. |
 | ③ Dạy và giao bài | Phiếu tự tách thành **3 phiếu nhóm Xanh/Cam/Tím**. Tên màu trung tính để học sinh không bị "dán nhãn". Có thêm đề A/B chống nhìn bài, phiếu in sẵn tên từng em, chế độ trình chiếu kiểu trò chơi, và **giao bài online bằng mã QR**: học sinh chọn tên, tự nhận đúng phiếu nhóm mình. | Chia nhóm, in phiếu hoặc chiếu mã lên lớp. |
 | ④ Chấm và nhận xét | **Chấm từ ảnh chụp bài làm viết tay** hoặc bài làm online. Câu trắc nghiệm, đúng/sai, nối cột được chấm ngay; AI viết **nhận xét theo tinh thần TT27**. Mức Hoàn thành tốt / Hoàn thành / Chưa hoàn thành được tính bằng **quy tắc cố định, công khai** (không để AI tự quyết). | Xem lại, **chấm tay hoặc sửa** từng câu, chốt mức và nhận xét. |
@@ -75,7 +75,7 @@ Theo ⟦khảo sát/ghi nhận của tác giả⟧, soạn một phiếu phân h
 
 > **Phần này chỉ được điền bằng số liệu thật từ đợt thí điểm** (kế hoạch ở [05-ke-hoach-thi-diem-va-khao-sat.md](05-ke-hoach-thi-diem-va-khao-sat.md)). Nếu số liệu còn ít, hãy ghi đúng là "kết quả thí điểm bước đầu, ⟦n⟧ ngày, ⟦n⟧ học sinh".
 
-**Phạm vi thí điểm:** lớp ⟦…⟧, ⟦sĩ số⟧ học sinh, môn ⟦…⟧, từ ⟦ngày⟧ đến ⟦ngày⟧. Có ⟦n⟧ đồng nghiệp dùng thử.
+**Phạm vi thí điểm:** lớp 4A3, 34 học sinh, môn Toán 4 – Bài 14 "So sánh các số có nhiều chữ số" và Bài 15 "Làm quen với dãy số tự nhiên", từ Thứ Hai 19/10 đến Thứ Sáu 23/10/2026. Có ⟦n⟧ đồng nghiệp dùng thử.
 
 | Chỉ số | Trước (cách làm cũ) | Sau (dùng sản phẩm) |
 |---|---|---|
@@ -94,7 +94,7 @@ Theo ⟦khảo sát/ghi nhận của tác giả⟧, soạn một phiếu phân h
 **Tác động:**
 - **Với giáo viên:** ⟦tiết kiệm … giờ/tuần⟧; có dữ liệu để dạy bổ trợ đúng chỗ; nhận xét học bạ dựa trên quá trình thay vì trí nhớ.
 - **Với học sinh:** mỗi em làm bài vừa sức; được phản hồi ngay ở các câu tự chấm; học bổ trợ đúng phần còn yếu.
-- **Với nhà trường:** ⟦…⟧
+- **Với nhà trường:** công cụ 0 đồng, dùng chung được trong tổ chuyên môn khối 4, Trường Tiểu học Ngô Quyền; kết quả đánh giá thường xuyên được lưu theo từng em, làm minh chứng cho việc dạy phân hóa và đánh giá theo TT27.
 
 ## 4. Tính bền vững và khả năng nhân rộng  *(tiêu chí 15%)*
 

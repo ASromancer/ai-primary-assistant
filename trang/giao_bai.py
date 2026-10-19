@@ -155,10 +155,9 @@ def theo_doi():
         "Học sinh": t, "Phiếu": p,
         "Trạng thái": TRANG_THAI.get(b["trang_thai"], "") if b else "— chưa nộp",
         "Nộp lúc": gio_vn(b["nop_luc"]) if b else "",
-        "Điểm": state.so_vn(b["diem"]) if b and b["diem"] is not None else "",  # ô trống, không hiện "None"
-        "Mức TT27": b["muc_tt27"] if b else ""} for t, p, b in hang])
+        "Mức hoàn thành": b["muc_tt27"] if b else ""} for t, p, b in hang])  # TT27: không hiện điểm
     st.dataframe(bang, hide_index=True, width="stretch")
-    st.caption("🔄 Tự cập nhật mỗi 5 giây. Điểm của bài chờ chấm mới gồm phần tự chấm (trắc nghiệm, đúng/sai, nối cột).")
+    st.caption("🔄 Tự cập nhật mỗi 5 giây. Câu trắc nghiệm, đúng/sai, nối cột được tự chấm ngay; câu điền và tự luận chờ chấm.")
 
 
 st.markdown("#### 👀 Theo dõi nộp bài")
