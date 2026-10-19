@@ -43,14 +43,15 @@ MAU_SO_LIEU = {
     "phan_hoi": "",
 }
 MODEL_TTS = "gemini-3.8-flash-tts"
-DOC_EDGE = [(r"\bAI\b", "ây ai"), (r"\bQR\b", "kiu a"), (r"Gemini", "Giê mi ni")]  # phát âm cho edge-tts
+DOC_EDGE = [(r"\bAI\b", "ây ai"), (r"\bQR\b", "kiu a"), (r"Gemini", "Giê mi ni"), (r"chatbot", "chát bót")]  # phát âm cho edge-tts
 GIOI_HAN = 298  # giây (thể lệ: tối đa 5 phút)
 MINH_HOA = {"04-soan-phieu": r"Đã rút gọn\Nthời gian chờ AI"}  # nhãn góc trên trái, chỉ hiện trong đoạn tương ứng
+CAT_DUOI = {"07-giao-bai": 23}  # giây cuối đoạn quay chỉ còn màn hình đứng yên sau khi nộp bài: cắt bỏ
 TUA_TOI_DA = 1.8  # đoạn quay app dài hơn lời đọc: tua nhanh tối đa 1,8 lần để không có khoảng lặng dài
 SR = 24000
 DONG = 42                                   # ký tự tối đa mỗi dòng phụ đề, tối đa 2 dòng mỗi khung
 GIU_NGUYEN = ["Thông tư 27", "Ban Giám khảo", "tổ trưởng chuyên môn", "Trợ Lý Giảng Dạy", "sách giáo khoa", "mã QR",
-              "yêu cầu cần đạt", "máy tính bảng", "bốn mươi phần trăm", "một buổi bổ trợ", "tháng 10", "ba mươi giây", "khối một", "khối năm", "ba mức", "thứ hai",
+              "yêu cầu cần đạt", "máy tính bảng", "một nửa", "chưa đạt", "19 đến 23", "đáp án sai", "nhận xét học bạ", "chatbot AI", "bốn mươi phần trăm", "một buổi bổ trợ", "tháng 10", "ba mươi giây", "khối một", "khối năm", "ba mức", "thứ hai",
               "Xanh, Cam và Tím", "phiếu bài tập phân hóa", "soạn xong"]
 # Từ ghép 2 âm tiết: không xuống dòng giữa từ (phụ đề tiếng Việt ngắt theo từ, không theo âm tiết)
 TU_GHEP = ("học sinh", "giáo viên", "nhận xét", "đáp án", "công cụ", "bài tập", "phân hóa", "đánh giá", "tiểu học",
@@ -75,7 +76,7 @@ def loi_doc(d: dict) -> dict[str, list[str]]:
                 f"{d['phan_tram_chua_dat_sau']} phần trăm sau một buổi bổ trợ."]
                if co("so_ngay", "so_hoc_sinh", "phut_soan_cu", "phut_soan_moi", "phut_cham_cu", "phut_cham_moi",
                      "phan_tram_chua_dat_truoc", "phan_tram_chua_dat_sau")
-               else [f"Tôi thí điểm từ ngày 19 đến 23 tháng 10 tại lớp {d['lop'] or 'mình'}, so sánh trước và sau trên cùng lớp.",
+               else [f"Tôi đang thí điểm từ ngày 19 đến 23 tháng 10 tại lớp {d['lop'] or 'mình'}, so sánh trước và sau trên cùng lớp.",
                      "Mục tiêu là giảm ít nhất một nửa thời gian soạn phiếu, giảm bốn mươi phần trăm thời gian chấm và nhận xét, "
                      "và giảm tỉ lệ học sinh chưa đạt sau một buổi bổ trợ."])
     if d.get("phan_hoi", "").strip():
@@ -93,7 +94,7 @@ def loi_doc(d: dict) -> dict[str, list[str]]:
                          "phân tích lỗi để bổ trợ, và theo dõi tiến bộ đến học bạ.",
                          "Ở mỗi bước, AI đề xuất, còn giáo viên là người quyết định."],
         "04-soan-phieu": ["Tôi chọn lớp, môn, nhập tên bài hoặc chụp trang sách giáo khoa.",
-                          "Chỉ khoảng ba mươi giây, AI soạn xong phiếu ba mức theo Thông tư 27, đáp án trình bày đúng như vở của học sinh, "
+                          "Chưa đầy một phút, AI soạn xong phiếu ba mức theo Thông tư 27, đáp án trình bày đúng như vở của học sinh, "
                           "kèm ma trận và yêu cầu cần đạt."],
         "05-kiem-dinh": ["Điểm khác biệt là một lượt AI thứ hai đóng vai tổ trưởng chuyên môn, tự giải lại từng câu để soát đáp án sai "
                          "và câu lệch mức.",
@@ -101,7 +102,7 @@ def loi_doc(d: dict) -> dict[str, list[str]]:
         "06-phan-hoa": ["Một phiếu tự tách thành ba phiếu Xanh, Cam và Tím cho ba nhóm.",
                         "Tên màu trung tính, nên các em không cảm thấy mình bị xếp loại."],
         "07-giao-bai": ["Trên lớp, tôi chiếu mã QR.",
-                        "Các em quét bằng máy tính bảng, chạm vào tên mình mà không cần tài khoản, và tự nhận đúng phiếu của nhóm.",
+                        "Các em quét mã bằng máy tính bảng hoặc điện thoại, chạm vào tên mình mà không cần tài khoản, và tự nhận đúng phiếu của nhóm.",
                         "Câu trắc nghiệm được chấm ngay, còn tôi theo dõi trực tiếp em nào đã nộp bài."],
         "08-cham-bai": ["Với bài viết tay, tôi chụp ảnh để AI chấm và viết nhận xét theo Thông tư 27.",
                         "Mức đạt được tính theo quy tắc công khai, và tôi có thể sửa từng câu.",
@@ -109,8 +110,11 @@ def loi_doc(d: dict) -> dict[str, list[str]]:
         "09-tien-bo": ["Kết quả được lưu theo từng em.",
                        "Cuối kỳ, AI gợi ý nhận xét học bạ dựa trên cả quá trình, mà không cần gửi tên học sinh."],
         "10-ket-qua": ket_qua,
+        "10b-so-sanh": ["So với chatbot AI phổ thông hay các nền tảng tạo đề và trắc nghiệm trực tuyến, điểm khác biệt là một vòng khép kín theo Thông tư 27.",
+                        "Phiếu ba mức có AI kiểm định, phân nhóm không dán nhãn, chấm bài viết tay kèm nhận xét, "
+                        "phân tích lỗi thành phiếu bổ trợ, và gợi ý nhận xét học bạ."],
         "11-trach-nhiem": ["Sản phẩm hoàn toàn miễn phí, chạy trên trình duyệt, dùng được cho khối một đến khối năm, bám sát bộ sách giáo khoa dùng chung toàn quốc.",
-                           "Tên học sinh không được gửi cho AI.", "Mọi đề, điểm và nhận xét đều do giáo viên duyệt."],
+                           "Danh sách lớp không được gửi cho AI.", "Mọi đề, điểm và nhận xét đều do giáo viên duyệt."],
         "12-ket": ["Mong rằng Trợ Lý Giảng Dạy sẽ giúp mỗi học sinh được học vừa sức, và giáo viên có thêm thời gian cho từng em.",
                    "Xin trân trọng cảm ơn Ban Giám khảo."],
     }
@@ -281,10 +285,13 @@ def doc_doan(ma: str, cau: list[str], d: dict, tam: Path, toc_do: str) -> tuple[
     return am + lang(0.2), moc
 
 
-def ass(cues, tong, nhan, het_bia=0.0) -> str:
+PHU_DE_THAP = ("01-mo-dau", "10b-so-sanh")  # trang có nội dung sát đáy (thông tin GV, bảng): phụ đề xuống sát mép dưới
+
+
+def ass(cues, tong, nhan, thap=()) -> str:
     g = lambda t: f"{int(t // 3600)}:{int(t % 3600 // 60):02d}:{t % 60:05.2f}"
     # trang bìa: phụ đề xuống sát đáy (vùng trắng) để không che tên, email giáo viên
-    dong = [f"Dialogue: 0,{g(a)},{g(b)},Default,,0,0,{30 if a < het_bia else 0},,{c.replace(chr(10), chr(92) + 'N')}"
+    dong = [f"Dialogue: 0,{g(a)},{g(b)},Default,,0,0,{30 if any(x <= a < y for x, y in thap) else 0},,{c.replace(chr(10), chr(92) + 'N')}"
             for a, b, c in cues]
     dong.append(f"Dialogue: 1,{g(0)},{g(tong)},Nhan,,0,0,0,,Lồng tiếng: giọng đọc AI")
     dong += [f"Dialogue: 1,{g(a)},{g(b)},Minh,,0,0,0,,{c}" for a, b, c in nhan]
@@ -315,7 +322,7 @@ def main():
         assert all(len(x) <= DONG for k in khung for x in k.split("\n")), khung
         assert " ".join(khung).replace("\n", " ") == cau, khung
     tam = Path(tempfile.mkdtemp())
-    clip = {ma: thoi_luong_clip(DOAN / f"{ma}.mp4") for ma, *_ in KICH_BAN}
+    clip = {ma: thoi_luong_clip(DOAN / f"{ma}.mp4") - CAT_DUOI.get(ma, 0) for ma, *_ in KICH_BAN}
     for toc in (0, 6, 12, 18):  # edge: tăng tốc độ đọc nếu vượt 5 phút (gemini: chỉnh trong phong_cach)
         doan = {}
         for ma, _, loai, _ in KICH_BAN:
@@ -330,20 +337,21 @@ def main():
     if tong > GIOI_HAN:
         raise SystemExit("Lời đọc quá dài so với 5 phút – rút gọn lời trong loi_doc() hoặc yêu cầu đọc nhanh hơn trong phong_cach.")
 
-    toan_bo, cues, t0, nhan = b"", [], 0.0, []
+    toan_bo, cues, t0, nhan, khoang = b"", [], 0.0, [], {}
     for ma, *_ in KICH_BAN:
         am, moc, L = doan[ma]
         toan_bo += am + lang(L - len(am) / 2 / SR)
         cues += [(t0 + a, t0 + b, c) for a, b, c in moc]
         if ma in MINH_HOA:
             nhan.append((t0, t0 + L, MINH_HOA[ma]))
+        khoang[ma] = (t0, t0 + L)
         t0 += L
     with wave.open(str(tam / "loi.wav"), "wb") as w:
         w.setnchannels(1), w.setsampwidth(2), w.setframerate(SR), w.writeframes(toan_bo)
     ffmpeg("-i", str(tam / "loi.wav"), "-b:a", "128k", str(RA / "loi-doc.mp3"))
     (RA / "phu-de-long-tieng.srt").write_text(
         "\n".join(f"{k}\n{srt_gio(a)} --> {srt_gio(b)}\n{c}\n" for k, (a, b, c) in enumerate(cues, 1)), encoding="utf-8")
-    (tam / "pd.ass").write_text(ass(cues, t0, nhan, doan[KICH_BAN[0][0]][2]), encoding="utf-8")
+    (tam / "pd.ass").write_text(ass(cues, t0, nhan, [khoang[ma] for ma in PHU_DE_THAP if ma in khoang]), encoding="utf-8")
 
     ds = []
     for ma, _, loai, _ in KICH_BAN:  # hình: app tua nhanh cho vừa lời đọc, slide cắt bớt; thiếu thì giữ khung cuối

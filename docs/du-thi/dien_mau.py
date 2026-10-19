@@ -57,18 +57,19 @@ LINK_VIDEO = _vd.read_text(encoding="utf-8").strip() if _vd.exists() else "⟦li
 # Mỗi trang: (tiêu đề, [(cấp, chữ)], [ảnh bên phải]) — cấp 1 = gạch đầu dòng, 2 = ý con, 0 = không gạch
 DAN_Y = [(1, "Bối cảnh và vấn đề"), (1, "Ý tưởng và giải pháp: vòng khép kín 6 bước"),
          (1, "Sản phẩm: soạn – kiểm định – dạy – chấm – bổ trợ – học bạ"), (1, "AI có trách nhiệm"),
-         (1, "Triển khai thực tế"), (1, "Kết quả và tác động"), (1, "Thảo luận và tổng kết"), (1, "Tài liệu đính kèm")]
+         (1, "Triển khai thực tế"), (1, "Kết quả và tác động"), (1, "So sánh với các cách làm hiện nay"), (1, "Thảo luận và tổng kết"), (1, "Tài liệu đính kèm")]
 
 BOI_CANH = [
     (1, f"Lớp {LOP} có {SI_SO} học sinh, trình độ chênh lệch rõ; đối tượng hưởng lợi: **học sinh và giáo viên tiểu học**."),
-    (1, "Thông tư 27/2020: đánh giá thường xuyên bằng nhận xét; câu hỏi, bài tập theo **3 mức** "
-        "(nhận biết – kết nối – vận dụng). Chương trình GDPT 2018 đòi hỏi dạy học phân hóa."),
+    (1, "Thông tư 27/2020: đánh giá thường xuyên bằng nhận xét; đề kiểm tra định kỳ theo **3 mức** "
+        "(nhận biết – kết nối – vận dụng), giáo viên vận dụng 3 mức khi ra bài tập phân hóa. "
+        "Chương trình GDPT 2018 đòi hỏi dạy học phân hóa."),
     (1, "Dạy phân hóa tốn thời gian: soạn 3 mức kèm đáp án, in theo nhóm, chấm, viết nhận xét từng em."),
     *([(2, f"Soạn 1 phiếu phân hóa có đáp án ≈ {_g('phut_soan_cu')} phút; chấm và nhận xét 1 lớp ≈ {_g('phut_cham_cu')} phút "
             "(giáo viên tự ước tính).")] if CO_CU else []),
-    (1, "Chatbot AI phổ thông trả lời rời rạc: không theo mẫu TT27, không tự kiểm tra đáp án, "
+    (1, "Chatbot AI phổ thông trả lời rời rạc: không theo mẫu TT27, không có bước kiểm tra đáp án riêng, "
         "không nối với chấm bài và theo dõi tiến bộ."),
-    (1, "Kết quả chấm nằm trên giấy, khó phân tích để dạy bù kịp thời."),
+    (1, "Kết quả chấm nằm trên giấy, khó phân tích để dạy bổ trợ kịp thời."),
 ]
 
 Y_TUONG = [
@@ -90,13 +91,13 @@ TINH_NANG = [
         (1, "**Lượt AI thứ hai** đóng vai tổ trưởng chuyên môn: tự giải lại từng câu, soát đáp án sai, câu lệch mức."),
         *([(2, f"Thí điểm: phát hiện {_g('loi_kiem_dinh')} lỗi.")] if _co("loi_kiem_dinh") else []),
     ], ["02-soan-phieu-kiem-dinh.png"]),
-    ("③ PHÂN HÓA KHÔNG DÁN NHÃN", [
+    ("③a PHÂN HÓA KHÔNG DÁN NHÃN", [
         (1, "Một phiếu tự tách thành **Phiếu Xanh / Cam / Tím** cho 3 nhóm; tên màu trung tính, "
             "học sinh không biết mình ở \"mức\" nào."),
         (1, "Đề A/B chống nhìn bài; phiếu in sẵn tên từng em, đúng màu nhóm."),
         (1, "In ngay khổ A4 hoặc tải Word; cỡ chữ lớn cho lớp 1–2."),
     ], ["31-phieu-xanh.png", "13-lop-cua-toi-phieu-theo-ten.png"]),
-    ("③ LỚP HỌC SỐ: TRÌNH CHIẾU VÀ GIAO BÀI BẰNG QR", [
+    ("③b LỚP HỌC SỐ: TRÌNH CHIẾU VÀ GIAO BÀI BẰNG QR", [
         (1, "Trình chiếu từng câu kiểu trò chơi: đếm giờ, lật đáp án, gọi tên ngẫu nhiên, đọc to câu hỏi."),
         (1, "Giao bài online: chiếu mã QR, học sinh **chạm vào tên mình**, không cần tài khoản."),
         (1, "Mỗi em tự nhận **đúng phiếu của nhóm**; câu trắc nghiệm, đúng/sai, nối cột được chấm ngay."),
@@ -104,34 +105,37 @@ TINH_NANG = [
     ], ["05-lop-hoc-trinh-chieu.png", "21-hs-lam-cau.png"]),
     ("④ CHẤM, NHẬN XÉT TT27 · ⑤ PHÂN TÍCH LỖI", [
         (1, "Chấm từ **ảnh chụp bài viết tay** hoặc bài làm online; AI viết nhận xét theo tinh thần TT27."),
-        (1, "Mức đạt theo **quy tắc công khai**: Chưa hoàn thành (Mức 1 < 50%) · Hoàn thành tốt "
-            "(Mức 1, Mức 2 ≥ 80%, Mức 3 ≥ 50%) · còn lại là Hoàn thành."),
+        (1, "Mức hoàn thành bài theo **quy tắc cố định, công khai**: Hoàn thành tốt khi đúng ≥ 80% câu Mức 1 và Mức 2, "
+            "≥ 50% câu Mức 3; Chưa hoàn thành khi đúng < 50% câu Mức 1; còn lại là Hoàn thành."),
+        (1, "Đánh giá thường xuyên bằng **nhận xét, không cho điểm** (TT27)."),
         (1, "Giáo viên **chấm tay hoặc sửa** mọi kết quả."),
         (1, "Biểu đồ tỉ lệ chưa đạt từng câu và lỗi thường gặp; **một nút soạn phiếu bổ trợ** đúng chỗ hổng."),
     ], ["09-cham-bai-so-tong-hop.png", "10-phan-tich-loi-sai.png"]),
     ("⑥ THEO DÕI TIẾN BỘ VÀ NHẬN XÉT HỌC BẠ", [
-        (1, "Mức TT27 của từng em qua các lần đánh giá; biểu đồ tiến bộ từng em."),
+        (1, "Mức hoàn thành của từng em qua các lần đánh giá; biểu đồ tiến bộ từng em."),
         (1, "AI gợi ý nhận xét cuối kỳ dựa trên cả quá trình (**không gửi tên học sinh**); giáo viên duyệt, xuất Excel."),
         (1, "Thư viện phiếu tự lưu, nhiều lớp, dữ liệu riêng cho từng giáo viên."),
     ], ["12-tien-bo-bieu-do.png"]),
 ]
 
 TRACH_NHIEM = [
-    (1, "**Giáo viên là người quyết định**: duyệt đề, sửa đáp án, chốt điểm, mức đạt, nhận xét; có chấm tay đầy đủ."),
+    (1, "**Giáo viên là người quyết định**: duyệt đề, sửa đáp án, chốt mức đạt và nhận xét; có chấm tay đầy đủ."),
     (1, "**Kiểm soát chất lượng**: AI kiểm định lượt 2; khung cấu trúc và quy tắc trình bày đáp án chuẩn tiểu học; "
         "mức TT27 tính bằng quy tắc công khai."),
-    (1, "**Bảo vệ dữ liệu học sinh**: không gửi tên học sinh cho AI khi soạn, chấm online, gợi ý học bạ; "
-        "ảnh bài làm chỉ gửi để chấm, không lưu."),
+    (1, "**Bảo vệ dữ liệu học sinh**: không gửi danh sách lớp cho AI; gợi ý nhận xét học bạ không kèm tên; "
+        "ảnh bài làm chỉ gửi để chấm, ứng dụng không lưu ảnh (khuyến nghị che tên trước khi chụp)."),
     (1, "**Riêng tư**: học sinh không cần tài khoản; dữ liệu mỗi giáo viên tách riêng; cơ sở dữ liệu chặn truy cập công khai."),
     (1, "**Công bằng**: phiếu nhóm dùng tên màu trung tính; học sinh làm online biết đúng/sai nhưng không thấy đáp án."),
     (1, "Thí điểm có sự đồng ý của nhà trường và phụ huynh; hình ảnh không lộ mặt học sinh."),
 ]
 
 TRIEN_KHAI = [
-    (1, "Hình thức: ứng dụng web <https://tro-ly-giang-day.streamlit.app> dùng trong soạn bài, giờ dạy và đánh giá."),
-    (2, "Soạn phiếu trước giờ học; in phiếu nhóm hoặc giao bài bằng QR; chấm và phân tích lỗi sau giờ học; dạy bổ trợ."),
-    (1, f"Thí điểm: 19–23/10/2026 tại lớp {LOP} ({SI_SO} học sinh), môn Toán; mời 2–3 đồng nghiệp trong khối dùng thử."),
-    (1, "Quy trình: tiết 1 soạn phiếu và giao bài → chấm, phân tích lỗi → 1 buổi bổ trợ → đo lại; "
+    (1, "Hình thức: ứng dụng web tro-ly-giang-day.streamlit.app dùng trong soạn bài, giờ dạy và đánh giá."),
+    (2, "Trước giờ học: soạn phiếu · Trên lớp: in phiếu nhóm hoặc giao bài bằng mã QR · Sau giờ học: chấm, phân tích lỗi · "
+        "Buổi sau: dạy bổ trợ."),
+    (1, f"Thí điểm: 19–23/10/2026 tại lớp {LOP} ({SI_SO} học sinh), Toán 4 – Bài 14 \"So sánh các số có nhiều chữ số\" và "
+        "Bài 15 \"Làm quen với dãy số tự nhiên\"; mời 2–3 đồng nghiệp khối 4 dùng thử."),
+    (1, "Quy trình đo: soạn phiếu, giao bài → chấm, phân tích lỗi → 1 buổi bổ trợ → đo lại; "
         "ghi chép bằng bảng in sẵn, khảo sát học sinh và giáo viên."),
     *([(1, f"Số lượng sử dụng: {_g('so_phieu')} phiếu đã soạn, {_g('so_bai')} bài đã chấm (thống kê trong app).")]
       if _co("so_phieu", "so_bai") else []),
@@ -148,31 +152,33 @@ KET_QUA = [
 ] if CO_KQ else [
     (1, "Thiết kế đánh giá: so sánh trước – sau trên cùng lớp, cùng giáo viên, đo bằng bảng ghi chép và khảo sát."),
     (1, "Chỉ số và mục tiêu thí điểm:"),
-    (2, "Thời gian soạn 1 phiếu phân hóa có đáp án: mục tiêu giảm ít nhất một nửa."),
-    (2, "Thời gian chấm và nhận xét 1 lớp: mục tiêu giảm ít nhất 40%."),
+    (2, "Thời gian soạn 1 phiếu phân hóa có đáp án: mục tiêu giảm ≥ 50%."),
+    (2, "Thời gian chấm và nhận xét 1 lớp: mục tiêu giảm ≥ 40%."),
     (2, "Chất lượng đề: ghi số lỗi AI kiểm định phát hiện và số lỗi giáo viên sửa thêm; 100% đề được giáo viên duyệt."),
     (2, "Học sinh: tỉ lệ chưa đạt giảm sau 1 buổi bổ trợ; ít nhất 80% học sinh thấy bài vừa sức."),
-    (1, "Số liệu đo thật được cập nhật vào hồ sơ và trình bày tại vòng chung kết."),
+    (1, "Kết quả đo trong tuần thí điểm được trình bày tại vòng chung kết."),
 ]
 
 THAO_LUAN = [
     (1, "So với cách cũ và chatbot AI phổ thông: một **quy trình hoàn chỉnh theo TT27**, có kiểm định, "
         "phân hóa không dán nhãn, nối liền từ soạn phiếu đến học bạ."),
-    (1, "Bền vững, nhân rộng: **0 đồng**; chạy trên trình duyệt; khối 1–5, 8 môn, bộ sách dùng chung toàn quốc; "
+    (1, "Bền vững, nhân rộng: **0 đồng**; chạy trên trình duyệt; khối 1–5, các môn văn hóa, SGK dùng chung toàn quốc; "
         "nhiều giáo viên dùng song song; có hướng dẫn chuyển giao."),
     (1, "Giới hạn: gói miễn phí giới hạn lượt AI; AI vẫn có thể sai nên luôn cần giáo viên duyệt; "
         "chọn tên khi làm bài online chưa ngăn được làm hộ."),
     (1, "Định hướng: chia sẻ phiếu trong tổ chuyên môn; tin nhắn phụ huynh từ kết quả đánh giá; "
         "tiếp tục theo dõi số liệu trong học kỳ I."),
-    (0, f"Phần lập trình được thực hiện với sự hỗ trợ của công cụ AI Claude Code {HO_TRO}."),
+    (1, "Tác giả phát hiện vấn đề, thiết kế quy trình sư phạm và yêu cầu, trực tiếp triển khai trên lớp; "
+        f"phần lập trình có sự hỗ trợ của công cụ AI Claude Code {HO_TRO}."),
 ]
 
 DINH_KEM = [
     (1, f"Dùng thử sản phẩm (dành cho Ban Giám khảo): {LINK_DEMO}"),
-    (1, f"Video thuyết trình: {LINK_VIDEO}"),
+    *([(1, f"Video thuyết trình: {LINK_VIDEO}")] if "⟦" not in LINK_VIDEO else []),
     (1, "Trang chủ: https://tro-ly-giang-day.streamlit.app"),
     *([(1, f"Thư mục minh chứng (khảo sát, ảnh, thống kê): {_g('link_minh_chung')}")] if _co("link_minh_chung") else []),
-    (1, "Tài liệu tham khảo: Thông tư 27/2020/TT-BGDĐT; Chương trình GDPT 2018."),
+    (1, "Tài liệu tham khảo: Thông tư 27/2020/TT-BGDĐT; Chương trình GDPT 2018; Quyết định 3588/QĐ-BGDĐT; "
+        "SGK Toán 4 – Kết nối tri thức với cuộc sống."),
 ]
 
 
@@ -188,7 +194,7 @@ LOI_NOI = [
     "không theo mẫu Thông tư 27, và đáp án đôi khi sai mà không ai kiểm tra.",
     "Giải pháp của tôi là một vòng khép kín 6 bước theo Thông tư 27. Ở mỗi bước AI đề xuất, giáo viên quyết định. Tôi dùng Google "
     "Gemini vì đọc được ảnh trang sách và chữ viết tay, hỗ trợ tiếng Việt tốt và có gói miễn phí; toàn bộ chi phí là 0 đồng.",
-    "Tôi chỉ cần nhập tên bài hoặc chụp trang sách giáo khoa. Khoảng 30 giây, AI soạn xong phiếu ba mức có đáp án trình bày đúng như "
+    "Tôi chỉ cần nhập tên bài hoặc chụp trang sách giáo khoa. Chưa đầy một phút, AI soạn xong phiếu ba mức có đáp án trình bày đúng như "
     "vở học sinh. Sau đó một lượt AI thứ hai đóng vai tổ trưởng chuyên môn, tự giải lại từng câu để soát lỗi"
     + (f" – trong thí điểm đã phát hiện {_g('loi_kiem_dinh')} lỗi." if _co("loi_kiem_dinh") else "."),
     "Một phiếu tự tách thành ba phiếu Xanh, Cam, Tím. Tên màu trung tính để các em không cảm thấy bị xếp loại. Có thêm đề A/B "
@@ -198,16 +204,18 @@ LOI_NOI = [
     "Với bài viết tay, tôi chụp ảnh để AI chấm và viết nhận xét theo Thông tư 27. Mức đạt tính theo quy tắc công khai và tôi sửa "
     "được từng câu. Biểu đồ cho thấy cả lớp còn yếu ở đâu; một nút bấm là có phiếu bổ trợ đúng chỗ đó.",
     "Kết quả lưu theo từng em; cuối kỳ AI gợi ý nhận xét học bạ dựa trên cả quá trình mà không cần gửi tên học sinh.",
-    "Tôi dùng AI có trách nhiệm: giáo viên duyệt mọi đề, điểm, nhận xét; AI kiểm định hai lượt; không gửi tên học sinh cho AI; "
+    "Tôi dùng AI có trách nhiệm: giáo viên duyệt mọi đề, mức đạt, nhận xét; có lượt AI thứ hai kiểm định; không gửi danh sách lớp cho AI; "
     "học sinh không cần tài khoản; dữ liệu từng giáo viên tách riêng.",
-    f"Tôi thí điểm từ 19 đến 23 tháng 10 tại lớp {LOP} với {SI_SO} học sinh, trong soạn bài, giờ dạy và đánh giá, "
-    "và mời đồng nghiệp trong khối dùng thử.",
+    f"Tôi đang thí điểm từ 19 đến 23 tháng 10 tại lớp {LOP} với {SI_SO} học sinh, với Bài 14 So sánh các số có nhiều chữ số "
+    "và Bài 15 Làm quen với dãy số tự nhiên, và mời đồng nghiệp khối 4 dùng thử.",
     (f"Sau {_g('so_ngay')} ngày thí điểm: soạn phiếu giảm từ {_g('phut_soan_cu')} xuống {_g('phut_soan_moi')} phút, chấm và nhận xét "
      f"từ {_g('phut_cham_cu')} xuống {_g('phut_cham_moi')} phút; tỉ lệ chưa đạt giảm từ {_g('phan_tram_chua_dat_truoc')} "
      f"xuống {_g('phan_tram_chua_dat_sau')} phần trăm sau một buổi bổ trợ. {PHAN_HOI}" if CO_KQ else
      "Tôi đánh giá bằng so sánh trước và sau trên cùng lớp: thời gian soạn phiếu, thời gian chấm và nhận xét, số lỗi AI kiểm định "
-     "phát hiện, và tỉ lệ học sinh chưa đạt trước và sau một buổi bổ trợ. Số liệu đo thật sẽ được trình bày tại vòng "
-     "chung kết."),
+     "phát hiện, và tỉ lệ học sinh chưa đạt trước và sau một buổi bổ trợ. Kết quả đo sẽ được trình bày tại vòng chung kết."),
+    "So với chatbot AI phổ thông hay các nền tảng tạo đề, trắc nghiệm trực tuyến, điểm khác biệt là một vòng khép kín theo "
+    "Thông tư 27: phiếu ba mức có AI kiểm định, phân nhóm không dán nhãn, chấm bài viết tay kèm nhận xét, phân tích lỗi thành "
+    "phiếu bổ trợ và gợi ý nhận xét học bạ.",
     "So với cách cũ, đây là một quy trình hoàn chỉnh theo Thông tư 27. Sản phẩm miễn phí, chạy trên trình duyệt, dùng được cho khối "
     "1 đến 5, bám sát bộ sách giáo khoa dùng chung toàn quốc. Giới hạn hiện tại là quota gói miễn phí và AI vẫn cần giáo viên duyệt. Hướng tới: chia sẻ trong tổ "
     "chuyên môn và tin nhắn phụ huynh.",
@@ -380,6 +388,8 @@ def lam_slide():
 
     # Bìa: tên sản phẩm, tác giả; bỏ ảnh người mẫu của Ban Tổ chức
     viet(tim(bia, "TextBox 11"), [(0, TEN_SP)], co=34)
+    for rpr in tim(bia, "TextBox 11")._element.iter(qn("a:rPr")):  # mẫu đặt giãn chữ âm (-322): chữ dính nhau
+        rpr.set("spc", "0")
     nhom = tim(bia, "Group 3")
     xf = nhom._element.grpSpPr.find(qn("a:xfrm"))
     tl = int(xf.find(qn("a:ext")).get("cx")) / int(xf.find(qn("a:chExt")).get("cx"))  # nhóm được thu nhỏ
@@ -449,19 +459,17 @@ def lam_slide():
     than = tim(dinh_kem, "TextBox 3")
     viet(than, DINH_KEM, co=25, mau_p=mau_than)
     than.width, than.height = Inches(12.4), Inches(7.4)
-    for k, (q, nhan) in enumerate([("qr-trai-nghiem.png", "Dùng thử"), ("qr-video.png", "Video"), ("qr-app.png", "Trang chủ")]):
+    for k, (q, nhan) in enumerate(qr_co_san()):
         y = Inches(2.2 + k * 2.55)
-        if not anh_vua_khung(dinh_kem, q, Inches(14.2), y, Inches(2.1), Inches(2.1), vien=False):
-            o = dinh_kem.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(14.2), y, Inches(2.1), Inches(2.1))
-            o.fill.background(); o.line.dash_style = 4; o.line.color.rgb = NAVY
-            o.text_frame.text = "⟦tạo QR⟧"; o.text_frame.paragraphs[0].runs[0].font.color.rgb = NAVY
+        anh_vua_khung(dinh_kem, q, Inches(14.2), y, Inches(2.1), Inches(2.1), vien=False)
         tb = dinh_kem.shapes.add_textbox(Inches(16.5), y + Inches(0.75), Inches(3), Inches(0.6)).text_frame
         tb.text = nhan; tb.paragraphs[0].runs[0].font.size = Pt(22); tb.paragraphs[0].runs[0].font.bold = True
         tb.paragraphs[0].runs[0].font.color.rgb = NAVY
 
-    # Thứ tự: bìa, dàn ý, bối cảnh, ý tưởng, 5 tính năng, trách nhiệm, triển khai, kết quả, thảo luận, đính kèm
-    # (chỉ số theo thứ tự hiện có: 0..8 là mẫu gốc, 9..14 là trang nhân bản; bỏ trang 2 = hướng dẫn)
-    xep_thu_tu(prs, [0, 1, 2, 3, 4, 9, 10, 11, 12, 13, 14, 5, 6, 7, 8])
+    trang_so_sanh(prs, trien_khai)
+    # Thứ tự: bìa, dàn ý, bối cảnh, ý tưởng, 5 tính năng, trách nhiệm, triển khai, kết quả, so sánh, thảo luận, đính kèm
+    # (chỉ số theo thứ tự hiện có: 0..8 là mẫu gốc, 9..15 là trang nhân bản; bỏ trang 2 = hướng dẫn)
+    xep_thu_tu(prs, [0, 1, 2, 3, 4, 9, 10, 11, 12, 13, 14, 5, 6, 15, 7, 8])
     xoa_trang(prs, 2)
     for trang, loi in zip(prs.slides, LOI_NOI):  # lời thuyết trình vào phần ghi chú (không hiện khi xuất PDF)
         trang.notes_slide.notes_text_frame.text = loi
@@ -469,6 +477,56 @@ def lam_slide():
     ra = RA / "Slide-du-thi.pptx"
     prs.save(ra)
     print(f"Đã tạo {ra} ({len(prs.slides)} trang)")
+
+
+def qr_co_san() -> list[tuple[str, str]]:
+    """Các mã QR đã có ảnh (QR video chỉ có sau khi tải video lên Drive)."""
+    ds = [("qr-trai-nghiem.png", "Dùng thử"), ("qr-video.png", "Video"), ("qr-app.png", "Trang chủ")]
+    return [(q, n) for q, n in ds if (RA / q).exists() or (ANH / q).exists()]
+
+
+SO_SANH = [  # (tiêu chí, chatbot AI phổ thông, nền tảng tạo đề / trắc nghiệm trực tuyến, Trợ Lý Giảng Dạy)
+    ("Soạn phiếu 3 mức TT27, đáp án trình bày chuẩn tiểu học",
+     "Được nếu tự viết lệnh; định dạng không cố định", "Chủ yếu chọn từ ngân hàng câu hỏi", "Tự soạn từ tên bài hoặc ảnh trang SGK"),
+    ("Kiểm tra lại đáp án, mức độ", "Người dùng tự kiểm tra", "Tùy nền tảng", "Lượt AI thứ hai tự giải lại, góp ý từng câu"),
+    ("Phân hóa theo nhóm", "Không có sẵn", "Giao bài theo lớp/nhóm", "Tự tách phiếu Xanh/Cam/Tím, không dán nhãn"),
+    ("Chấm bài viết tay, nhận xét TT27", "Đọc được ảnh, cần hướng dẫn từng lần", "Chủ yếu chấm bài làm trực tuyến",
+     "Chụp ảnh cả lớp → mức hoàn thành + nhận xét"),
+    ("Từ lỗi sai đến dạy bổ trợ", "Không có sẵn", "Thống kê kết quả", "Phân tích lỗi → một nút soạn phiếu bổ trợ"),
+    ("Nhận xét học bạ cuối kỳ", "Không có sẵn", "Tùy nền tảng", "Gợi ý theo cả quá trình, không gửi tên học sinh"),
+    ("Chi phí với giáo viên", "Miễn phí hoặc trả phí", "Có gói miễn phí và trả phí", "0 đồng"),
+]
+
+
+def trang_so_sanh(prs, mau):
+    """Trang so sánh với các cách làm hiện nay (tiêu chí Sáng tạo)."""
+    from pptx.dml.color import RGBColor as _RGB
+    t = nhan_ban(prs, mau)
+    viet(tim(t, "TextBox 2"), [(0, "SO SÁNH VỚI CÁC CÁCH LÀM HIỆN NAY")])
+    tim(t, "TextBox 2").width = Inches(17)
+    xoa(tim(t, "TextBox 3"))
+    hang, cot = len(SO_SANH) + 1, 4
+    bang = t.shapes.add_table(hang, cot, Inches(0.8), Inches(2.3), Inches(18.4), Inches(6.9)).table
+    for j, w in enumerate((4.6, 4.2, 4.2, 5.4)):
+        bang.columns[j].width = Inches(w)
+    tieu_de = ("Tiêu chí", "Chatbot AI phổ thông", "Nền tảng tạo đề, trắc nghiệm trực tuyến", "Trợ Lý Giảng Dạy")
+    for i, dong in enumerate([tieu_de, *SO_SANH]):
+        for j, chu in enumerate(dong):
+            o = bang.cell(i, j)
+            o.text = chu
+            o.margin_left = o.margin_right = Inches(0.12)
+            o.fill.solid()
+            o.fill.fore_color.rgb = NAVY if i == 0 else (_RGB(0xE3, 0xF2, 0xE8) if j == 3 else (NEN if i % 2 else _RGB(0xFF, 0xFF, 0xFF)))
+            for para in o.text_frame.paragraphs:
+                for r in para.runs:
+                    r.font.size, r.font.name = Pt(17 if i else 18), "Aptos"
+                    r.font.bold = i == 0 or j in (0, 3)
+                    r.font.color.rgb = _RGB(0xFF, 0xFF, 0xFF) if i == 0 else (_RGB(0x1B, 0x5E, 0x20) if j == 3 else NAVY)
+    ghi = t.shapes.add_textbox(Inches(0.8), Inches(9.25), Inches(18.4), Inches(0.5)).text_frame
+    ghi.text = "So sánh theo nhóm công cụ dựa trên trải nghiệm sử dụng của tác giả, không đánh giá một sản phẩm cụ thể."
+    ghi.paragraphs[0].runs[0].font.size = Pt(14); ghi.paragraphs[0].runs[0].font.italic = True
+    ghi.paragraphs[0].runs[0].font.color.rgb = NAVY
+    return t
 
 
 # ---------------- Poster ----------------
@@ -518,25 +576,25 @@ def lam_poster():
     khoi(s, X, y, w1, h, "1. BỐI CẢNH VÀ VẤN ĐỀ")
     doan(s, X + Inches(0.5), y + Inches(1.6), w1 - Inches(1), h - Inches(1.8), [
         f"• Lớp {LOP}: {SI_SO} học sinh, trình độ chênh lệch rõ.",
-        "• TT27: đánh giá thường xuyên bằng nhận xét; bài tập **3 mức**.",
+        "• TT27: nhận xét thường xuyên; đề định kỳ theo **3 mức**.",
         *([f"• Soạn 1 phiếu phân hóa có đáp án ≈ {_g('phut_soan_cu')} phút; chấm và nhận xét 1 lớp ≈ {_g('phut_cham_cu')} phút."]
           if CO_CU else ["• Soạn 3 mức kèm đáp án, in theo nhóm, chấm và nhận xét từng em: tốn nhiều thời gian."]),
-        "• Chatbot AI phổ thông: rời rạc, không theo TT27, không tự kiểm tra đáp án.",
+        "• Chatbot AI phổ thông: rời rạc, không theo TT27, không có bước kiểm tra đáp án.",
         "• **Đối tượng hưởng lợi:** học sinh và giáo viên tiểu học."], co=36)
     x2, w2 = X + w1 + G, W - w1 - G
     khoi(s, x2, y, w2, h, "2. GIẢI PHÁP: VÒNG KHÉP KÍN")
     anh_vua_khung(s, "so-do-vong-khep-kin.png", x2 + Inches(0.4), y + Inches(1.5), w2 - Inches(0.8), h - Inches(2.6), vien=False)
     doan(s, x2 + Inches(0.5), y + h - Inches(1.1), w2 - Inches(1), Inches(1),
-         ["AI đề xuất – **giáo viên quyết định**. Công cụ: Google Gemini · Streamlit · Supabase."], co=28)
+         ["AI đề xuất – **giáo viên quyết định**. Công cụ AI: Google Gemini (soạn, kiểm định, chấm ảnh, gợi ý nhận xét)."], co=28)
 
     # Hàng 2: 6 ảnh
     y, h = y + h + G, Inches(15.6)
     khoi(s, X, y, W, h, "3. AI HOẠT ĐỘNG THẾ NÀO")
-    anh6 = [("02-soan-phieu-kiem-dinh.png", "① Soạn phiếu 3 mức từ tên bài / ảnh SGK"),
-            ("32-dap-an-ma-tran.png", "② Đáp án chuẩn tiểu học, AI kiểm định lượt 2"),
-            ("31-phieu-xanh.png", "③ Phiếu Xanh/Cam/Tím – không dán nhãn"),
-            ("21-hs-lam-cau.png", "③ Quét QR, chọn tên, làm bài trên điện thoại"),
-            ("10-phan-tich-loi-sai.png", "④⑤ Chấm, nhận xét TT27, phân tích lỗi → bổ trợ"),
+    anh6 = [("02-soan-phieu-kiem-dinh.png", "①② Soạn phiếu 3 mức từ ảnh SGK, AI tự kiểm định"),
+            ("32-dap-an-ma-tran.png", "Ma trận và đáp án trình bày chuẩn tiểu học"),
+            ("31-phieu-xanh.png", "③a Phiếu Xanh/Cam/Tím – không gọi \"yếu/giỏi\""),
+            ("21-hs-lam-cau.png", "③b Quét QR, chọn tên, làm bài trên điện thoại"),
+            ("10-phan-tich-loi-sai.png", "④⑤ Chấm, nhận xét, phân tích lỗi → phiếu bổ trợ"),
             ("12-tien-bo-bieu-do.png", "⑥ Tiến bộ từng em, gợi ý nhận xét học bạ")]
     cw, ch = (W - Inches(1.4)) / 3, (h - Inches(1.8)) / 2
     for k, (a, cap) in enumerate(anh6):
@@ -558,25 +616,25 @@ def lam_poster():
         "• Soạn 1 phiếu: mục tiêu giảm ≥ 50% thời gian.",
         "• Chấm, nhận xét 1 lớp: mục tiêu giảm ≥ 40% thời gian.",
         "• Tỉ lệ chưa đạt giảm sau 1 buổi bổ trợ.",
-        "• 100% đề, điểm, nhận xét do giáo viên duyệt."], co=34)
+        "• Khảo sát học sinh 4A3 và đồng nghiệp dùng thử."], co=34)
     khoi(s, x2, y, w2, h, "5. TRÁCH NHIỆM · BỀN VỮNG")
     doan(s, x2 + Inches(0.5), y + Inches(1.6), w2 - Inches(1), h - Inches(1.8), [
-        "• Giáo viên duyệt mọi đề, điểm, nhận xét; kiểm định 2 lượt.",
-        "• Không gửi tên học sinh cho AI; học sinh không cần tài khoản.",
-        "• **0 đồng**, chạy trên trình duyệt; khối 1–5, 8 môn, SGK dùng chung toàn quốc.",
-        "• Định hướng: chia sẻ trong tổ chuyên môn, tin nhắn phụ huynh."], co=34)
+        "• Giáo viên duyệt mọi đề, mức đạt, nhận xét; AI kiểm định lượt 2.",
+        "• Không gửi danh sách lớp cho AI; học sinh không cần tài khoản.",
+        "• **0 đồng**, chạy trên trình duyệt; lớp 1–5, SGK dùng chung toàn quốc.",
+        "• Định hướng: nhân rộng trong tổ chuyên môn; gửi nhận xét cho phụ huynh."], co=34)
 
     # Hàng 4: QR + công khai
     y = y + h + Inches(0.35)
-    for k, (q, nhan) in enumerate([("qr-trai-nghiem.png", "Dùng thử"), ("qr-video.png", "Video"), ("qr-app.png", "Trang chủ")]):
-        cx = X + Inches(4.2) + k * Inches(8.8)
-        if not anh_vua_khung(s, q, cx, y, Inches(2.3), Inches(2.3), vien=False):
-            o = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, cx, y, Inches(2.3), Inches(2.3))
-            o.fill.background(); o.line.dash_style = 4; o.line.color.rgb = NAVY
-            o.text_frame.text = "⟦tạo QR⟧"
+    qr = qr_co_san()
+    buoc = W / len(qr)
+    for k, (q, nhan) in enumerate(qr):  # chia đều bề ngang, mỗi nhóm (QR 2,3" + nhãn) căn giữa ô của mình
+        cx = X + int(buoc * k + (buoc - Inches(6.8)) / 2)
+        anh_vua_khung(s, q, cx, y, Inches(2.3), Inches(2.3), vien=False)
         doan(s, cx + Inches(2.5), y + Inches(0.75), Inches(4.5), Inches(1), [f"**{nhan}**"], co=40)
     doan(s, X, y + Inches(2.4), W, Inches(0.6),
-         [f"Phần lập trình được thực hiện với sự hỗ trợ của công cụ AI Claude Code {HO_TRO}."], co=24
+         ["Tác giả thiết kế quy trình sư phạm và triển khai trên lớp; phần lập trình có sự hỗ trợ của công cụ AI "
+          f"Claude Code {HO_TRO}."], co=24
          ).paragraphs[0].alignment = PP_ALIGN.CENTER
     RA.mkdir(exist_ok=True)
     ra = RA / "Poster-du-thi.pptx"

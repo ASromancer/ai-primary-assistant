@@ -59,9 +59,10 @@ KICH_BAN = [
     ("09-tien-bo", 15, "app:tienbo", "Kết quả được lưu theo từng em. Cuối kỳ, AI gợi ý nhận xét học bạ dựa trên cả quá trình, không cần gửi tên học sinh."),
     ("10-ket-qua", 33, "slide:12", "Sau ⟦…⟧ ngày thí điểm với ⟦…⟧ học sinh: thời gian soạn phiếu giảm từ ⟦…⟧ xuống ⟦…⟧ phút, chấm và nhận xét "
      "từ ⟦…⟧ xuống ⟦…⟧ phút; tỉ lệ chưa đạt giảm từ ⟦…⟧ xuống ⟦…⟧ sau một buổi bổ trợ. (Thay bằng số liệu và cảnh lớp học thật.)"),
+    ("10b-so-sanh", 16, "slide:13", "So sánh với chatbot AI phổ thông và các nền tảng tạo đề, trắc nghiệm trực tuyến."),
     ("11-trach-nhiem", 20, "slide:10", "Sản phẩm miễn phí, chạy trên trình duyệt, dùng cho khối 1 đến 5 và bộ sách giáo khoa dùng chung toàn quốc. Tên học sinh không được gửi cho AI; "
      "mọi đề, điểm và nhận xét đều do giáo viên duyệt."),
-    ("12-ket", 13, "slide:14", "Mong rằng Trợ Lý Giảng Dạy sẽ giúp mỗi học sinh được học vừa sức, và giáo viên có thêm thời gian cho từng em. "
+    ("12-ket", 13, "slide:15", "Mong rằng Trợ Lý Giảng Dạy sẽ giúp mỗi học sinh được học vừa sức, và giáo viên có thêm thời gian cho từng em. "
      "Xin cảm ơn Ban Giám khảo!"),
 ]
 
