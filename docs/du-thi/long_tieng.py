@@ -65,7 +65,7 @@ TU_GHEP = ("học sinh", "giáo viên", "nhận xét", "đáp án", "công cụ"
 def loi_doc(d: dict) -> dict[str, list[str]]:
     """Lời đọc từng đoạn (mỗi phần tử là một câu). Chỉ nói số liệu khi đã được điền."""
     co = lambda *k: all(str(d.get(x, "")).strip() for x in k)
-    noi_day = ", ".join(x for x in (d["truong"], d["dia_chi"].replace("TP. ", "")) if x.strip())
+    noi_day = ", ".join(x for x in (d["truong"], d["dia_chi"].replace("TP. ", "thành phố ")) if x.strip())
     gioi_thieu = (f"Tôi là {d['ho_ten'] + ', ' if co('ho_ten') else ''}giáo viên lớp {d['lop']}, {noi_day}."
                   if co("lop", "truong") else "")
     ket_qua = ([f"Sau {d['so_ngay']} ngày thí điểm với {d['so_hoc_sinh']} học sinh, thời gian soạn một phiếu giảm từ "

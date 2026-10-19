@@ -93,7 +93,9 @@ exec(open("app.py", encoding="utf-8").read())
 '''
 
 
-CHU_DE = "Phép cộng các số có nhiều chữ số"
+CHU_DE = "So sánh các số có nhiều chữ số"  # Toán 4 KNTT tập 1, Bài 14 – đúng bài lớp học tuần thí điểm 19–23/10
+SGK = next(GOC.glob("docs/SÁCH GIÁO KHOA*/*/SGK-Toan-4-*Tap-1.pdf"), None)  # bản quét SGK (không đưa lên GitHub)
+TRANG_SGK = (48, 49, 50)  # trang PDF của Bài 14
 PHIEU_MAU = RA / "phieu-mau-lop4.json"  # phiếu lớp 4 do Gemini soạn và kiểm định thật (sinh 1 lần, dùng lại)
 DANH_SACH = RA / "danh-sach-lop.xlsx"  # danh sách học sinh thật – chỉ nằm trong ban-nop/, không đưa lên GitHub
 
@@ -112,6 +114,18 @@ def thong_tin() -> dict:
             "lop": d.get("lop") or "4A", "hoc_sinh": hs or [f"Học sinh {k}" for k in range(1, 9)]}
 
 
+def anh_sgk() -> list[Path]:
+    """Ảnh các trang SGK của bài (như giáo viên chụp trang sách để AI soạn bám sát)."""
+    if SGK is None:
+        return []
+    ra = [RA / f"sgk-trang-{t}.jpg" for t in TRANG_SGK]
+    for t, f in zip(TRANG_SGK, ra):
+        if not f.exists():
+            subprocess.run(["pdftoppm", "-f", str(t), "-l", str(t), "-r", "110", "-jpeg", "-singlefile", str(SGK),
+                            str(f.with_suffix(""))], check=True)
+    return ra
+
+
 def phieu_mau():
     sys.path.insert(0, str(GOC))
     import ai
@@ -124,7 +138,7 @@ def phieu_mau():
     client, model = genai.Client(api_key=key), "gemini-3.8-flash"
     ts = ai.ThongSo(mon="Toán", lop=4, bo_sach="Kết nối tri thức với cuộc sống", chu_de=CHU_DE, thoi_luong=20,
                     truong=thong_tin()["truong"])
-    phieu = ai.tao_phieu(client, model, ts, list(ai.DANG_BAI), [])
+    phieu = ai.tao_phieu(client, model, ts, list(ai.DANG_BAI), [(t.read_bytes(), "image/png") for t in anh_sgk()])
     ban = ai.BanLuu(thong_so=ts, phieu=phieu, kiem_dinh=ai.kiem_dinh(client, model, ts, phieu), kiem_dinh_cho=ai.dau_van_tay(phieu))
     PHIEU_MAU.write_text(ban.model_dump_json(indent=1), encoding="utf-8")
     return ban
@@ -132,10 +146,12 @@ def phieu_mau():
 
 # Lỗi minh họa theo dạng câu (dùng cho sổ tổng hợp, phân tích lỗi)
 LOI = {"trac_nghiem": ["✗ chọn sai"], "dung_sai": ["½ sai 1 ý"], "noi_cot": ["½ nối sai 1 cặp"],
-       "dien_khuyet": ["✗ quên nhớ", "½ đúng 1 chỗ"], "tu_luan": ["½ thiếu đáp số", "✗ đặt tính sai hàng", "½ thiếu câu lời giải"]}
-NHAN_XET = {"Hoàn thành tốt": ["Em tính nhanh, trình bày rõ ràng.", "Em làm bài cẩn thận, chính xác."],
-            "Hoàn thành": ["Em nhớ đặt tính thẳng hàng nhé.", "Em trình bày đủ câu lời giải và đáp số nhé.", "Em kiểm tra lại phép tính có nhớ."],
-            "Chưa hoàn thành": ["Em cần luyện thêm cộng có nhớ.", "Em đọc kỹ đề và đặt tính thẳng hàng nhé."]}
+       "dien_khuyet": ["✗ so sánh sai hàng", "½ đúng 1 chỗ"],
+       "tu_luan": ["½ chưa giải thích", "✗ so sánh từ phải sang trái", "½ sắp xếp sai thứ tự"]}
+NHAN_XET = {"Hoàn thành tốt": ["Em so sánh nhanh, giải thích rõ ràng.", "Em làm bài cẩn thận, chính xác."],
+            "Hoàn thành": ["Em nhớ so sánh từ hàng cao nhất nhé.", "Em đếm số chữ số trước khi so sánh nhé.",
+                           "Em kiểm tra lại thứ tự khi sắp xếp."],
+            "Chưa hoàn thành": ["Em cần luyện thêm so sánh từng hàng.", "Em đọc kỹ đề và đếm số chữ số nhé."]}
 
 
 def du_lieu_lop(ban, hoc_sinh: list[str]) -> tuple[list, list[dict]]:
@@ -172,8 +188,8 @@ def tao_du_lieu(db_path: str) -> tuple[str, Path]:
     db, e = create_engine(f"sqlite:///{db_path}"), "gv@truong.vn"
     kho.tao_bang(db)
     kho.ho_so_luu(db, e, ten=tt["ten_gv"], truong=tt["truong"], lop_mac_dinh=ban.thong_so.lop, mon_mac_dinh="Toán")
-    for cd, mon in [("Số có sáu chữ số", "Toán"), ("Danh từ", "Tiếng Việt"), ("Một số tính chất của nước", "Khoa học"),
-                    ("Đo góc, đơn vị đo góc", "Toán"), (CHU_DE, "Toán")]:
+    for cd, mon in [("Hàng và lớp", "Toán"), ("Các số trong phạm vi lớp triệu", "Toán"), ("Làm tròn số đến hàng trăm nghìn", "Toán"),
+                    ("Làm quen với dãy số tự nhiên", "Toán"), (CHU_DE, "Toán")]:
         b = ban.model_copy(deep=True)
         b.thong_so.chu_de, b.thong_so.mon = cd, mon
         kho.phieu_luu(db, e, b)
@@ -183,7 +199,8 @@ def tao_du_lieu(db_path: str) -> tuple[str, Path]:
     kho.lop_luu(db, e, lop)
     m = ["Chưa hoàn thành", "Hoàn thành", "Hoàn thành tốt"]
     goc = kho._bay_gio
-    for k, cd in enumerate(["Số có sáu chữ số", "Hàng và lớp", "Đo góc", CHU_DE]):
+    for k, cd in enumerate(["Số có sáu chữ số. Số 1 000 000", "Hàng và lớp", "Các số trong phạm vi lớp triệu",
+                            "Làm tròn số đến hàng trăm nghìn"]):
         kho._bay_gio = lambda k=k: datetime(2026, 9, 21, 2, tzinfo=timezone.utc) + timedelta(days=7 * k)
         cuoi = {r["Họ tên"]: m.index(r["Mức TT27"]) for r in rows}
         kho.cham_luu(db, e, lop.id, "Toán", cd, "Phiếu chung",  # tiến bộ dần đến lần chấm cuối
@@ -361,6 +378,8 @@ def quay(trinh_duyet, U, canh, dai, ma, tam, ra):
             cho(1500)
             o = pg.get_by_placeholder("VD: Phép cộng có nhớ trong phạm vi 100")
             o.click(); o.press_sequentially(CHU_DE, delay=60); o.press("Enter"); cho(1500)
+            if anh_sgk():  # đính kèm ảnh chụp trang SGK của bài
+                pg.locator("input[type=file]").first.set_input_files([str(t) for t in anh_sgk()]); cho(2500)
             pg.get_by_role("button", name="🚀 Tạo phiếu bài tập").click(); cho(9500)
             cuon_toi("★ Mức 1"); cho(4000)
             pg.mouse.wheel(0, 700); cho(4000)
