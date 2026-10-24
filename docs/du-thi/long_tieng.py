@@ -76,9 +76,10 @@ def loi_doc(d: dict) -> dict[str, list[str]]:
                 f"{d['phan_tram_chua_dat_sau']} phần trăm sau một buổi bổ trợ."]
                if co("so_ngay", "so_hoc_sinh", "phut_soan_cu", "phut_soan_moi", "phut_cham_cu", "phut_cham_moi",
                      "phan_tram_chua_dat_truoc", "phan_tram_chua_dat_sau")
-               else [f"Tôi đang thí điểm từ ngày 19 đến 23 tháng 10 tại lớp {d['lop'] or 'mình'}, so sánh trước và sau trên cùng lớp.",
-                     "Mục tiêu là giảm ít nhất một nửa thời gian soạn phiếu, giảm bốn mươi phần trăm thời gian chấm và nhận xét, "
-                     "và giảm tỉ lệ học sinh chưa đạt sau một buổi bổ trợ."])
+               else [*([f"Kết quả bước đầu: đến ngày 19 tháng 10, tôi đã soạn {d['so_phieu']} phiếu trên ứng dụng."] if co("so_phieu") else []),
+                     "Phiếu Bài 14 được soạn từ ảnh ba trang sách giáo khoa, và lượt AI kiểm định đã phát hiện một lỗi "
+                     "trong hướng dẫn chấm để tôi sửa trước khi dùng.",
+                     "Tôi tiếp tục theo dõi thời gian soạn, chấm và sự tiến bộ của học sinh trong học kỳ một."])
     if d.get("phan_hoi", "").strip():
         ket_qua.append(d["phan_hoi"].strip())
     return {

@@ -41,7 +41,7 @@ DON_VI = ["Đơn vị công tác:", _g("truong", "⟦Trường Tiểu học …�
 EMAIL = ["Email:", _g("email", "⟦email giáo viên⟧")]
 LOP, SI_SO = _g("lop"), _g("si_so")
 _co = lambda *k: all(str(_tt.get(x, "")).strip() for x in k)
-# Chưa có số liệu thí điểm thật: slide/poster/lời nói trình bày MỤC TIÊU và cách đo, không ghi số giả định như kết quả
+# Chưa có số đo trước – sau: slide/poster/lời nói chỉ nêu kết quả bước đầu có thật, không ghi số giả định như kết quả
 CO_KQ = _co("so_ngay", "so_hoc_sinh", "phut_soan_cu", "phut_soan_moi", "phut_cham_cu", "phut_cham_moi",
             "phan_tram_chua_dat_truoc", "phan_tram_chua_dat_sau")
 CO_CU = _co("phut_soan_cu", "phut_cham_cu")
@@ -154,14 +154,15 @@ KET_QUA = [
     (2, f"Học sinh – tỉ lệ chưa đạt: {_g('phan_tram_chua_dat_truoc')}% → {_g('phan_tram_chua_dat_sau')}% sau 1 buổi bổ trợ."),
     *([(1, f"Phản hồi: \"{PHAN_HOI}\".")] if PHAN_HOI else []),
     (1, "Minh chứng: bảng ghi chép, khảo sát, ảnh phiếu và bài làm (đã che tên), thống kê sử dụng."),
-] if CO_KQ else [
-    (1, "Thiết kế đánh giá: so sánh trước – sau trên cùng lớp, cùng giáo viên, đo bằng bảng ghi chép và khảo sát."),
-    (1, "Chỉ số và mục tiêu thí điểm:"),
-    (2, "Thời gian soạn 1 phiếu phân hóa có đáp án: mục tiêu giảm ≥ 50%."),
-    (2, "Thời gian chấm và nhận xét 1 lớp: mục tiêu giảm ≥ 40%."),
-    (2, "Chất lượng đề: ghi số lỗi AI kiểm định phát hiện và số lỗi giáo viên sửa thêm; 100% đề được giáo viên duyệt."),
-    (2, "Học sinh: tỉ lệ chưa đạt giảm sau 1 buổi bổ trợ; ít nhất 80% học sinh thấy bài vừa sức."),
-    (1, "Kết quả đo trong tuần thí điểm được trình bày tại vòng chung kết."),
+] if CO_KQ else [  # chưa có số đo trước – sau: chỉ nêu kết quả đã có thật, kiểm chứng được
+    (1, f"Kết quả bước đầu tại lớp {LOP} ({SI_SO} học sinh), tuần 19–23/10/2026, Toán 4 – Bài 14, Bài 15:"),
+    *([(2, f"Đến ngày 19/10, giáo viên đã soạn **{_g('so_phieu')} phiếu** trên ứng dụng (thống kê ở Trang chủ).")]
+      if _co("so_phieu") else []),
+    (2, "Phiếu Bài 14 \"So sánh các số có nhiều chữ số\" soạn từ **ảnh 3 trang SGK**: 7 câu, 3 mức, đủ 5 dạng bài; "
+        "giáo viên kiểm tra lại đáp án **7/7 câu đúng**."),
+    (2, "Lượt AI kiểm định chấm phiếu **95/100** và **phát hiện 1 lỗi** ở hướng dẫn chấm câu 7 (ghi \"8 chữ số\", đúng là "
+        "9 chữ số) – giáo viên sửa trước khi dùng."),
+    (1, "Tác động về thời gian và tiến bộ của học sinh tiếp tục được theo dõi trong học kỳ I."),
 ]
 
 THAO_LUAN = [
@@ -219,8 +220,10 @@ LOI_NOI = [
     (f"Sau {_g('so_ngay')} ngày thí điểm: soạn phiếu giảm từ {_g('phut_soan_cu')} xuống {_g('phut_soan_moi')} phút, chấm và nhận xét "
      f"từ {_g('phut_cham_cu')} xuống {_g('phut_cham_moi')} phút; tỉ lệ chưa đạt giảm từ {_g('phan_tram_chua_dat_truoc')} "
      f"xuống {_g('phan_tram_chua_dat_sau')} phần trăm sau một buổi bổ trợ. {PHAN_HOI}" if CO_KQ else
-     "Tôi đánh giá bằng so sánh trước và sau trên cùng lớp: thời gian soạn phiếu, thời gian chấm và nhận xét, số lỗi AI kiểm định "
-     "phát hiện, và tỉ lệ học sinh chưa đạt trước và sau một buổi bổ trợ. Kết quả đo sẽ được trình bày tại vòng chung kết."),
+     (f"Kết quả bước đầu: đến ngày 19/10 tôi đã soạn {_g('so_phieu')} phiếu trên ứng dụng. " if _co("so_phieu") else "")
+     + "Phiếu Bài 14 được soạn từ ảnh ba trang sách giáo khoa, đáp án bảy câu đều đúng; lượt AI kiểm định cho 95 điểm và phát hiện "
+     "một lỗi trong hướng dẫn chấm câu 7 để tôi sửa trước khi dùng. Tôi tiếp tục theo dõi thời gian soạn, chấm và sự tiến bộ "
+     "của học sinh trong học kỳ I."),
     "So với chatbot AI phổ thông hay các nền tảng tạo đề, trắc nghiệm trực tuyến, điểm khác biệt là một vòng khép kín theo "
     "Thông tư 27: phiếu ba mức có AI kiểm định, phân nhóm không dán nhãn, chấm bài viết tay kèm nhận xét, phân tích lỗi thành "
     "phiếu bổ trợ và gợi ý nhận xét học bạ. Đây là một quy trình hoàn chỉnh theo Thông tư 27. Sản phẩm miễn phí, chạy trên trình duyệt, dùng được cho khối "
@@ -657,17 +660,17 @@ def lam_poster():
 
     # Hàng 3: Kết quả | Trách nhiệm + Bền vững
     y, h = y + h + G, Inches(6.6)
-    khoi(s, X, y, w1, h, "4. KẾT QUẢ THỰC TẾ" if CO_KQ else "4. THÍ ĐIỂM & MỤC TIÊU")
+    khoi(s, X, y, w1, h, "4. KẾT QUẢ THỰC TẾ" if CO_KQ else "4. KẾT QUẢ BƯỚC ĐẦU")
     doan(s, X + Inches(0.5), y + Inches(1.6), w1 - Inches(1), h - Inches(1.8), [
         f"• Soạn 1 phiếu: {_g('phut_soan_cu')} → {_g('phut_soan_moi')} phút",
         f"• Chấm và nhận xét 1 lớp: {_g('phut_cham_cu')} → {_g('phut_cham_moi')} phút",
         f"• Sau bổ trợ: chưa đạt {_g('phan_tram_chua_dat_truoc')}% → {_g('phan_tram_chua_dat_sau')}%",
         *([f"\"{PHAN_HOI}\""] if PHAN_HOI else [])] if CO_KQ else [
-        f"• Lớp {LOP} ({SI_SO} học sinh), 19–23/10/2026.",
-        "• Soạn 1 phiếu: mục tiêu giảm ≥ 50% thời gian.",
-        "• Chấm, nhận xét 1 lớp: mục tiêu giảm ≥ 40% thời gian.",
-        "• Tỉ lệ chưa đạt giảm sau 1 buổi bổ trợ.",
-        "• Khảo sát học sinh 4A3 và đồng nghiệp dùng thử."], co=34)
+        f"• Lớp {LOP} ({SI_SO} học sinh), 19–23/10/2026, Toán 4 Bài 14–15.",
+        *([f"• **{_g('so_phieu')} phiếu** đã soạn trên ứng dụng (đến 19/10)."] if _co("so_phieu") else []),
+        "• Phiếu Bài 14 từ ảnh 3 trang SGK; đáp án 7/7 câu đúng.",
+        "• AI kiểm định **95/100**, phát hiện **1 lỗi** hướng dẫn chấm → giáo viên sửa trước khi dùng.",
+        "• Tiếp tục theo dõi trong học kỳ I."], co=34)
     khoi(s, x2, y, w2, h, "5. TRÁCH NHIỆM · BỀN VỮNG")
     doan(s, x2 + Inches(0.5), y + Inches(1.6), w2 - Inches(1), h - Inches(1.8), [
         "• Giáo viên duyệt mọi đề, mức đạt, nhận xét; AI kiểm định lượt 2.",
