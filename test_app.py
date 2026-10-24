@@ -11,7 +11,11 @@ import classroom_html as cx
 import danh_gia as dg
 import docx_export as dx
 
-BAN = ai.BanLuu.model_validate_json(open("mau/phieu_mau.json", encoding="utf-8").read())
+import state
+
+# Phiếu cố định cho kiểm thử (mau/phieu_mau.json là phiếu mẫu giới thiệu, có thể thay)
+state.PHIEU_MAU = state.PHIEU_MAU.with_name("phieu_kiem_thu.json")
+BAN = ai.BanLuu.model_validate_json(state.PHIEU_MAU.read_text(encoding="utf-8"))
 
 
 class FakeClient:

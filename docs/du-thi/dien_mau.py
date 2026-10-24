@@ -48,7 +48,7 @@ CO_CU = _co("phut_soan_cu", "phut_cham_cu")
 PHAN_HOI = str(_tt.get("phan_hoi", "")).strip()
 HO_TRO = "và một người hỗ trợ kỹ thuật"  # chỉnh theo trả lời của Ban Tổ chức về quyền tác giả
 _ma = RA / "ma-demo.txt"
-LINK_DEMO = (f"https://tro-ly-giang-day.streamlit.app/?demo={_ma.read_text(encoding='utf-8').strip()}" if _ma.exists()
+LINK_DEMO = (f"https://tro-ly-giang-day.streamlit.app/?embed=true&demo={_ma.read_text(encoding='utf-8').strip()}" if _ma.exists()
              else "⟦https://tro-ly-giang-day.streamlit.app/?demo=MA_DEMO⟧")
 _vd = RA / "link-video.txt"
 LINK_VIDEO = _vd.read_text(encoding="utf-8").strip() if _vd.exists() else "⟦link Google Drive video⟧"
@@ -181,7 +181,7 @@ THAO_LUAN = [
 DINH_KEM = [
     (1, f"Dùng thử sản phẩm (dành cho Ban Giám khảo): {LINK_DEMO}"),
     *([(1, f"Video thuyết trình: {LINK_VIDEO}")] if "⟦" not in LINK_VIDEO else []),
-    (1, "Trang chủ: https://tro-ly-giang-day.streamlit.app"),
+    (1, "Trang chủ: https://tro-ly-giang-day.streamlit.app/?embed=true"),
     *([(1, f"Thư mục minh chứng (khảo sát, ảnh, thống kê): {_g('link_minh_chung')}")] if _co("link_minh_chung") else []),
     (1, "Tài liệu tham khảo: Thông tư 27/2020/TT-BGDĐT; Chương trình GDPT 2018; Quyết định 3588/QĐ-BGDĐT; "
         "SGK Toán 4 – Kết nối tri thức với cuộc sống."),

@@ -1,123 +1,128 @@
 {
-  "id": "",
-  "thong_so": {
-    "mon": "Toán",
-    "lop": 2,
-    "bo_sach": "Kết nối tri thức với cuộc sống",
-    "chu_de": "Phép cộng có nhớ trong phạm vi 100",
-    "thoi_luong": 20,
-    "truong": ""
-  },
-  "phieu": {
-    "ten_bai": "Phép cộng (có nhớ) số có hai chữ số với số có hai chữ số",
-    "yeu_cau_can_dat": [
-      "Thực hiện được phép cộng (có nhớ) số có hai chữ số với số có một chữ số, số có hai chữ số trong phạm vi 100.",
-      "Giải được bài toán thực tế liên quan đến phép cộng có nhớ.",
-      "Nhận biết và tìm được quy luật của dãy số đơn giản."
+ "id": "",
+ "thong_so": {
+  "mon": "Toán",
+  "lop": 4,
+  "bo_sach": "Kết nối tri thức với cuộc sống",
+  "chu_de": "So sánh các số có nhiều chữ số",
+  "thoi_luong": 20,
+  "truong": ""
+ },
+ "phieu": {
+  "ten_bai": "So sánh các số có nhiều chữ số",
+  "yeu_cau_can_dat": [
+   "Biết so sánh hai số có nhiều chữ số bằng cách so sánh số lượng chữ số hoặc so sánh từng cặp chữ số ở cùng một hàng kể từ trái sang phải.",
+   "Biết sắp xếp một nhóm các số có nhiều chữ số theo thứ tự từ bé đến lớn hoặc từ lớn đến bé.",
+   "Vận dụng quy tắc so sánh để giải quyết các tình huống thực tế liên quan đến số liệu dân số, giá trị hàng hóa và lập số thỏa mãn điều kiện cho trước."
+  ],
+  "cau_hoi": [
+   {
+    "muc": 1,
+    "dang": "trac_nghiem",
+    "noi_dung": "Dấu thích hợp để điền vào chỗ chấm trong phép so sánh 99 999 999 ....... 100 000 000 là:",
+    "lua_chon": [
+     ">",
+     "<",
+     "=",
+     "Không so sánh được"
     ],
-    "cau_hoi": [
-      {
-        "muc": 1,
-        "dang": "trac_nghiem",
-        "noi_dung": "Khoanh vào chữ đặt trước kết quả đúng của phép tính 38 + 5:",
-        "lua_chon": [
-          "33",
-          "43",
-          "42",
-          "53"
-        ],
-        "cot_phai": [],
-        "dap_an": "B. 43",
-        "huong_dan_cham": "Khoanh đúng B được 1 điểm.",
-        "diem": 1.0
-      },
-      {
-        "muc": 1,
-        "dang": "dien_khuyet",
-        "noi_dung": "Đặt tính rồi tính:   27 + 15 = .......      46 + 38 = .......      59 + 6 = .......",
-        "lua_chon": [],
-        "cot_phai": [],
-        "dap_an": "42; 84; 65\n(27 + 15 = 42;  46 + 38 = 84;  59 + 6 = 65)",
-        "huong_dan_cham": "Mỗi phép tính đúng 0,5 điểm; đặt tính thẳng cột.",
-        "diem": 1.5
-      },
-      {
-        "muc": 1,
-        "dang": "noi_cot",
-        "noi_dung": "Nối mỗi phép tính với kết quả đúng:",
-        "lua_chon": [
-          "29 + 4",
-          "36 + 7",
-          "48 + 5"
-        ],
-        "cot_phai": [
-          "53",
-          "33",
-          "43"
-        ],
-        "dap_an": "1 – b; 2 – c; 3 – a",
-        "huong_dan_cham": "Mỗi nối đúng 0,5 điểm.",
-        "diem": 1.5
-      },
-      {
-        "muc": 2,
-        "dang": "tu_luan",
-        "noi_dung": "Lớp 2A có 28 bạn nữ và 17 bạn nam. Hỏi lớp 2A có tất cả bao nhiêu bạn?",
-        "lua_chon": [],
-        "cot_phai": [],
-        "dap_an": "Bài giải\nSố bạn lớp 2A có tất cả là:\n28 + 17 = 45 (bạn)\nĐáp số: 45 bạn.",
-        "huong_dan_cham": "Câu lời giải 0,5đ; phép tính đúng 1đ; đáp số 0,5đ.",
-        "diem": 2.0
-      },
-      {
-        "muc": 2,
-        "dang": "dung_sai",
-        "noi_dung": "Đúng ghi Đ, sai ghi S vào ô trống:",
-        "lua_chon": [
-          "45 + 27 = 72",
-          "38 + 46 = 74",
-          "19 + 19 = 38"
-        ],
-        "cot_phai": [],
-        "dap_an": "a) Đ; b) S; c) Đ\n(b sai vì 38 + 46 = 84)",
-        "huong_dan_cham": "Mỗi ý đúng 0,5 điểm.",
-        "diem": 1.5
-      },
-      {
-        "muc": 3,
-        "dang": "tu_luan",
-        "noi_dung": "Mai có 35 nhãn vở. Mai có ít hơn Hà 8 nhãn vở. Hỏi cả hai bạn có tất cả bao nhiêu nhãn vở?",
-        "lua_chon": [],
-        "cot_phai": [],
-        "dap_an": "Bài giải\nSố nhãn vở của Hà là:\n35 + 8 = 43 (nhãn vở)\nSố nhãn vở cả hai bạn có là:\n35 + 43 = 78 (nhãn vở)\nĐáp số: 78 nhãn vở.",
-        "huong_dan_cham": "Tìm đúng số nhãn vở của Hà 0,75đ; tìm đúng tổng 0,75đ.",
-        "diem": 1.5
-      },
-      {
-        "muc": 3,
-        "dang": "dien_khuyet",
-        "noi_dung": "Tìm quy luật rồi viết tiếp hai số:   17, 26, 35, 44, ......., .......",
-        "lua_chon": [],
-        "cot_phai": [],
-        "dap_an": "53; 62\n(Quy luật: mỗi số sau bằng số liền trước cộng thêm 9.)",
-        "huong_dan_cham": "Viết đúng 2 số 0,5đ; nêu được quy luật 0,5đ.",
-        "diem": 1.0
-      }
+    "cot_phai": [],
+    "dap_an": "B. <",
+    "huong_dan_cham": "Học sinh chọn đúng phương án B, nhận biết được số có 8 chữ số bé hơn số có 9 chữ số.",
+    "diem": 1.0
+   },
+   {
+    "muc": 1,
+    "dang": "dung_sai",
+    "noi_dung": "Đúng ghi Đ, sai ghi S vào ô trống tương ứng với mỗi nhận định sau:",
+    "lua_chon": [
+     "a) 456 789 000 < 456 798 000",
+     "b) 500 000 000 = 500 000",
+     "c) 72 000 000 + 500 000 = 72 500 000"
     ],
-    "loi_chuc": "Chúc các em làm bài thật tốt và luôn yêu thích môn Toán!"
-  },
-  "phieu_b": null,
-  "kiem_dinh": {
-    "diem": 92,
-    "nhan_xet_chung": "Phiếu bám sát yêu cầu cần đạt, đáp án chính xác, phân hóa 3 mức rõ ràng. Có một góp ý nhỏ để câu Mức 3 phát huy tư duy tốt hơn.",
-    "van_de": [
-      {
-        "cau_so": 7,
-        "loai": "trinh_bay",
-        "mo_ta": "Câu tìm quy luật chưa yêu cầu học sinh giải thích nên khó đánh giá tư duy Mức 3.",
-        "de_xuat": "Thêm yêu cầu: \"Em hãy giải thích vì sao em viết được hai số đó.\""
-      }
-    ]
-  },
-  "kiem_dinh_cho": "e7f4b4a12fcce4cba3066d0f9daa02add3b59728"
+    "cot_phai": [],
+    "dap_an": "a) Đ; b) S; c) Đ",
+    "huong_dan_cham": "Học sinh điền đúng mỗi ý được khoảng 0,33 điểm. Đúng cả 3 ý được trọn vẹn 1 điểm.",
+    "diem": 1.0
+   },
+   {
+    "muc": 1,
+    "dang": "dien_khuyet",
+    "noi_dung": "Điền dấu thích hợp (>, <, =) vào chỗ chấm:\na) 24 560 000 ....... 24 519 999\nb) 300 000 000 ....... 299 999 999",
+    "lua_chon": [],
+    "cot_phai": [],
+    "dap_an": "a) >; b) >",
+    "huong_dan_cham": "Điền đúng mỗi dấu được 0,5 điểm.",
+    "diem": 1.0
+   },
+   {
+    "muc": 2,
+    "dang": "noi_cot",
+    "noi_dung": "Nối mỗi cặp số ở cột bên trái với dấu so sánh thích hợp ở cột bên phải:",
+    "lua_chon": [
+     "1) 850 000 000 và 805 000 000",
+     "2) 42 000 000 + 300 000 và 42 300 000",
+     "3) 67 890 000 và 67 900 000"
+    ],
+    "cot_phai": [
+     "a) =",
+     "b) >",
+     "c) <"
+    ],
+    "dap_an": "1 – b; 2 – a; 3 – c",
+    "huong_dan_cham": "Nối đúng mỗi cặp được 0,5 điểm.",
+    "diem": 1.5
+   },
+   {
+    "muc": 2,
+    "dang": "tu_luan",
+    "noi_dung": "Số cây trồng của ba nông trường trong đợt phát động trồng rừng đầu năm được thống kê như sau:\n- Nông trường Sao Vàng: 1 250 000 cây\n- Nông trường Hòa Bình: 985 000 cây\n- Nông trường Thắng Lợi: 1 205 000 cây\na) Trong ba nông trường trên, nông trường nào trồng được nhiều cây nhất? Nông trường nào trồng được ít cây nhất?\nb) Hãy sắp xếp tên ba nông trường theo thứ tự số cây trồng từ bé đến lớn.",
+    "lua_chon": [],
+    "cot_phai": [],
+    "dap_an": "Bài giải:\na) Ta có:\n985 000 < 1 205 000 < 1 250 000.\nNông trường trồng được nhiều cây nhất là: Nông trường Sao Vàng.\nNông trường trồng được ít cây nhất là: Nông trường Hòa Bình.\nb) Tên ba nông trường sắp xếp theo thứ tự số cây trồng từ bé đến lớn là: Nông trường Hòa Bình, Nông trường Thắng Lợi, Nông trường Sao Vàng.",
+    "huong_dan_cham": "Ý a được 1 điểm (chỉ ra đúng mỗi nông trường được 0,5 điểm). Ý b được 1 điểm (sắp xếp đúng thứ tự).",
+    "diem": 2.0
+   },
+   {
+    "muc": 3,
+    "dang": "tu_luan",
+    "noi_dung": "Cho 8 tấm thẻ ghi các chữ số: 6, 0, 9, 2, 0, 7, 1, 8.\na) Dùng cả 8 tấm thẻ trên, hãy lập số lớn nhất có tám chữ số.\nb) Dùng cả 8 tấm thẻ trên, hãy lập số bé nhất có tám chữ số (chữ số đầu tiên khác 0).",
+    "lua_chon": [],
+    "cot_phai": [],
+    "dap_an": "Bài giải:\na) Để lập số lớn nhất có tám chữ số từ các chữ số đã cho, ta xếp các chữ số theo thứ tự từ lớn đến bé:\nSố lớn nhất có tám chữ số là: 98 762 100.\nb) Để lập số bé nhất có tám chữ số, chữ số hàng chục triệu phải bé nhất khác 0 là chữ số 1, các chữ số còn lại xếp theo thứ tự từ bé đến lớn:\nSố bé nhất có tám chữ số là: 10 026 789.",
+    "huong_dan_cham": "Lập đúng số lớn nhất được 1 điểm. Lập đúng số bé nhất được 1 điểm.",
+    "diem": 2.0
+   },
+   {
+    "muc": 3,
+    "dang": "trac_nghiem",
+    "noi_dung": "Cho số 45* 600 000 > 456 900 000. Để phép so sánh đúng thì chữ số thích hợp bé nhất có thể thay vào dấu * là:",
+    "lua_chon": [
+     "6",
+     "7",
+     "8",
+     "9"
+    ],
+    "cot_phai": [],
+    "dap_an": "B. 7",
+    "huong_dan_cham": "Học sinh chọn đúng phương án B. Học sinh lập luận được: hai số cùng có 8 chữ số, các chữ số hàng trăm triệu và hàng chục triệu bằng nhau (4 = 4; 5 = 5). Nếu * = 6 thì 456 600 000 < 456 900 000 (không thỏa mãn). Do đó * phải lớn hơn 6 (* có thể là 7, 8, 9). Chữ số bé nhất là 7.",
+    "diem": 1.5
+   }
+  ],
+  "loi_chuc": "Chúc các em làm bài thật cẩn thận, tự tin chinh phục các con số và đạt kết quả cao nhất nhé!"
+ },
+ "phieu_b": null,
+ "kiem_dinh": {
+  "diem": 95,
+  "nhan_xet_chung": "Phiếu bài tập bám sát yêu cầu cần đạt của Chương trình GDPT 2018 và ma trận 3 mức độ của Thông tư 27/2020/TT-BGDĐT. Các câu hỏi đa dạng hình thức, phân hóa tốt và phù hợp với thời lượng 20 phút.",
+  "van_de": [
+   {
+    "cau_so": 7,
+    "loai": "trinh_bay",
+    "mo_ta": "Trong phần hướng dẫn chấm có nêu 'hai số cùng có 8 chữ số' là chưa chính xác vì hai số 45* 600 000 và 456 900 000 đều là các số có 9 chữ số (thuộc lớp triệu, hàng trăm triệu).",
+    "de_xuat": "Sửa lại câu trong hướng dẫn chấm thành: 'hai số cùng có 9 chữ số, các chữ số hàng trăm triệu và hàng chục triệu bằng nhau (4 = 4; 5 = 5)...'."
+   }
+  ]
+ },
+ "kiem_dinh_cho": "c4c21a8f9b9a898d1fc0c4dc7258a6d79a1d3f0d"
 }

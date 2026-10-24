@@ -22,7 +22,7 @@ def main():
     if not tep.exists():
         tep.write_text("gk" + secrets.token_hex(5) + "\n", encoding="utf-8")
     ma = tep.read_text(encoding="utf-8").strip()
-    link = f"{APP}/?demo={ma}"
+    link = f"{APP}/?embed=true&demo={ma}"  # embed: Streamlit Cloud không hiện tên tài khoản tạo app, nút GitHub/Fork
     segno.make(link, error="h").save(RA / "qr-trai-nghiem.png", scale=20, border=2)
     print(f"Link dùng thử: {link}")
     print(f'→ Thêm vào Secrets của app trên Streamlit Cloud:  MA_DEMO = "{ma}"  rồi Reboot app.')

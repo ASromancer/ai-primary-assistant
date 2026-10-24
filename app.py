@@ -14,7 +14,7 @@ if ma_demo and st.query_params.get("demo") == ma_demo:  # link trải nghiệm c
     st.session_state.che_do_demo = True
 
 cong = not state.da_dang_nhap() and not state.cho_phep_khach()  # chưa đăng nhập: chỉ hiện màn hình đăng nhập
-st.set_page_config(page_title="Trợ Lý Phân Hóa Tiểu Học - TT27", page_icon="📚", layout="wide",
+st.set_page_config(page_title="Trợ Lý Giảng Dạy – Phân hóa tiểu học TT27", page_icon="📚", layout="wide",
                    initial_sidebar_state="collapsed" if cong else "auto")
 state.chan_dich_tu_dong()
 
@@ -35,7 +35,7 @@ st.html("""<style>
 if cong:
     _, giua, _ = st.columns([1, 2, 1])
     with giua:
-        st.html("""<div class="banner" style="margin-top:6vh"><div class="t">📚 Trợ Lý Giáo Viên: Phiếu Bài Tập Phân Hóa</div>
+        st.html("""<div class="banner" style="margin-top:6vh"><div class="t">📚 Trợ Lý Giảng Dạy: Phiếu Bài Tập Phân Hóa</div>
 <div class="s">Soạn phiếu 3 mức theo Thông tư 27/2020/TT-BGDĐT · Kiểm định bằng AI · Dạy trên lớp · Chấm bài bằng ảnh ·
 Theo dõi tiến bộ và gợi ý nhận xét học bạ</div></div>""")
         with st.container(border=True):

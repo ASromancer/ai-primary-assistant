@@ -1,0 +1,123 @@
+{
+  "id": "",
+  "thong_so": {
+    "mon": "Toán",
+    "lop": 2,
+    "bo_sach": "Kết nối tri thức với cuộc sống",
+    "chu_de": "Phép cộng có nhớ trong phạm vi 100",
+    "thoi_luong": 20,
+    "truong": ""
+  },
+  "phieu": {
+    "ten_bai": "Phép cộng (có nhớ) số có hai chữ số với số có hai chữ số",
+    "yeu_cau_can_dat": [
+      "Thực hiện được phép cộng (có nhớ) số có hai chữ số với số có một chữ số, số có hai chữ số trong phạm vi 100.",
+      "Giải được bài toán thực tế liên quan đến phép cộng có nhớ.",
+      "Nhận biết và tìm được quy luật của dãy số đơn giản."
+    ],
+    "cau_hoi": [
+      {
+        "muc": 1,
+        "dang": "trac_nghiem",
+        "noi_dung": "Khoanh vào chữ đặt trước kết quả đúng của phép tính 38 + 5:",
+        "lua_chon": [
+          "33",
+          "43",
+          "42",
+          "53"
+        ],
+        "cot_phai": [],
+        "dap_an": "B. 43",
+        "huong_dan_cham": "Khoanh đúng B được 1 điểm.",
+        "diem": 1.0
+      },
+      {
+        "muc": 1,
+        "dang": "dien_khuyet",
+        "noi_dung": "Đặt tính rồi tính:   27 + 15 = .......      46 + 38 = .......      59 + 6 = .......",
+        "lua_chon": [],
+        "cot_phai": [],
+        "dap_an": "42; 84; 65\n(27 + 15 = 42;  46 + 38 = 84;  59 + 6 = 65)",
+        "huong_dan_cham": "Mỗi phép tính đúng 0,5 điểm; đặt tính thẳng cột.",
+        "diem": 1.5
+      },
+      {
+        "muc": 1,
+        "dang": "noi_cot",
+        "noi_dung": "Nối mỗi phép tính với kết quả đúng:",
+        "lua_chon": [
+          "29 + 4",
+          "36 + 7",
+          "48 + 5"
+        ],
+        "cot_phai": [
+          "53",
+          "33",
+          "43"
+        ],
+        "dap_an": "1 – b; 2 – c; 3 – a",
+        "huong_dan_cham": "Mỗi nối đúng 0,5 điểm.",
+        "diem": 1.5
+      },
+      {
+        "muc": 2,
+        "dang": "tu_luan",
+        "noi_dung": "Lớp 2A có 28 bạn nữ và 17 bạn nam. Hỏi lớp 2A có tất cả bao nhiêu bạn?",
+        "lua_chon": [],
+        "cot_phai": [],
+        "dap_an": "Bài giải\nSố bạn lớp 2A có tất cả là:\n28 + 17 = 45 (bạn)\nĐáp số: 45 bạn.",
+        "huong_dan_cham": "Câu lời giải 0,5đ; phép tính đúng 1đ; đáp số 0,5đ.",
+        "diem": 2.0
+      },
+      {
+        "muc": 2,
+        "dang": "dung_sai",
+        "noi_dung": "Đúng ghi Đ, sai ghi S vào ô trống:",
+        "lua_chon": [
+          "45 + 27 = 72",
+          "38 + 46 = 74",
+          "19 + 19 = 38"
+        ],
+        "cot_phai": [],
+        "dap_an": "a) Đ; b) S; c) Đ\n(b sai vì 38 + 46 = 84)",
+        "huong_dan_cham": "Mỗi ý đúng 0,5 điểm.",
+        "diem": 1.5
+      },
+      {
+        "muc": 3,
+        "dang": "tu_luan",
+        "noi_dung": "Mai có 35 nhãn vở. Mai có ít hơn Hà 8 nhãn vở. Hỏi cả hai bạn có tất cả bao nhiêu nhãn vở?",
+        "lua_chon": [],
+        "cot_phai": [],
+        "dap_an": "Bài giải\nSố nhãn vở của Hà là:\n35 + 8 = 43 (nhãn vở)\nSố nhãn vở cả hai bạn có là:\n35 + 43 = 78 (nhãn vở)\nĐáp số: 78 nhãn vở.",
+        "huong_dan_cham": "Tìm đúng số nhãn vở của Hà 0,75đ; tìm đúng tổng 0,75đ.",
+        "diem": 1.5
+      },
+      {
+        "muc": 3,
+        "dang": "dien_khuyet",
+        "noi_dung": "Tìm quy luật rồi viết tiếp hai số:   17, 26, 35, 44, ......., .......",
+        "lua_chon": [],
+        "cot_phai": [],
+        "dap_an": "53; 62\n(Quy luật: mỗi số sau bằng số liền trước cộng thêm 9.)",
+        "huong_dan_cham": "Viết đúng 2 số 0,5đ; nêu được quy luật 0,5đ.",
+        "diem": 1.0
+      }
+    ],
+    "loi_chuc": "Chúc các em làm bài thật tốt và luôn yêu thích môn Toán!"
+  },
+  "phieu_b": null,
+  "kiem_dinh": {
+    "diem": 92,
+    "nhan_xet_chung": "Phiếu bám sát yêu cầu cần đạt, đáp án chính xác, phân hóa 3 mức rõ ràng. Có một góp ý nhỏ để câu Mức 3 phát huy tư duy tốt hơn.",
+    "van_de": [
+      {
+        "cau_so": 7,
+        "loai": "trinh_bay",
+        "mo_ta": "Câu tìm quy luật chưa yêu cầu học sinh giải thích nên khó đánh giá tư duy Mức 3.",
+        "de_xuat": "Thêm yêu cầu: \"Em hãy giải thích vì sao em viết được hai số đó.\""
+      }
+    ]
+  },
+  "kiem_dinh_cho": "e7f4b4a12fcce4cba3066d0f9daa02add3b59728"
+}
