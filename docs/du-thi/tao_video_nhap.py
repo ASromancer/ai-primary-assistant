@@ -46,6 +46,7 @@ KICH_BAN = [
      "không theo mẫu Thông tư 27, và đáp án đôi khi sai mà không ai kiểm tra."),
     ("03-giai-phap", 23, "slide:4", "Vì vậy tôi xây dựng một vòng khép kín 6 bước: soạn phiếu, AI kiểm định, dạy và giao bài, chấm và nhận xét, "
      "phân tích lỗi để bổ trợ, và theo dõi tiến bộ đến học bạ. AI đề xuất – giáo viên quyết định."),
+    ("03b-toan-canh", 18, "slide:5", "Toàn cảnh tám nhóm tính năng của sản phẩm."),
     ("04-soan-phieu", 30, "app:soan", "(Minh họa giao diện) Tôi chọn lớp, môn, nhập tên bài hoặc chụp trang sách giáo khoa. "
      "Khoảng 30 giây, AI soạn xong phiếu ba mức theo Thông tư 27, đáp án trình bày đúng như vở học sinh, kèm ma trận và yêu cầu cần đạt."),
     ("05-kiem-dinh", 20, "app:kiemdinh", "Điểm khác biệt: một lượt AI thứ hai đóng vai tổ trưởng chuyên môn, tự giải lại từng câu để soát đáp án sai "
@@ -57,10 +58,10 @@ KICH_BAN = [
     ("08-cham-bai", 30, "app:chambai", "Với bài viết tay, tôi chụp ảnh để AI chấm và viết nhận xét theo Thông tư 27; mức đạt tính theo quy tắc công khai "
      "và tôi sửa được từng câu. Biểu đồ cho thấy cả lớp còn yếu ở đâu – một nút bấm là có phiếu bổ trợ đúng chỗ đó."),
     ("09-tien-bo", 15, "app:tienbo", "Kết quả được lưu theo từng em. Cuối kỳ, AI gợi ý nhận xét học bạ dựa trên cả quá trình, không cần gửi tên học sinh."),
-    ("10-ket-qua", 33, "slide:12", "Sau ⟦…⟧ ngày thí điểm với ⟦…⟧ học sinh: thời gian soạn phiếu giảm từ ⟦…⟧ xuống ⟦…⟧ phút, chấm và nhận xét "
+    ("10-ket-qua", 33, "slide:13", "Sau ⟦…⟧ ngày thí điểm với ⟦…⟧ học sinh: thời gian soạn phiếu giảm từ ⟦…⟧ xuống ⟦…⟧ phút, chấm và nhận xét "
      "từ ⟦…⟧ xuống ⟦…⟧ phút; tỉ lệ chưa đạt giảm từ ⟦…⟧ xuống ⟦…⟧ sau một buổi bổ trợ. (Thay bằng số liệu và cảnh lớp học thật.)"),
-    ("10b-so-sanh", 16, "slide:13", "So sánh với chatbot AI phổ thông và các nền tảng tạo đề, trắc nghiệm trực tuyến."),
-    ("11-trach-nhiem", 20, "slide:10", "Sản phẩm miễn phí, chạy trên trình duyệt, dùng cho khối 1 đến 5 và bộ sách giáo khoa dùng chung toàn quốc. Tên học sinh không được gửi cho AI; "
+    ("10b-so-sanh", 16, "slide:14", "So sánh với chatbot AI phổ thông và các nền tảng tạo đề, trắc nghiệm trực tuyến."),
+    ("11-trach-nhiem", 20, "slide:11", "Sản phẩm miễn phí, chạy trên trình duyệt, dùng cho khối 1 đến 5 và bộ sách giáo khoa dùng chung toàn quốc. Tên học sinh không được gửi cho AI; "
      "mọi đề, điểm và nhận xét đều do giáo viên duyệt."),
     ("12-ket", 13, "slide:15", "Mong rằng Trợ Lý Giảng Dạy sẽ giúp mỗi học sinh được học vừa sức, và giáo viên có thêm thời gian cho từng em. "
      "Xin cảm ơn Ban Giám khảo!"),

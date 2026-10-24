@@ -93,6 +93,10 @@ def loi_doc(d: dict) -> dict[str, list[str]]:
         "03-giai-phap": ["Vì vậy, tôi xây dựng một vòng khép kín sáu bước: soạn phiếu, AI kiểm định, dạy và giao bài, chấm và nhận xét, "
                          "phân tích lỗi để bổ trợ, và theo dõi tiến bộ đến học bạ.",
                          "Ở mỗi bước, AI đề xuất, còn giáo viên là người quyết định."],
+        "03b-toan-canh": ["Sản phẩm gồm tám nhóm tính năng.",
+                          "Soạn phiếu từ tên bài hoặc ảnh sách giáo khoa, AI kiểm định, in và tải phiếu, đề A B và phiếu theo tên.",
+                          "Trình chiếu trên lớp, giao bài online bằng mã QR, chấm bài và phân tích lỗi.",
+                          "Theo dõi tiến bộ, gợi ý nhận xét học bạ, cùng thư viện phiếu và quản lý lớp."],
         "04-soan-phieu": ["Tôi chọn lớp, môn, nhập tên bài hoặc chụp trang sách giáo khoa.",
                           "Chưa đầy một phút, AI soạn xong phiếu ba mức theo Thông tư 27, đáp án trình bày đúng như vở của học sinh, "
                           "kèm ma trận và yêu cầu cần đạt."],
@@ -285,7 +289,7 @@ def doc_doan(ma: str, cau: list[str], d: dict, tam: Path, toc_do: str) -> tuple[
     return am + lang(0.2), moc
 
 
-PHU_DE_THAP = ("01-mo-dau", "10b-so-sanh")  # trang có nội dung sát đáy (thông tin GV, bảng): phụ đề xuống sát mép dưới
+PHU_DE_THAP = ("01-mo-dau", "03b-toan-canh", "10b-so-sanh")  # trang có nội dung sát đáy (thông tin GV, bảng): phụ đề xuống sát mép dưới
 
 
 def ass(cues, tong, nhan, thap=()) -> str:

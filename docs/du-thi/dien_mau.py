@@ -56,8 +56,8 @@ LINK_VIDEO = _vd.read_text(encoding="utf-8").strip() if _vd.exists() else "⟦li
 # ---------------- Nội dung slide ----------------
 # Mỗi trang: (tiêu đề, [(cấp, chữ)], [ảnh bên phải]) — cấp 1 = gạch đầu dòng, 2 = ý con, 0 = không gạch
 DAN_Y = [(1, "Bối cảnh và vấn đề"), (1, "Ý tưởng và giải pháp: vòng khép kín 6 bước"),
-         (1, "Sản phẩm: soạn – kiểm định – dạy – chấm – bổ trợ – học bạ"), (1, "AI có trách nhiệm"),
-         (1, "Triển khai thực tế"), (1, "Kết quả và tác động"), (1, "So sánh với các cách làm hiện nay"), (1, "Thảo luận và tổng kết"), (1, "Tài liệu đính kèm")]
+         (1, "Toàn cảnh 8 nhóm tính năng; chi tiết: soạn – kiểm định – dạy – chấm – bổ trợ – học bạ"), (1, "AI có trách nhiệm"),
+         (1, "Triển khai thực tế"), (1, "Kết quả và tác động"), (1, "Thảo luận: so sánh, bền vững, định hướng"), (1, "Tài liệu đính kèm")]
 
 BOI_CANH = [
     (1, f"Lớp {LOP} có {SI_SO} học sinh, trình độ chênh lệch rõ; đối tượng hưởng lợi: **học sinh và giáo viên tiểu học**."),
@@ -89,32 +89,37 @@ TINH_NANG = [
         (1, "Phiếu 3 mức TT27 kèm đáp án, hướng dẫn chấm, ma trận, yêu cầu cần đạt."),
         (1, "Đáp án chuẩn tiểu học: Bài giải – câu lời giải – phép tính (đơn vị) – Đáp số."),
         (1, "**Lượt AI thứ hai** đóng vai tổ trưởng chuyên môn: tự giải lại từng câu, soát đáp án sai, câu lệch mức."),
+        (1, "Chỉnh từng câu: **đổi câu, dễ hơn, khó hơn**, sửa tay, hoàn tác; một nút **Sửa theo góp ý**."),
         *([(2, f"Thí điểm: phát hiện {_g('loi_kiem_dinh')} lỗi.")] if _co("loi_kiem_dinh") else []),
     ], ["02-soan-phieu-kiem-dinh.png"]),
     ("③a PHÂN HÓA KHÔNG DÁN NHÃN", [
         (1, "Một phiếu tự tách thành **Phiếu Xanh / Cam / Tím** cho 3 nhóm; tên màu trung tính, "
             "học sinh không biết mình ở \"mức\" nào."),
         (1, "Đề A/B chống nhìn bài; phiếu in sẵn tên từng em, đúng màu nhóm."),
-        (1, "In ngay khổ A4 hoặc tải Word; cỡ chữ lớn cho lớp 1–2."),
+        (1, "In ngay khổ A4 (cỡ chữ 14–18pt) hoặc **tải Word**, tải trọn bộ phiếu và đáp án (.zip)."),
     ], ["31-phieu-xanh.png", "13-lop-cua-toi-phieu-theo-ten.png"]),
     ("③b LỚP HỌC SỐ: TRÌNH CHIẾU VÀ GIAO BÀI BẰNG QR", [
         (1, "Trình chiếu từng câu kiểu trò chơi: đếm giờ, lật đáp án, gọi tên ngẫu nhiên, đọc to câu hỏi."),
         (1, "Giao bài online: chiếu mã QR, học sinh **chạm vào tên mình**, không cần tài khoản."),
         (1, "Mỗi em tự nhận **đúng phiếu của nhóm**; câu trắc nghiệm, đúng/sai, nối cột được chấm ngay."),
-        (1, "Giáo viên theo dõi trực tiếp số bài đã nộp."),
+        (1, "Giáo viên **theo dõi trực tiếp**; đặt hạn nộp, đóng/mở bài, cho em làm lại; câu điền, tự luận do AI chấm "
+            "hoặc giáo viên chấm tay."),
     ], ["05-lop-hoc-trinh-chieu.png", "21-hs-lam-cau.png"]),
     ("④ CHẤM, NHẬN XÉT TT27 · ⑤ PHÂN TÍCH LỖI", [
-        (1, "Chấm từ **ảnh chụp bài viết tay** hoặc bài làm online; AI viết nhận xét theo tinh thần TT27."),
+        (1, "Chấm từ **ảnh chụp bài viết tay** (tối đa 40 bài một lượt) hoặc bài làm online; AI viết nhận xét theo tinh thần TT27."),
         (1, "Mức hoàn thành bài theo **quy tắc cố định, công khai**: Hoàn thành tốt khi đúng ≥ 80% câu Mức 1 và Mức 2, "
             "≥ 50% câu Mức 3; Chưa hoàn thành khi đúng < 50% câu Mức 1; còn lại là Hoàn thành."),
         (1, "Đánh giá thường xuyên bằng **nhận xét, không cho điểm** (TT27)."),
         (1, "Giáo viên **chấm tay hoặc sửa** mọi kết quả."),
         (1, "Biểu đồ tỉ lệ chưa đạt từng câu và lỗi thường gặp; **một nút soạn phiếu bổ trợ** đúng chỗ hổng."),
+        (1, "Xuất **sổ tổng hợp Excel**; cập nhật nhóm Xanh/Cam/Tím cho lần sau; lưu vào hồ sơ lớp."),
     ], ["09-cham-bai-so-tong-hop.png", "10-phan-tich-loi-sai.png"]),
     ("⑥ THEO DÕI TIẾN BỘ VÀ NHẬN XÉT HỌC BẠ", [
         (1, "Mức hoàn thành của từng em qua các lần đánh giá; biểu đồ tiến bộ từng em."),
-        (1, "AI gợi ý nhận xét cuối kỳ dựa trên cả quá trình (**không gửi tên học sinh**); giáo viên duyệt, xuất Excel."),
-        (1, "Thư viện phiếu tự lưu, nhiều lớp, dữ liệu riêng cho từng giáo viên."),
+        (1, "AI gợi ý nhận xét học bạ **cho cả lớp một lần**, dựa trên cả quá trình (không gửi tên học sinh); "
+            "giáo viên duyệt, xuất Excel."),
+        (1, "**Thư viện phiếu** tự lưu: gắn sao, nhân bản, nhập/xuất file; **Lớp của tôi**: nhiều lớp, dán nhanh danh sách tên."),
+        (1, "Đăng nhập Google, dữ liệu riêng từng giáo viên; Trang chủ thống kê số phiếu, bài đã chấm, thời gian tiết kiệm."),
     ], ["12-tien-bo-bieu-do.png"]),
 ]
 
@@ -194,6 +199,9 @@ LOI_NOI = [
     "không theo mẫu Thông tư 27, và đáp án đôi khi sai mà không ai kiểm tra.",
     "Giải pháp của tôi là một vòng khép kín 6 bước theo Thông tư 27. Ở mỗi bước AI đề xuất, giáo viên quyết định. Tôi dùng Google "
     "Gemini vì đọc được ảnh trang sách và chữ viết tay, hỗ trợ tiếng Việt tốt và có gói miễn phí; toàn bộ chi phí là 0 đồng.",
+    "Toàn cảnh sản phẩm gồm tám nhóm tính năng: soạn phiếu từ tên bài hoặc ảnh sách giáo khoa; AI kiểm định; in và tải phiếu, "
+    "đề A/B, phiếu theo tên; trình chiếu trên lớp; giao bài online bằng mã QR; chấm bài và phân tích lỗi; theo dõi tiến bộ, gợi ý "
+    "nhận xét học bạ; và thư viện phiếu, quản lý lớp. Các trang sau đi vào từng bước.",
     "Tôi chỉ cần nhập tên bài hoặc chụp trang sách giáo khoa. Chưa đầy một phút, AI soạn xong phiếu ba mức có đáp án trình bày đúng như "
     "vở học sinh. Sau đó một lượt AI thứ hai đóng vai tổ trưởng chuyên môn, tự giải lại từng câu để soát lỗi"
     + (f" – trong thí điểm đã phát hiện {_g('loi_kiem_dinh')} lỗi." if _co("loi_kiem_dinh") else "."),
@@ -215,8 +223,7 @@ LOI_NOI = [
      "phát hiện, và tỉ lệ học sinh chưa đạt trước và sau một buổi bổ trợ. Kết quả đo sẽ được trình bày tại vòng chung kết."),
     "So với chatbot AI phổ thông hay các nền tảng tạo đề, trắc nghiệm trực tuyến, điểm khác biệt là một vòng khép kín theo "
     "Thông tư 27: phiếu ba mức có AI kiểm định, phân nhóm không dán nhãn, chấm bài viết tay kèm nhận xét, phân tích lỗi thành "
-    "phiếu bổ trợ và gợi ý nhận xét học bạ.",
-    "So với cách cũ, đây là một quy trình hoàn chỉnh theo Thông tư 27. Sản phẩm miễn phí, chạy trên trình duyệt, dùng được cho khối "
+    "phiếu bổ trợ và gợi ý nhận xét học bạ. Đây là một quy trình hoàn chỉnh theo Thông tư 27. Sản phẩm miễn phí, chạy trên trình duyệt, dùng được cho khối "
     "1 đến 5, bám sát bộ sách giáo khoa dùng chung toàn quốc. Giới hạn hiện tại là quota gói miễn phí và AI vẫn cần giáo viên duyệt. Hướng tới: chia sẻ trong tổ "
     "chuyên môn và tin nhắn phụ huynh.",
     "Mời Ban Giám khảo quét mã QR để dùng thử. Xin cảm ơn!",
@@ -454,8 +461,8 @@ def lam_slide():
     tim(trien_khai, "TextBox 3").height = Inches(7.4)
     viet(tim(ket_qua, "TextBox 3"), KET_QUA, co=27, mau_p=mau_than)
     tim(ket_qua, "TextBox 3").height = Inches(7.4)
-    viet(tim(thao_luan, "TextBox 3"), THAO_LUAN, co=27, mau_p=mau_than)
-    tim(thao_luan, "TextBox 3").height = Inches(7.6)
+    viet(tim(thao_luan, "TextBox 3"), THAO_LUAN[1:], co=19, mau_p=mau_than)  # ý so sánh đã nằm trong bảng
+    tim(thao_luan, "TextBox 3").top, tim(thao_luan, "TextBox 3").height = Inches(6.65), Inches(3.1)
     than = tim(dinh_kem, "TextBox 3")
     viet(than, DINH_KEM, co=25, mau_p=mau_than)
     than.width, than.height = Inches(12.4), Inches(7.4)
@@ -466,10 +473,11 @@ def lam_slide():
         tb.text = nhan; tb.paragraphs[0].runs[0].font.size = Pt(22); tb.paragraphs[0].runs[0].font.bold = True
         tb.paragraphs[0].runs[0].font.color.rgb = NAVY
 
-    trang_so_sanh(prs, trien_khai)
-    # Thứ tự: bìa, dàn ý, bối cảnh, ý tưởng, 5 tính năng, trách nhiệm, triển khai, kết quả, so sánh, thảo luận, đính kèm
-    # (chỉ số theo thứ tự hiện có: 0..8 là mẫu gốc, 9..15 là trang nhân bản; bỏ trang 2 = hướng dẫn)
-    xep_thu_tu(prs, [0, 1, 2, 3, 4, 9, 10, 11, 12, 13, 14, 5, 6, 15, 7, 8])
+    trang_toan_canh(prs, trien_khai)
+    bang_so_sanh(thao_luan, Inches(2.2), Inches(4.25), 14)
+    # Thứ tự: bìa, dàn ý, bối cảnh, ý tưởng, toàn cảnh, 5 tính năng, trách nhiệm, triển khai, kết quả, thảo luận (+ bảng so sánh),
+    # đính kèm (chỉ số hiện có: 0..8 là mẫu gốc, 9..15 là trang nhân bản; bỏ trang 2 = hướng dẫn) → 15 trang
+    xep_thu_tu(prs, [0, 1, 2, 3, 4, 15, 9, 10, 11, 12, 13, 14, 5, 6, 7, 8])
     xoa_trang(prs, 2)
     for trang, loi in zip(prs.slides, LOI_NOI):  # lời thuyết trình vào phần ghi chú (không hiện khi xuất PDF)
         trang.notes_slide.notes_text_frame.text = loi
@@ -498,34 +506,77 @@ SO_SANH = [  # (tiêu chí, chatbot AI phổ thông, nền tảng tạo đề / 
 ]
 
 
-def trang_so_sanh(prs, mau):
-    """Trang so sánh với các cách làm hiện nay (tiêu chí Sáng tạo)."""
-    from pptx.dml.color import RGBColor as _RGB
-    t = nhan_ban(prs, mau)
-    viet(tim(t, "TextBox 2"), [(0, "SO SÁNH VỚI CÁC CÁCH LÀM HIỆN NAY")])
-    tim(t, "TextBox 2").width = Inches(17)
-    xoa(tim(t, "TextBox 3"))
+def bang_so_sanh(slide, tren, cao, co):
+    """Bảng so sánh với các cách làm hiện nay (tiêu chí Sáng tạo), đặt trên trang Thảo luận."""
     hang, cot = len(SO_SANH) + 1, 4
-    bang = t.shapes.add_table(hang, cot, Inches(0.8), Inches(2.3), Inches(18.4), Inches(6.9)).table
+    bang = slide.shapes.add_table(hang, cot, Inches(0.8), tren, Inches(18.4), cao).table
     for j, w in enumerate((4.6, 4.2, 4.2, 5.4)):
         bang.columns[j].width = Inches(w)
-    tieu_de = ("Tiêu chí", "Chatbot AI phổ thông", "Nền tảng tạo đề, trắc nghiệm trực tuyến", "Trợ Lý Giảng Dạy")
+    tieu_de = ("So sánh với cách làm hiện nay", "Chatbot AI phổ thông", "Nền tảng tạo đề, trắc nghiệm trực tuyến",
+               "Trợ Lý Giảng Dạy")
     for i, dong in enumerate([tieu_de, *SO_SANH]):
+        bang.rows[i].height = int(cao / hang)
         for j, chu in enumerate(dong):
             o = bang.cell(i, j)
             o.text = chu
-            o.margin_left = o.margin_right = Inches(0.12)
+            o.margin_left = o.margin_right = Inches(0.1)
+            o.margin_top = o.margin_bottom = Inches(0.03)
             o.fill.solid()
-            o.fill.fore_color.rgb = NAVY if i == 0 else (_RGB(0xE3, 0xF2, 0xE8) if j == 3 else (NEN if i % 2 else _RGB(0xFF, 0xFF, 0xFF)))
+            o.fill.fore_color.rgb = NAVY if i == 0 else (RGBColor(0xE3, 0xF2, 0xE8) if j == 3 else (NEN if i % 2 else RGBColor(0xFF, 0xFF, 0xFF)))
             for para in o.text_frame.paragraphs:
                 for r in para.runs:
-                    r.font.size, r.font.name = Pt(17 if i else 18), "Aptos"
+                    r.font.size, r.font.name = Pt(co), "Aptos"
                     r.font.bold = i == 0 or j in (0, 3)
-                    r.font.color.rgb = _RGB(0xFF, 0xFF, 0xFF) if i == 0 else (_RGB(0x1B, 0x5E, 0x20) if j == 3 else NAVY)
-    ghi = t.shapes.add_textbox(Inches(0.8), Inches(9.25), Inches(18.4), Inches(0.5)).text_frame
-    ghi.text = "So sánh theo nhóm công cụ dựa trên trải nghiệm sử dụng của tác giả, không đánh giá một sản phẩm cụ thể."
-    ghi.paragraphs[0].runs[0].font.size = Pt(14); ghi.paragraphs[0].runs[0].font.italic = True
-    ghi.paragraphs[0].runs[0].font.color.rgb = NAVY
+                    r.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF) if i == 0 else (RGBColor(0x1B, 0x5E, 0x20) if j == 3 else NAVY)
+
+
+TOAN_CANH = [  # 8 nhóm tính năng (mỗi nhóm một khu vực của ứng dụng)
+    ("① Soạn phiếu", ["Từ tên bài hoặc ảnh trang SGK (tối đa 3 ảnh)", "Phiếu 3 mức TT27, 5 dạng bài, 15/20/35 phút",
+                     "Đáp án chuẩn tiểu học, hướng dẫn chấm, ma trận, yêu cầu cần đạt", "Đổi câu, dễ hơn, khó hơn, sửa tay, hoàn tác"]),
+    ("② AI kiểm định", ["\"Tổ trưởng chuyên môn\" AI tự giải lại từng câu", "Chấm chất lượng phiếu (VD 95/100), chỉ ra lỗi từng câu",
+                       "Một nút \"Sửa theo góp ý\"; kiểm định lại sau khi sửa", "Tự chuyển mô hình AI dự phòng khi quá tải"]),
+    ("③ In & tải phiếu", ["Phiếu chung, Phiếu Xanh/Cam/Tím, đáp án", "In A4, chọn cỡ chữ 14–18pt",
+                         "Tải Word, tải trọn bộ (.zip)", "Đề A/B chống nhìn bài; phiếu in sẵn tên từng em"]),
+    ("④ Trình chiếu trên lớp", ["Từng câu toàn màn hình, kiểu trò chơi", "Đếm giờ, lật đáp án", "Gọi bạn ngẫu nhiên, đọc to câu hỏi",
+                               "Điều khiển bằng phím tắt"]),
+    ("⑤ Giao bài online", ["Mã QR/link, học sinh chạm tên, không cần tài khoản", "Mỗi em nhận đúng phiếu của nhóm",
+                          "Đặt hạn nộp, đóng/mở bài, cho em làm lại", "Theo dõi trực tiếp; tự chấm trắc nghiệm, AI chấm tự luận"]),
+    ("⑥ Chấm & phân tích lỗi", ["Chụp ảnh tối đa 40 bài, AI đọc chữ viết tay", "Nhận xét từng em theo TT27; chấm tay, sửa mọi ô",
+                               "Biểu đồ câu sai, lỗi thường gặp → phiếu bổ trợ", "Sổ tổng hợp Excel; cập nhật nhóm Xanh/Cam/Tím"]),
+    ("⑦ Tiến bộ & học bạ", ["Mức hoàn thành từng em qua các lần đánh giá", "Biểu đồ tiến bộ từng em",
+                           "Gợi ý nhận xét học bạ cả lớp, không gửi tên", "Xuất nhận xét học bạ Excel"]),
+    ("⑧ Thư viện & lớp của tôi", ["Phiếu tự lưu; gắn sao, nhân bản, nhập/xuất file", "Nhiều lớp; dán nhanh danh sách tên",
+                                 "Đăng nhập Google, dữ liệu riêng từng giáo viên", "Trang chủ: thống kê, thời gian tiết kiệm"]),
+]
+
+
+def trang_toan_canh(prs, mau):
+    """Trang tổng quan: 8 nhóm tính năng thành lưới 4 × 2."""
+    t = nhan_ban(prs, mau)
+    viet(tim(t, "TextBox 2"), [(0, "TOÀN CẢNH TÍNH NĂNG")])
+    tim(t, "TextBox 2").width = Inches(17)
+    xoa(tim(t, "TextBox 3"))
+    X, Y, W, H, G = Inches(0.8), Inches(2.2), Inches(18.4), Inches(7.5), Inches(0.22)
+    w, h = (W - 3 * G) / 4, (H - G) / 2
+    for k, (ten, ds) in enumerate(TOAN_CANH):
+        x, y = X + int((w + G) * (k % 4)), Y + int((h + G) * (k // 4))
+        o = t.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, int(w), int(h))
+        o.adjustments[0] = 0.05
+        o.fill.solid(); o.fill.fore_color.rgb = NEN; o.line.color.rgb = RGBColor(0xCF, 0xD8, 0xE6); o.shadow.inherit = False
+        dau = t.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, int(w), Inches(0.7))
+        dau.adjustments[0] = 0.25
+        dau.fill.solid(); dau.fill.fore_color.rgb = NAVY2; dau.line.fill.background(); dau.shadow.inherit = False
+        tf = dau.text_frame
+        tf.margin_left = Inches(0.15)
+        r = tf.paragraphs[0].add_run(); r.text = ten
+        r.font.size, r.font.bold, r.font.name, r.font.color.rgb = Pt(20), True, "Aptos", RGBColor(0xFF, 0xFF, 0xFF)
+        than = t.shapes.add_textbox(x + Inches(0.1), y + Inches(0.8), int(w) - Inches(0.2), int(h) - Inches(0.85)).text_frame
+        than.word_wrap = True
+        for i, chu in enumerate(ds):
+            para = than.paragraphs[0] if i == 0 else than.add_paragraph()
+            para.space_after = Pt(7)
+            r = para.add_run(); r.text = "• " + chu
+            r.font.size, r.font.name, r.font.color.rgb = Pt(17), "Aptos", NAVY
     return t
 
 
