@@ -363,14 +363,15 @@ def main():
         L, ra = doan[ma][2], tam / f"{ma}.mp4"
         tua = min(L / clip[ma], 1) if loai.startswith("app") else 1
         ffmpeg("-i", str(DOAN / f"{ma}.mp4"), "-vf",
-               f"setpts={tua:.4f}*PTS,tpad=stop_mode=clone:stop_duration={max(L - clip[ma] * tua, 0):.3f}",
+               f"setpts={tua:.4f}*PTS,tpad=stop_mode=clone:stop_duration={max(L - clip[ma] * tua, 0) + 3:.3f}",  # dư rồi cắt đúng L
                "-t", f"{L:.3f}", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-r", "30", str(ra))
         ds.append(f"file '{ra}'\n")
     (tam / "ds.txt").write_text("".join(ds), encoding="utf-8")
     ffmpeg("-f", "concat", "-safe", "0", "-i", str(tam / "ds.txt"), "-c", "copy", str(tam / "hinh.mp4"))
     subprocess.run([FFMPEG, "-y", "-loglevel", "error", "-i", "hinh.mp4", "-i", "loi.wav",
-                    "-vf", "ass=pd.ass:fontsdir=/usr/share/fonts/truetype/dejavu",
-                    "-c:v", "libx264", "-preset", "veryfast", "-crf", "22", "-c:a", "aac", "-b:a", "160k", "-shortest",
+                    "-vf", "tpad=stop_mode=clone:stop_duration=5,ass=pd.ass:fontsdir=/usr/share/fonts/truetype/dejavu",
+                    "-c:v", "libx264", "-preset", "veryfast", "-crf", "22", "-c:a", "aac", "-b:a", "160k",
+                    "-t", f"{t0:.3f}",  # đúng bằng lời đọc: không để hình ngắn hơn làm mất câu cuối
                     str(RA / "video-long-tieng.mp4")], cwd=tam, check=True)
     print(f"Đã tạo {RA / 'video-long-tieng.mp4'} ({int(t0 // 60)}:{int(t0 % 60):02d}), loi-doc.mp3, phu-de-long-tieng.srt")
 
