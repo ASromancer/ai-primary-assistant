@@ -8,7 +8,8 @@ if st.query_params.get("ma"):  # học sinh vào làm bài bằng mã: không c�
     st.navigation([st.Page("trang/lam_bai.py", title="Làm bài", icon="📝")], position="hidden").run()
     st.stop()
 
-ma_demo = state._secret("MA_DEMO", "")
+ma_demo = str(state._secret("MA_DEMO", "") or next(  # dán nhầm dưới một mục [..] trong Secrets vẫn nhận
+    (v["MA_DEMO"] for v in (state._secret(k, {}) for k in ("auth", "connections")) if hasattr(v, "get") and v.get("MA_DEMO")), "")).strip()
 if ma_demo and st.query_params.get("demo") == ma_demo:  # link trải nghiệm cho giám khảo
     st.session_state.che_do_demo = True
 
