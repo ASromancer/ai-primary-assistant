@@ -95,7 +95,7 @@ def loi_doc(d: dict) -> dict[str, list[str]]:
                          "phân tích lỗi để bổ trợ, và theo dõi tiến bộ đến học bạ.",
                          "Ở mỗi bước, AI đề xuất, còn giáo viên là người quyết định."],
         "03b-toan-canh": ["Sản phẩm gồm tám nhóm tính năng.",
-                          "Soạn phiếu từ tên bài hoặc ảnh sách giáo khoa, AI kiểm định, in và tải phiếu, đề A B và phiếu theo tên.",
+                          "Soạn phiếu từ tên bài hoặc ảnh sách giáo khoa, AI kiểm định, in và tải phiếu, đề A/B và phiếu theo tên.",
                           "Trình chiếu trên lớp, giao bài online bằng mã QR, chấm bài và phân tích lỗi.",
                           "Theo dõi tiến bộ, gợi ý nhận xét học bạ, cùng thư viện phiếu và quản lý lớp."],
         "04-soan-phieu": ["Tôi chọn lớp, môn, nhập tên bài hoặc chụp trang sách giáo khoa.",
@@ -363,7 +363,8 @@ def main():
         L, ra = doan[ma][2], tam / f"{ma}.mp4"
         tua = min(L / clip[ma], 1) if loai.startswith("app") else 1
         ffmpeg("-i", str(DOAN / f"{ma}.mp4"), "-vf",
-               f"setpts={tua:.4f}*PTS,tpad=stop_mode=clone:stop_duration={max(L - clip[ma] * tua, 0) + 3:.3f}",  # dư rồi cắt đúng L
+               # tpad phải đứng trước setpts (sau setpts, tpad của ffmpeg 7 không kéo dài) → tính phần kéo dài theo thời gian gốc
+               f"tpad=stop_mode=clone:stop_duration={max(L / tua - clip[ma], 0) + 3:.3f},setpts={tua:.4f}*PTS",  # dư rồi cắt đúng L
                "-t", f"{L:.3f}", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-r", "30", str(ra))
         ds.append(f"file '{ra}'\n")
     (tam / "ds.txt").write_text("".join(ds), encoding="utf-8")
